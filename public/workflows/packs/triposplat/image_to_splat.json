@@ -1,0 +1,293 @@
+{
+    "_meta": {
+        "title": "Image to 3D (TripoSplat)",
+        "description": "Core ComfyUI nodes only, converted from the official TripoSplat image-to-splat template: BiRefNet foreground mask -> TripoSplatPreprocessImage (crop/centre, 1024) -> TripoSplatConditioning (DINOv3 ViT-H image features + FLUX.2 VAE latent) -> KSampler on the TripoSplat diffusion model -> VAEDecodeTripoSplat (Gaussian splat) -> SplatToFile3D -> SaveGLB writes the splat file (.ply by default, .spz smaller). RenderSplat orbits the splat into a turntable clip (CreateCameraInfo orbit camera) -> CreateVideo -> SaveVideo so the gallery has something to play. Optional SplatToMesh -> SaveGLB exports a coloured mesh; the builder (src/lib/oj/imageToSplat.ts) drops it unless params.mesh is on. Models: VAST-AI/TripoSplat (MIT) diffusion_models/triposplat_fp16, vae/triposplat_vae_decoder_fp16, vae/flux2-vae, clip_vision/dino_v3_vit_h (DINOv3 License); Comfy-Org/BiRefNet."
+    },
+    "1": {
+        "class_type": "LoadImage",
+        "inputs": {
+            "image": "example.png"
+        },
+        "_meta": {
+            "title": "Source Image"
+        }
+    },
+    "2": {
+        "class_type": "LoadBackgroundRemovalModel",
+        "inputs": {
+            "bg_removal_name": "birefnet.safetensors"
+        },
+        "_meta": {
+            "title": "BiRefNet"
+        }
+    },
+    "3": {
+        "class_type": "RemoveBackground",
+        "inputs": {
+            "bg_removal_model": [
+                "2",
+                0
+            ],
+            "image": [
+                "1",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Foreground Mask"
+        }
+    },
+    "4": {
+        "class_type": "TripoSplatPreprocessImage",
+        "inputs": {
+            "image": [
+                "1",
+                0
+            ],
+            "mask": [
+                "3",
+                0
+            ],
+            "erode_radius": 1,
+            "size": 1024
+        },
+        "_meta": {
+            "title": "Crop + Centre Subject"
+        }
+    },
+    "5": {
+        "class_type": "CLIPVisionLoader",
+        "inputs": {
+            "clip_name": "dino_v3_vit_h.safetensors"
+        },
+        "_meta": {
+            "title": "DINOv3 ViT-H"
+        }
+    },
+    "6": {
+        "class_type": "VAELoader",
+        "inputs": {
+            "vae_name": "flux2-vae.safetensors"
+        },
+        "_meta": {
+            "title": "FLUX.2 VAE"
+        }
+    },
+    "7": {
+        "class_type": "TripoSplatConditioning",
+        "inputs": {
+            "clip_vision": [
+                "5",
+                0
+            ],
+            "vae": [
+                "6",
+                0
+            ],
+            "image": [
+                "4",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "TripoSplat Conditioning"
+        }
+    },
+    "8": {
+        "class_type": "UNETLoader",
+        "inputs": {
+            "unet_name": "triposplat_fp16.safetensors",
+            "weight_dtype": "default"
+        },
+        "_meta": {
+            "title": "TripoSplat Model"
+        }
+    },
+    "9": {
+        "class_type": "KSampler",
+        "inputs": {
+            "model": [
+                "8",
+                0
+            ],
+            "seed": 42,
+            "steps": 20,
+            "cfg": 3.0,
+            "sampler_name": "dpmpp_2m",
+            "scheduler": "simple",
+            "positive": [
+                "7",
+                0
+            ],
+            "negative": [
+                "7",
+                1
+            ],
+            "latent_image": [
+                "7",
+                2
+            ],
+            "denoise": 1.0
+        },
+        "_meta": {
+            "title": "Sample Splat Latent"
+        }
+    },
+    "10": {
+        "class_type": "VAELoader",
+        "inputs": {
+            "vae_name": "triposplat_vae_decoder_fp16.safetensors"
+        },
+        "_meta": {
+            "title": "TripoSplat Decoder"
+        }
+    },
+    "11": {
+        "class_type": "VAEDecodeTripoSplat",
+        "inputs": {
+            "samples": [
+                "9",
+                0
+            ],
+            "vae": [
+                "10",
+                0
+            ],
+            "num_gaussians": 262144,
+            "seed": 42
+        },
+        "_meta": {
+            "title": "Decode Gaussians"
+        }
+    },
+    "12": {
+        "class_type": "SplatToFile3D",
+        "inputs": {
+            "splat": [
+                "11",
+                0
+            ],
+            "format": "ply"
+        },
+        "_meta": {
+            "title": "Splat File"
+        }
+    },
+    "13": {
+        "class_type": "SaveGLB",
+        "inputs": {
+            "mesh": [
+                "12",
+                0
+            ],
+            "filename_prefix": "3d/adrift_triposplat"
+        },
+        "_meta": {
+            "title": "Save Splat"
+        }
+    },
+    "14": {
+        "class_type": "CreateCameraInfo",
+        "inputs": {
+            "mode": "orbit",
+            "mode.yaw": 35.0,
+            "mode.pitch": 30.0,
+            "mode.distance": 2.5,
+            "target_x": 0.0,
+            "target_y": 0.0,
+            "target_z": 0.0,
+            "roll": 0.0,
+            "fov": 35.0,
+            "zoom": 1.0,
+            "camera_type": "perspective"
+        },
+        "_meta": {
+            "title": "Turntable Camera"
+        }
+    },
+    "15": {
+        "class_type": "RenderSplat",
+        "inputs": {
+            "splat": [
+                "11",
+                0
+            ],
+            "width": 1024,
+            "height": 1024,
+            "frames": 75,
+            "splat_scale": 1.0,
+            "sharpen": 2.0,
+            "headlight_shading": 0.0,
+            "opacity_threshold": 0.0,
+            "render_style": "color",
+            "background": "#848484",
+            "camera_info": [
+                "14",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Render Turntable"
+        }
+    },
+    "16": {
+        "class_type": "CreateVideo",
+        "inputs": {
+            "images": [
+                "15",
+                0
+            ],
+            "fps": 25.0
+        },
+        "_meta": {
+            "title": "Turntable Clip"
+        }
+    },
+    "17": {
+        "class_type": "SaveVideo",
+        "inputs": {
+            "video": [
+                "16",
+                0
+            ],
+            "filename_prefix": "video/adrift_triposplat",
+            "format": "auto",
+            "codec": "auto"
+        },
+        "_meta": {
+            "title": "Save Turntable"
+        }
+    },
+    "18": {
+        "class_type": "SplatToMesh",
+        "inputs": {
+            "splat": [
+                "11",
+                0
+            ],
+            "resolution": 384,
+            "kernel": 5,
+            "smooth": 0,
+            "level": 0.6,
+            "min_component": 500,
+            "min_opacity": 0.02,
+            "color_sharpen": 2.0
+        },
+        "_meta": {
+            "title": "Splat to Mesh"
+        }
+    },
+    "19": {
+        "class_type": "SaveGLB",
+        "inputs": {
+            "mesh": [
+                "18",
+                0
+            ],
+            "filename_prefix": "3d/adrift_triposplat_mesh"
+        },
+        "_meta": {
+            "title": "Save Mesh"
+        }
+    }
+}

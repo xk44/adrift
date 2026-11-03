@@ -1,0 +1,137 @@
+{
+  "name": "rack_focus",
+  "tool": "rack_focus",
+  "action": "rack_focus",
+  "workflow": "packs/image-tools/rack_focus.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "VideoTemporalCrop",
+      "title": "Length cap (head)",
+      "inputs": {
+        "length": 241,
+        "start_frame": 0,
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "LoadDA3Model",
+      "title": "Depth model",
+      "inputs": {
+        "model_name": "depth_anything_3_mono_large.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "5": {
+      "class_type": "DA3Inference",
+      "title": "Per-frame depth",
+      "inputs": {
+        "da3_model": [
+          "4",
+          0
+        ],
+        "image": [
+          "3",
+          0
+        ],
+        "mode": "mono",
+        "resize_method": "upper_bound_resize",
+        "resolution": 504
+      }
+    },
+    "6": {
+      "class_type": "DA3Render",
+      "title": "Depth maps (near = white)",
+      "inputs": {
+        "da3_geometry": [
+          "5",
+          0
+        ],
+        "output": "depth",
+        "output.apply_sky_clip": false,
+        "output.normalization": "v2_style"
+      }
+    },
+    "7": {
+      "class_type": "CJRackFocus",
+      "title": "Rack focus",
+      "inputs": {
+        "a_time": 0.5,
+        "a_x": 0.3,
+        "a_y": 0.5,
+        "b_time": 3,
+        "b_x": 0.7,
+        "b_y": 0.5,
+        "blur_amount": 2.4,
+        "depth": [
+          "6",
+          0
+        ],
+        "depth_smoothing": 0.25,
+        "ease": "smooth",
+        "focus_range": 0.04,
+        "fps": [
+          "3",
+          2
+        ],
+        "highlights": 0.3,
+        "images": [
+          "3",
+          0
+        ],
+        "invert_depth": false
+      }
+    },
+    "8": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video",
+      "inputs": {
+        "audio": [
+          "3",
+          1
+        ],
+        "fps": [
+          "3",
+          2
+        ],
+        "images": [
+          "7",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_RackFocus",
+        "format": "auto",
+        "video": [
+          "8",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+Patch for https://github.com/city96/ComfyUI-GGUF (pinned commit c09b4b799b44).
+This diff modifies that project's files and is distributed under its
+license (Apache-2.0), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/loader.py b/loader.py
+index 7cefb11..7a0d6aa 100644
+--- a/loader.py
++++ b/loader.py
+@@ -9,7 +9,7 @@ import os
+ from .ops import GGMLTensor
+ from .dequant import is_quantized, dequantize_tensor
+ 
+-IMG_ARCH_LIST = {"flux", "sd1", "sdxl", "sd3", "aura", "hidream", "cosmos", "ltxv", "hyvid", "wan", "lumina2", "qwen_image"}
++IMG_ARCH_LIST = {"flux", "sd1", "sdxl", "sd3", "aura", "hidream", "cosmos", "ltxv", "hyvid", "wan", "lumina2", "qwen_image", "krea2"}  # krea2: GGUF uses native tensor names, recognized by ComfyUI 0.27 core
+ TXT_ARCH_LIST = {"t5", "t5encoder", "llama", "qwen2vl", "qwen3", "qwen3vl", "gemma3"}
+ VIS_TYPE_LIST = {"clip-vision", "mmproj"}
+ 

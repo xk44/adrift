@@ -1,0 +1,230 @@
+{
+  "name": "image_to_splat",
+  "tool": "image_to_splat",
+  "action": "image_to_splat",
+  "workflow": "packs/triposplat/image_to_splat.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "title": "BiRefNet",
+      "inputs": {
+        "bg_removal_name": "birefnet.safetensors"
+      }
+    },
+    "3": {
+      "class_type": "RemoveBackground",
+      "title": "Foreground Mask",
+      "inputs": {
+        "bg_removal_model": [
+          "2",
+          0
+        ],
+        "image": [
+          "1",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "TripoSplatPreprocessImage",
+      "title": "Crop + Centre Subject",
+      "inputs": {
+        "erode_radius": 1,
+        "image": [
+          "1",
+          0
+        ],
+        "mask": [
+          "3",
+          0
+        ],
+        "size": 1024
+      }
+    },
+    "5": {
+      "class_type": "CLIPVisionLoader",
+      "title": "DINOv3 ViT-H",
+      "inputs": {
+        "clip_name": "dino_v3_vit_h.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "VAELoader",
+      "title": "FLUX.2 VAE",
+      "inputs": {
+        "vae_name": "flux2-vae.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "TripoSplatConditioning",
+      "title": "TripoSplat Conditioning",
+      "inputs": {
+        "clip_vision": [
+          "5",
+          0
+        ],
+        "image": [
+          "4",
+          0
+        ],
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "UNETLoader",
+      "title": "TripoSplat Model",
+      "inputs": {
+        "unet_name": "triposplat_fp16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "9": {
+      "class_type": "KSampler",
+      "title": "Sample Splat Latent",
+      "inputs": {
+        "cfg": 3,
+        "denoise": 1,
+        "latent_image": [
+          "7",
+          2
+        ],
+        "model": [
+          "8",
+          0
+        ],
+        "negative": [
+          "7",
+          1
+        ],
+        "positive": [
+          "7",
+          0
+        ],
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "simple",
+        "seed": 1234,
+        "steps": 20
+      }
+    },
+    "10": {
+      "class_type": "VAELoader",
+      "title": "TripoSplat Decoder",
+      "inputs": {
+        "vae_name": "triposplat_vae_decoder_fp16.safetensors"
+      }
+    },
+    "11": {
+      "class_type": "VAEDecodeTripoSplat",
+      "title": "Decode Gaussians",
+      "inputs": {
+        "num_gaussians": 262144,
+        "samples": [
+          "9",
+          0
+        ],
+        "seed": 1234,
+        "vae": [
+          "10",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "SplatToFile3D",
+      "title": "Splat File",
+      "inputs": {
+        "format": "ply",
+        "splat": [
+          "11",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "SaveGLB",
+      "title": "Save Splat",
+      "inputs": {
+        "filename_prefix": "3d/adrift_triposplat",
+        "mesh": [
+          "12",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "CreateCameraInfo",
+      "title": "Turntable Camera",
+      "inputs": {
+        "camera_type": "perspective",
+        "fov": 35,
+        "mode": "orbit",
+        "mode.distance": 2.5,
+        "mode.pitch": 30,
+        "mode.yaw": 35,
+        "roll": 0,
+        "target_x": 0,
+        "target_y": 0,
+        "target_z": 0,
+        "zoom": 1
+      }
+    },
+    "15": {
+      "class_type": "RenderSplat",
+      "title": "Render Turntable",
+      "inputs": {
+        "background": "#848484",
+        "camera_info": [
+          "14",
+          0
+        ],
+        "frames": 75,
+        "headlight_shading": 0,
+        "height": 1024,
+        "opacity_threshold": 0,
+        "render_style": "color",
+        "sharpen": 2,
+        "splat": [
+          "11",
+          0
+        ],
+        "splat_scale": 1,
+        "width": 1024
+      }
+    },
+    "16": {
+      "class_type": "CreateVideo",
+      "title": "Turntable Clip",
+      "inputs": {
+        "fps": 25,
+        "images": [
+          "15",
+          0
+        ]
+      }
+    },
+    "17": {
+      "class_type": "SaveVideo",
+      "title": "Save Turntable",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/adrift_triposplat",
+        "format": "auto",
+        "video": [
+          "16",
+          0
+        ]
+      }
+    }
+  }
+}

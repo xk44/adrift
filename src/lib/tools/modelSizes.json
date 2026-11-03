@@ -1,0 +1,1137 @@
+{
+  "about": "Sizes and sources for docs/models.md (src/lib/tools/modelsDoc.ts). files: keyed by weight basename; bytes is the Hugging Face reported size (or `measured` from a local copy), null = unknown; set is the download-list set, null = not in the list; gated = gated Hugging Face repo. byName: models a node loads by folder name. Regenerate the doc with `npm run docs:models`.",
+  "files": {
+    "360_Orbit.safetensors": {
+      "bytes": 359257680,
+      "source": "Remade-AI/360-Orbit",
+      "set": "minimal"
+    },
+    "ace_1.5_vae.safetensors": {
+      "bytes": 337431732,
+      "source": "Comfy-Org/ACE-Step-1.5",
+      "set": "full"
+    },
+    "acestep_v1.5_turbo.safetensors": {
+      "bytes": 4787825604,
+      "source": "Comfy-Org/ACE-Step-1.5",
+      "set": "full"
+    },
+    "anima-base-v1.0.safetensors": {
+      "bytes": 4182218328,
+      "source": "circlestone-labs/Anima",
+      "set": null,
+      "note": "optional \"Character from reference (Anima)\" mode only, under the CircleStone Labs Non-Commercial License, so it is kept out of the minimal/full download sets; download it from the source repo (src/lib/tools/modelRepoPaths.json) into `models/diffusion_models`."
+    },
+    "anima_ref_adapter_pilot_r32.safetensors": {
+      "bytes": 91853888,
+      "source": "ElectronGirl/anima-ref-adapter",
+      "set": null,
+      "note": "legacy pilot adapter for the optional \"Character from reference (Anima)\" mode, used only when the installed ComfyUI-Anima-Ref-Adapter predates v2 (packs/anima/anima_ref_pilot.json); under the CircleStone Labs Non-Commercial License, so it is kept out of the minimal/full download sets; download it from the source repo (src/lib/tools/modelRepoPaths.json) into `models/loras`."
+    },
+    "anima_ref_adapter_v2_r64.safetensors": {
+      "bytes": 183605032,
+      "source": "ElectronGirl/anima-ref-adapter",
+      "set": null,
+      "note": "optional \"Character from reference (Anima)\" mode only (v2 adapter, one or two characters), under the CircleStone Labs Non-Commercial License, so it is kept out of the minimal/full download sets; download it from the source repo (src/lib/tools/modelRepoPaths.json) into `models/loras`."
+    },
+    "apple_DFN5B-CLIP-ViT-H-14-384_fp16.safetensors": {
+      "bytes": 1973509450,
+      "source": "Kijai/MMAudio_safetensors",
+      "set": "full"
+    },
+    "bfs_body_swap_v1_krea2.safetensors": {
+      "bytes": 914160176,
+      "source": "Alissonerdx/BFS-Best-Face-Swap",
+      "set": "full"
+    },
+    "bfs_body_swap_v1.0_qwen_2.1.safetensors": {
+      "bytes": 209753576,
+      "source": "Alissonerdx/BFS-Best-Face-Swap",
+      "set": "full"
+    },
+    "bfs_head_swap_v1.1_krea2.safetensors": {
+      "bytes": 914159816,
+      "source": "Alissonerdx/BFS-Best-Face-Swap",
+      "set": "full"
+    },
+    "bfs_head_v1.1_qwen_2.1.safetensors": {
+      "bytes": 260096144,
+      "source": "Alissonerdx/BFS-Best-Face-Swap",
+      "set": "full"
+    },
+    "birefnet.safetensors": {
+      "bytes": 444473596,
+      "source": "Comfy-Org/BiRefNet",
+      "set": "minimal"
+    },
+    "camera_motion_h3_lora_v1_3000_pruned.safetensors": {
+      "bytes": 155109680,
+      "source": "Jojocodex/minimax-h3-Camera-Motion-lora",
+      "set": "full"
+    },
+    "character-sheet-qwen-image-2.1-edit-lora-e9.safetensors": {
+      "bytes": 42059152,
+      "source": "houseofboern/character-sheet-qwen-image-2.1-edit-lora",
+      "set": "full"
+    },
+    "clip_vision_h.safetensors": {
+      "bytes": 1264219396,
+      "source": "Comfy-Org/Wan-Animate-2",
+      "set": "minimal"
+    },
+    "depth_anything_3_base.safetensors": {
+      "bytes": 541524124,
+      "source": "Comfy-Org/Depth-Anything-3",
+      "set": "full"
+    },
+    "depth_anything_3_mono_large.safetensors": {
+      "bytes": 1336748056,
+      "source": "Comfy-Org/Depth-Anything-3",
+      "set": "full"
+    },
+    "dino_v3_L_naf_fp32.safetensors": {
+      "bytes": 1215214176,
+      "source": "Comfy-Org/Pixal3D",
+      "set": "full"
+    },
+    "dino_v3_vit_h.safetensors": {
+      "bytes": 1681247696,
+      "source": "VAST-AI/TripoSplat",
+      "set": "full"
+    },
+    "doodle_in_lora_qwen21.safetensors": {
+      "bytes": 159436032,
+      "source": "ML-Intern-lab/Qwen-Image-2.1-doodle-in-LoRA",
+      "set": "full"
+    },
+    "face_yolov8m.pt": {
+      "bytes": 52026019,
+      "source": "Bingsu/adetailer",
+      "set": "full"
+    },
+    "FaceSwap_H3_REF2VA.safetensors": {
+      "bytes": 65623904,
+      "source": "UntMods/FaceSwap_MiniMaxH3_REF2VA",
+      "set": "full"
+    },
+    "fibo2_dev_bf16.safetensors": {
+      "bytes": 16450000000,
+      "source": "briaai",
+      "set": null,
+      "gated": true,
+      "measured": "local copy",
+      "note": "Bria publishes this transformer only as gated, sharded diffusers weights (`briaai/Fibo-2.0-dev`, `transformer/diffusion_pytorch_model-0000N-of-00002.safetensors`), so there is no single file to pin in the download list; this file is a local single-file merge of those shards."
+    },
+    "fibo2_edit_turbo_bf16.safetensors": {
+      "bytes": 16450000000,
+      "source": "briaai",
+      "set": null,
+      "gated": true,
+      "measured": "local copy",
+      "note": "Bria publishes this transformer only as gated, sharded diffusers weights (`briaai/Fibo-2.0-edit-turbo`, `transformer/diffusion_pytorch_model-0000N-of-00002.safetensors`), so there is no single file to pin in the download list; this file is a local single-file merge of those shards."
+    },
+    "flux-3-image-klein-consistency.safetensors": {
+      "bytes": 160696888,
+      "source": "ausboss/FLUX-3-Image-Klein-Consistency-LoRA",
+      "set": "full"
+    },
+    "flux-3-image-klein-outpaint.safetensors": {
+      "bytes": 160697104,
+      "source": "ausboss/FLUX-3-Image-Klein-Outpaint-LoRA",
+      "set": "full"
+    },
+    "flux-3-image-klein-restore.safetensors": {
+      "bytes": 160697064,
+      "source": "ausboss/FLUX-3-Image-Klein-Restore-LoRA",
+      "set": "full"
+    },
+    "flux2-vae.safetensors": {
+      "bytes": 336211292,
+      "source": "Comfy-Org/MOSS-Image",
+      "set": "minimal"
+    },
+    "flux3_image_klein_bf16.safetensors": {
+      "bytes": 11076957072,
+      "source": "black-forest-labs/flux-3-image-klein-comfy",
+      "set": "full",
+      "gated": true
+    },
+    "flux3_image_klein_sd_bf16.safetensors": {
+      "bytes": 11097404512,
+      "source": "black-forest-labs/flux-3-image-klein-comfy",
+      "set": "full",
+      "gated": true
+    },
+    "flux3_klein_angles_comfy.safetensors": {
+      "bytes": 80382960,
+      "source": "akhaliq/flux-3-image-klein-angles-lora",
+      "set": null,
+      "measured": "local copy after key conversion",
+      "convert": "scripts/convert_flux3_lora_keys.py",
+      "note": "published with diffusers key names: download `pytorch_lora_weights.safetensors` from the source repo, then rename its keys with `python3 scripts/convert_flux3_lora_keys.py pytorch_lora_weights.safetensors <Destination>` (models/download-list.md, Convert after download)."
+    },
+    "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors": {
+      "bytes": 15372969374,
+      "source": "Lightricks/LTX-2.5",
+      "set": "full",
+      "gated": true
+    },
+    "h3_character_swap_v1.5.safetensors": {
+      "bytes": 155110792,
+      "source": "akatz-ai/MiniMax-H3-Character-Swap-LoRA",
+      "set": "full"
+    },
+    "H3-Person-Remover-V1.safetensors": {
+      "bytes": 155110584,
+      "source": "akatz-ai/MiniMax-H3-Person-Remover-LoRA",
+      "set": "full"
+    },
+    "hand_yolov8s.pt": {
+      "bytes": 22507643,
+      "source": "Bingsu/adetailer",
+      "set": "full"
+    },
+    "krea2_anypaint_rank32.safetensors": {
+      "bytes": 228587752,
+      "source": "yijunwang2/krea2-anypaint",
+      "set": "full"
+    },
+    "krea2_depth_control_lora.safetensors": {
+      "bytes": 861995928,
+      "source": "Patil/Krea-2-depth-controlnet",
+      "set": "full"
+    },
+    "krea2_detail_enhancer_edit.safetensors": {
+      "bytes": 228587824,
+      "source": "reverentelusarca/krea2-detail-enhancer-edit-lora",
+      "set": "full"
+    },
+    "krea2_general_edit_v2_r64.safetensors": {
+      "bytes": 457140008,
+      "source": "conradlocke/krea2-identity-edit",
+      "set": "full"
+    },
+    "krea2_identity_edit_v1_2.safetensors": {
+      "bytes": 1828256432,
+      "source": "conradlocke/krea2-identity-edit",
+      "set": "full"
+    },
+    "krea2_identity_edit_v1.safetensors": {
+      "bytes": 1828256864,
+      "source": "conradlocke/krea2-identity-edit",
+      "set": "full"
+    },
+    "krea2_inpaint_edit_v2_17500.safetensors": {
+      "bytes": 457111992,
+      "source": "Cierpliwy/krea2-inpaint-edit",
+      "set": "full"
+    },
+    "krea2_outpaint_rank32.safetensors": {
+      "bytes": 228587736,
+      "source": "yijunwang2/krea2-outpaint",
+      "set": "full"
+    },
+    "krea2_raw_bf16.safetensors": {
+      "bytes": 26283332608,
+      "source": "Comfy-Org/Krea-2",
+      "set": "full"
+    },
+    "krea2_selfie_v1.safetensors": {
+      "bytes": 228587720,
+      "source": "siraxe/krea2_to_selfie_edit",
+      "set": "full"
+    },
+    "krea2_style_reference.safetensors": {
+      "bytes": 457111760,
+      "source": "Comfy-Org/Krea-2",
+      "set": "full"
+    },
+    "krea2_turbo_4step_rank_64_lora_comfyui.safetensors": {
+      "bytes": 438140968,
+      "source": "lvladikov/Krea2-Turbo-Distill-4step-LoRA",
+      "set": "full"
+    },
+    "krea2_turbo_bf16.safetensors": {
+      "bytes": 26283332608,
+      "source": "Comfy-Org/Krea-2",
+      "set": "minimal"
+    },
+    "krea2_turbo_distill_r128.safetensors": {
+      "bytes": 936944890,
+      "source": "TheDivergentAI/Krea2-Turbo-Distill-8step-LoRA",
+      "set": "full"
+    },
+    "krea2-control.safetensors": {
+      "bytes": 470863680,
+      "source": "darask0/Krea-2-color-depth-control",
+      "set": "full"
+    },
+    "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors": {
+      "bytes": 738005744,
+      "source": "Comfy-Org/Wan-Animate-2",
+      "set": "minimal"
+    },
+    "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors": {
+      "bytes": 21504034224,
+      "source": "Lightricks/LTX-2.5",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-alpha-gen-0.9.safetensors": {
+      "bytes": 1308787472,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Alpha-Gen",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.3-22b-ic-lora-outpaint.safetensors": {
+      "bytes": 1308756416,
+      "source": "oumoumad/LTX-2.3-22b-IC-LoRA-Outpaint",
+      "set": "full",
+      "gated": false
+    },
+    "LTX25_Ripple_v11.safetensors": {
+      "bytes": 654443392,
+      "source": "WepeNerd/LTX-Ripple",
+      "set": "full",
+      "gated": false
+    },
+    "ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors": {
+      "bytes": 654465352,
+      "source": "Lightricks/LTX-2.3-22b-IC-LoRA-Union-Control",
+      "set": "full",
+      "gated": false
+    },
+    "ainvfx-fluid.safetensors": {
+      "bytes": 654446312,
+      "source": "AInVFX/ainvfx-fluid",
+      "set": "full",
+      "gated": false
+    },
+    "ltx-2.5-xpldv_v5-lora.safetensors": {
+      "bytes": 402758608,
+      "source": "DigitalByte/LTX-2.5-Exploded-View-XPLDV",
+      "set": "full",
+      "gated": false
+    },
+    "ltx-2.5-22b-ic-lora-clean-plate-1.0.safetensors": {
+      "bytes": 327318439,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Clean-Plate",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-day-to-night-0.9.safetensors": {
+      "bytes": 327318440,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Day-To-Night",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-pixel-spatial-upscaler-x2-1.0.safetensors": {
+      "bytes": 327322640,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Pixel-Spatial-Upscaler",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-water-simulation-0.9.safetensors": {
+      "bytes": 906080568,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Water-Simulation",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-lora-cinemagraph-0.9.safetensors": {
+      "bytes": 201462650,
+      "source": "Lightricks/LTX-2.5-22b-LoRA-Cinemagraph",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-lora-slow-motion-control-1.0.safetensors": {
+      "bytes": 654474448,
+      "source": "Lightricks/LTX-2.5-22b-LoRA-Slow-Motion-Control",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-audio-vae-bf16.safetensors": {
+      "bytes": 364866540,
+      "source": "Lightricks/LTX-2.5",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors": {
+      "bytes": 995778752,
+      "source": "Lightricks/LTX-2.5",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-video-vae-bf16.safetensors": {
+      "bytes": 1472223346,
+      "source": "Lightricks/LTX-2.5",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-video-2b-v0.9.5.safetensors": {
+      "bytes": 6340729500,
+      "source": "Lightricks/LTX-Video",
+      "set": "minimal"
+    },
+    "ltxv-2b-0.9.8-distilled.safetensors": {
+      "bytes": 6340744492,
+      "source": "Lightricks/LTX-Video",
+      "set": "full"
+    },
+    "lucy-edit-dev-cui-fp16.safetensors": {
+      "bytes": 10000838496,
+      "source": "decart-ai/Lucy-Edit-Dev-ComfyUI",
+      "set": "full"
+    },
+    "marigold_v2_albedo.safetensors": {
+      "bytes": 1703764632,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_albedo_conditioning.safetensors": {
+      "bytes": 2573432,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_albedo_vae.safetensors": {
+      "bytes": 253806278,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_depth_conditioning.safetensors": {
+      "bytes": 2422904,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_depth_log_stage2.safetensors": {
+      "bytes": 1703764632,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_depth_log_stage2_vae.safetensors": {
+      "bytes": 253806278,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_normals.safetensors": {
+      "bytes": 1703764632,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_normals_conditioning.safetensors": {
+      "bytes": 2537592,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "marigold_v2_normals_vae.safetensors": {
+      "bytes": 253806278,
+      "source": "Comfy-Org/marigold-v2-0",
+      "set": "full"
+    },
+    "minimax_h3_audio_vae_fp32.safetensors": {
+      "bytes": 605254808,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors": {
+      "bytes": 1956193000,
+      "source": "lightx2v/Minimax-h3-Turbo",
+      "set": "full"
+    },
+    "minimax_h3_fl2va_pruned_bf16.safetensors": {
+      "bytes": 40225724176,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "minimax_h3_flf2v_lora_v1.safetensors": {
+      "bytes": 155111424,
+      "source": "pablodawson/MiniMax-H3-360-Orbit-LoRA",
+      "set": "full"
+    },
+    "minimax_h3_fun_controlnet_union_2.0_pruned_int8_convrot.safetensors": {
+      "bytes": 4531220608,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "minimax_h3_latent_upscaler_3d_conv_v1_bf16.safetensors": {
+      "bytes": 690592992,
+      "source": "Efficient-Large-Model/Open-H3-Regenerate-2K",
+      "set": "full"
+    },
+    "minimax_h3_ref2va_pruned_bf16.safetensors": {
+      "bytes": 40225724176,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "minimax_h3_ref2va_pruned_int8_convrot.safetensors": {
+      "bytes": 20970379616,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "minimax_h3_ref2va_turbo11_charswap15_merged_int8_convrot.safetensors": {
+      "bytes": null,
+      "source": null,
+      "set": null,
+      "note": "a local int8 merge of the H3 Ref2VA base with the turbo 1.1 and character-swap 1.5 LoRAs, with no published download; `packs/minimax/character_swap.json` loads the unmerged base and LoRAs instead."
+    },
+    "minimax_h3_video_vae_fp16.safetensors": {
+      "bytes": 5207808496,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "mmaudio_large_44k_v2_fp16.safetensors": {
+      "bytes": 2061198424,
+      "source": "Kijai/MMAudio_safetensors",
+      "set": "full"
+    },
+    "mmaudio_synchformer_fp16.safetensors": {
+      "bytes": 474981098,
+      "source": "Kijai/MMAudio_safetensors",
+      "set": "full"
+    },
+    "mmaudio_vae_44k_fp16.safetensors": {
+      "bytes": 610966060,
+      "source": "Kijai/MMAudio_safetensors",
+      "set": "full"
+    },
+    "moge_2_vitl_normal_fp16.safetensors": {
+      "bytes": 661859924,
+      "source": "Comfy-Org/MoGe",
+      "set": "full"
+    },
+    "moge_3_vitg_fp16.safetensors": {
+      "bytes": 2501605198,
+      "source": "Comfy-Org/MoGe",
+      "set": "full"
+    },
+    "moss_image_base_bf16.safetensors": {
+      "bytes": 10164655808,
+      "source": "Comfy-Org/MOSS-Image",
+      "set": "full"
+    },
+    "moss_image_base_colorize_v2.safetensors": {
+      "bytes": 148721736,
+      "source": "sorryhyun/moss-image-colorize",
+      "set": "full"
+    },
+    "moss_image_charref_v2.safetensors": {
+      "bytes": 148697656,
+      "source": "7err4/MOSS-Image-CharRef",
+      "set": "full"
+    },
+    "moss_image_sft_8step_dmd.safetensors": {
+      "bytes": 1189176800,
+      "source": "lodestones/MOSS-Image-SFT-8-steps-dmd",
+      "set": "full"
+    },
+    "moss_image_sft_banding_fix_L37-41_bf16.safetensors": {
+      "bytes": 1132530600,
+      "source": "MATLOWAI/MOSS-Image-SFT-DeBand",
+      "set": "full"
+    },
+    "moss_image_sft_bf16.safetensors": {
+      "bytes": 10164655808,
+      "source": "Comfy-Org/MOSS-Image",
+      "set": "full"
+    },
+    "moss-control.safetensors": {
+      "bytes": 313063368,
+      "source": "darask0/MOSS-Image-color-depth-control",
+      "set": "full"
+    },
+    "next_scene_step2500.safetensors": {
+      "bytes": 335605648,
+      "source": "akhaliq/Qwen-Image-2.1-Next-Scene-LoRA",
+      "set": "full"
+    },
+    "open_h3_regenerate_2k_lora.safetensors": {
+      "bytes": 12452449080,
+      "source": "Efficient-Large-Model/Open-H3-Regenerate-2K",
+      "set": "full"
+    },
+    "pano360_qwen21_edit_v1.safetensors": {
+      "bytes": 159436400,
+      "source": "Gogodr/qwen-image-2.1-edit-pano360-lora",
+      "set": "full"
+    },
+    "pixal3d_int8_convrot.safetensors": {
+      "bytes": 5584555824,
+      "source": "Comfy-Org/Pixal3D",
+      "set": "full"
+    },
+    "qwen_0.6b_ace15.safetensors": {
+      "bytes": 1191588248,
+      "source": "Comfy-Org/ACE-Step-1.5",
+      "set": "full"
+    },
+    "qwen_1.7b_ace15.safetensors": {
+      "bytes": 3708523360,
+      "source": "Comfy-Org/ACE-Step-1.5",
+      "set": "full"
+    },
+    "qwen_2.5_vl_7b_fp8_scaled.safetensors": {
+      "bytes": 9384670680,
+      "source": "Comfy-Org/Qwen-Image",
+      "set": "full"
+    },
+    "qwen_3_06b_base.safetensors": {
+      "bytes": 1192135096,
+      "source": "circlestone-labs/Anima",
+      "set": null,
+      "note": "optional \"Character from reference (Anima)\" mode only, under the CircleStone Labs Non-Commercial License, so it is kept out of the minimal/full download sets; download it from the source repo (src/lib/tools/modelRepoPaths.json) into `models/text_encoders`."
+    },
+    "qwen_image_2.1_bf16.safetensors": {
+      "bytes": 14230280616,
+      "source": "Comfy-Org/Qwen-Image-2.1",
+      "set": "full"
+    },
+    "qwen_image_2.1_vae_bf16.safetensors": {
+      "bytes": 675509688,
+      "source": "Comfy-Org/Qwen-Image-2.1",
+      "set": "full"
+    },
+    "qwen_image_edit_2509_fp8_e4m3fn.safetensors": {
+      "bytes": 20430698424,
+      "source": "Comfy-Org/Qwen-Image-Edit",
+      "set": "full"
+    },
+    "qwen_image_edit_2511_bf16.safetensors": {
+      "bytes": 40861031560,
+      "source": "Comfy-Org/Qwen-Image-Edit",
+      "set": "full"
+    },
+    "qwen_image_layered_fp8mixed.safetensors": {
+      "bytes": 20533591821,
+      "source": "Comfy-Org/Qwen-Image-Layered",
+      "set": "full"
+    },
+    "qwen_image_layered_vae.safetensors": {
+      "bytes": 253816616,
+      "source": "Comfy-Org/Qwen-Image-Layered",
+      "set": "full"
+    },
+    "qwen_image_vae.safetensors": {
+      "bytes": 253806246,
+      "source": "Comfy-Org/Krea-2",
+      "set": "minimal"
+    },
+    "qwen-image-2.1-consistency.safetensors": {
+      "bytes": 159436496,
+      "source": "ausboss/Qwen-Image-2.1-Consistency-LoRA",
+      "set": "full"
+    },
+    "qwen-image-2.1-lightning-4step.safetensors": {
+      "bytes": 67144280,
+      "source": "lightx2v/Qwen-Image-2.1-Lightning",
+      "set": "full"
+    },
+    "Qwen-Image-2.1-Object-Remover-Bbox-turbo-4000.safetensors": {
+      "bytes": 83943952,
+      "source": "prithivMLmods/Qwen-Image-2.1-Object-Remover-Bbox-turbo",
+      "set": "full"
+    },
+    "qwen-image-2.1-outfit-swap.safetensors": {
+      "bytes": 159436488,
+      "source": "ausboss/Qwen-Image-2.1-Outfit-Swap-Consistency-LoRA",
+      "set": "full"
+    },
+    "qwen-image-2.1-outpaint-v2.safetensors": {
+      "bytes": 159436576,
+      "source": "ausboss/Qwen-Image-2.1-Outpaint-LoRA",
+      "set": "full"
+    },
+    "qwen-image-2.1-qma-camera-angles.safetensors": {
+      "bytes": 318820224,
+      "source": "gribbliest/qwen-image-2.1-qma-camera-angles",
+      "set": "full"
+    },
+    "qwen-image-2.1-restore.safetensors": {
+      "bytes": 159436584,
+      "source": "ausboss/Qwen-Image-2.1-Restore-LoRA",
+      "set": "full"
+    },
+    "Qwen-Image-2.1-viggle-turbo-4step-lora-r64.safetensors": {
+      "bytes": 339832808,
+      "source": "Viggle/Qwen-Image-2.1-viggle-turbo",
+      "set": "full"
+    },
+    "Qwen-Image-Edit-2509-Light-Migration.safetensors": {
+      "bytes": 236117032,
+      "source": "Comfy-Org/Qwen-Image-Edit",
+      "set": "minimal"
+    },
+    "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors": {
+      "bytes": 849608296,
+      "source": "lightx2v/Qwen-Image-Lightning",
+      "set": "full"
+    },
+    "Qwen-Image-Edit-2509-Relight.safetensors": {
+      "bytes": 236117032,
+      "source": "Comfy-Org/Qwen-Image-Edit",
+      "set": "minimal"
+    },
+    "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors": {
+      "bytes": 849608296,
+      "source": "lightx2v/Qwen-Image-Edit-2511-Lightning",
+      "set": "full"
+    },
+    "qwen-image-edit-2511-multiple-angles-lora.safetensors": {
+      "bytes": 295140688,
+      "source": "fal/Qwen-Image-Edit-2511-Multiple-Angles-LoRA",
+      "set": "full"
+    },
+    "Qwen-Image-Edit-2511-Object-Remover.safetensors": {
+      "bytes": 236117064,
+      "source": "prithivMLmods/Qwen-Image-Edit-2511-Object-Remover",
+      "set": "full"
+    },
+    "Qwen-Image-Edit-Unblur-Upscale_20.safetensors": {
+      "bytes": 236117064,
+      "source": "prithivMLmods/Qwen-Image-Edit-2511-Unblur-Upscale",
+      "set": "full"
+    },
+    "Qwen2.1_Anything2RealCharacters.safetensors": {
+      "bytes": 318820200,
+      "source": "WarmBloodAban/Qwen-Image-2.1-LoRAs",
+      "set": "full"
+    },
+    "qwen3.5_9b_bf16.safetensors": {
+      "bytes": 19306312328,
+      "source": "Comfy-Org/MOSS-Image",
+      "set": "full"
+    },
+    "qwen3vl_32b_minimax_h3_bf16.safetensors": {
+      "bytes": 51506295256,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "qwen3vl_32b_minimax_h3_int8_convrot.safetensors": {
+      "bytes": 27141342152,
+      "source": "Comfy-Org/MiniMax-H3",
+      "set": "full"
+    },
+    "qwen3vl_4b_bf16.safetensors": {
+      "bytes": 8875719384,
+      "source": "Comfy-Org/Krea-2",
+      "set": "minimal"
+    },
+    "qwen3vl_8b_bf16.safetensors": {
+      "bytes": 17534334616,
+      "source": "Comfy-Org/Qwen-Image-2.1",
+      "set": "full"
+    },
+    "RealESRGAN_x2plus.pth": {
+      "bytes": 67061725,
+      "source": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.1",
+      "set": "minimal"
+    },
+    "RealESRGAN_x4plus.pth": {
+      "bytes": 67040989,
+      "source": "https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.1.0",
+      "set": "minimal"
+    },
+    "realism-qwen-image-2.1-edit-lora-e8.safetensors": {
+      "bytes": 42102592,
+      "source": "houseofboern/realism-qwen-image-2.1-edit-lora",
+      "set": "full"
+    },
+    "rife_v4.26.safetensors": {
+      "bytes": 22674688,
+      "source": "Comfy-Org/Frame-Interpolation",
+      "set": "minimal"
+    },
+    "rt_detr_v4-x-hgnet_fp16.safetensors": {
+      "bytes": 123968978,
+      "source": "Comfy-Org/SDPose",
+      "set": "full"
+    },
+    "sam3.1_multiplex_fp16.safetensors": {
+      "bytes": 1745546848,
+      "source": "Comfy-Org/sam3.1",
+      "set": "full"
+    },
+    "sam_3d_body_dinov3_bf16.safetensors": {
+      "bytes": 2830737652,
+      "source": "Comfy-Org/sam-3d-body",
+      "set": "full"
+    },
+    "sd_xl_base_1.0.safetensors": {
+      "bytes": 6938078334,
+      "source": "stabilityai/stable-diffusion-xl-base-1.0",
+      "set": "minimal"
+    },
+    "sdpose_wholebody_fp16.safetensors": {
+      "bytes": 1916645792,
+      "source": "Comfy-Org/SDPose",
+      "set": "full"
+    },
+    "seedvr2_3b_fp8_e4m3fn.safetensors": {
+      "bytes": 3392794232,
+      "source": "Comfy-Org/SeedVR2",
+      "set": "minimal"
+    },
+    "seedvr2_7b_fp8_e4m3fn.safetensors": {
+      "bytes": 8240979248,
+      "source": "Comfy-Org/SeedVR2",
+      "set": "full"
+    },
+    "seedvr2_7b_sharp_fp8_e4m3fn.safetensors": {
+      "bytes": 8240979248,
+      "source": "Comfy-Org/SeedVR2",
+      "set": null,
+      "note": "optional SeedVR2 \"7B sharp\" model choice only, so it is kept out of the minimal/full download sets; download it from the source repo (src/lib/tools/modelRepoPaths.json) into `models/diffusion_models`."
+    },
+    "seedvr2_ema_vae_fp16.safetensors": {
+      "bytes": 501324814,
+      "source": "Comfy-Org/SeedVR2",
+      "set": "minimal"
+    },
+    "sharp_curve_branches.safetensors": {
+      "bytes": 1238746768,
+      "source": "Efficient-Large-Model/Open-H3-Regenerate-2K",
+      "set": "full"
+    },
+    "stable_audio_3_medium.safetensors": {
+      "bytes": 9222116660,
+      "source": "Comfy-Org/stable-audio-3",
+      "set": "full"
+    },
+    "stable_audio_3_medium_base.safetensors": {
+      "bytes": 9222116660,
+      "source": "Comfy-Org/stable-audio-3",
+      "set": "full"
+    },
+    "stable_audio_3_small_sfx.safetensors": {
+      "bytes": 2270384940,
+      "source": "Comfy-Org/stable-audio-3",
+      "set": "full"
+    },
+    "t3_mtl23ls_v3.safetensors": {
+      "bytes": 2143989928,
+      "source": "ResembleAI/chatterbox",
+      "set": "full"
+    },
+    "t5gemma_b_b_ul2.safetensors": {
+      "bytes": 1187264003,
+      "source": "Comfy-Org/stable-audio-3",
+      "set": "full"
+    },
+    "t5xxl_fp16.safetensors": {
+      "bytes": 9787841024,
+      "source": "comfyanonymous/flux_text_encoders",
+      "set": "minimal"
+    },
+    "trellis_2_int8_convrot.safetensors": {
+      "bytes": 5253048192,
+      "source": "Comfy-Org/TRELLIS.2",
+      "set": "minimal"
+    },
+    "trellis_2_shape_vae_bf16.safetensors": {
+      "bytes": 1095844024,
+      "source": "Comfy-Org/TRELLIS.2",
+      "set": "minimal"
+    },
+    "trellis_2_texture_vae_bf16.safetensors": {
+      "bytes": 948461364,
+      "source": "Comfy-Org/TRELLIS.2",
+      "set": "minimal"
+    },
+    "triposplat_fp16.safetensors": {
+      "bytes": 741106994,
+      "source": "VAST-AI/TripoSplat",
+      "set": "full"
+    },
+    "triposplat_vae_decoder_fp16.safetensors": {
+      "bytes": 576148442,
+      "source": "VAST-AI/TripoSplat",
+      "set": "full"
+    },
+    "umt5_xxl_fp16.safetensors": {
+      "bytes": 11366399385,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "umt5_xxl_fp8_e4m3fn_scaled.safetensors": {
+      "bytes": 6735906897,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "umt5-xxl-enc-fp8_e4m3fn.safetensors": {
+      "bytes": 6731333792,
+      "source": "Kijai/WanVideo_comfy",
+      "set": "full"
+    },
+    "unblur-background-qwen-image-2.1-edit-lora.safetensors": {
+      "bytes": 42027024,
+      "source": "houseofboern/unblur-background-qwen-image-2.1-edit-lora",
+      "set": "full"
+    },
+    "wan_2.1_vae.safetensors": {
+      "bytes": 253815318,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "wan_animate_2_distill_int8_convrot.safetensors": {
+      "bytes": 16653175528,
+      "source": "Comfy-Org/Wan-Animate-2",
+      "set": "full"
+    },
+    "Wan2_1-T2V-1_3B_FlashVSR_fp32.safetensors": {
+      "bytes": 5676070392,
+      "source": "Kijai/WanVideo_comfy",
+      "set": "full"
+    },
+    "Wan2_1_FlashVSR_LQ_proj_model_bf16.safetensors": {
+      "bytes": 575692608,
+      "source": "Kijai/WanVideo_comfy",
+      "set": "full"
+    },
+    "Wan2_1_FlashVSR_TCDecoder_fp32.safetensors": {
+      "bytes": 181359756,
+      "source": "Kijai/WanVideo_comfy",
+      "set": "full"
+    },
+    "wan2.1_i2v_480p_14B_fp8_scaled.safetensors": {
+      "bytes": 16401356938,
+      "source": "Comfy-Org/Wan-2.1",
+      "set": "minimal"
+    },
+    "wan2.1_infiniteTalk_single_fp16.safetensors": {
+      "bytes": 5125258232,
+      "source": "Comfy-Org/Wan-2.1",
+      "set": "minimal"
+    },
+    "wan2.1_t2v_1.3B_fp16.safetensors": {
+      "bytes": 2838303560,
+      "source": "Comfy-Org/Wan-2.1",
+      "set": "full"
+    },
+    "wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 15301408048,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 15301408048,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 17346056104,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 17346056104,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors": {
+      "bytes": 634645944,
+      "source": "lightx2v/Wan2.2-Distill-Loras",
+      "set": "full"
+    },
+    "wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors": {
+      "bytes": 739472104,
+      "source": "lightx2v/Wan2.2-Distill-Loras",
+      "set": "full"
+    },
+    "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 14294742832,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors": {
+      "bytes": 14294742832,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "wan2.2_s2v_14B_fp8_scaled.safetensors": {
+      "bytes": 16394832474,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "wan2.2_ti2v_5B_fp16.safetensors": {
+      "bytes": 9999658848,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "wan2.2_vae.safetensors": {
+      "bytes": 1409400960,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "minimal"
+    },
+    "Wan2.2-Lightning_T2V-v1.1-A14B-4steps-lora_HIGH_fp16.safetensors": {
+      "bytes": 613561776,
+      "source": "Kijai/WanVideo_comfy",
+      "set": "full"
+    },
+    "Wan21-WanMove_fp8_scaled_e4m3fn_KJ.safetensors": {
+      "bytes": 16402832658,
+      "source": "Kijai/WanVideo_comfy_fp8_scaled",
+      "set": "full"
+    },
+    "wan22_14b_i2v_orbit_high_noise.safetensors": {
+      "bytes": 153453568,
+      "source": "ostris/wan22_i2v_14b_orbit_shot_lora",
+      "set": "minimal"
+    },
+    "wan22_14b_i2v_orbit_low_noise.safetensors": {
+      "bytes": 153453568,
+      "source": "ostris/wan22_i2v_14b_orbit_shot_lora",
+      "set": "minimal"
+    },
+    "wav2vec2_large_english_fp16.safetensors": {
+      "bytes": 630997322,
+      "source": "Comfy-Org/Wan-2.2",
+      "set": "full"
+    },
+    "wav2vec2-chinese-base_fp16.safetensors": {
+      "bytes": 190115368,
+      "source": "Kijai/wav2vec2_safetensors",
+      "set": "minimal"
+    },
+    "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors": {
+      "bytes": 1956193000,
+      "source": "lightx2v/Minimax-h3-Turbo",
+      "set": null,
+      "measured": "local copy",
+      "note": "Music Video tool only (optional MiniMax H3 pack, `packs/minimax/music_video.json`), not in the download sets yet; download it from the source repo into `models/loras`."
+    },
+    "hdemucs_high_trained.pt": {
+      "bytes": 334697255,
+      "source": "https://download.pytorch.org/torchaudio/models/hdemucs_high_trained.pt",
+      "set": null,
+      "measured": "local copy",
+      "note": "optional stems step of the Music Video tool (CJAudioStems, `comfy_nodes/cj_stems`): torchaudio's HDEMUCS_HIGH_MUSDB_PLUS state dict, placed by hand in `models/demucs/` (the node never downloads it)."
+    },
+    "flux3_image_klein_sd_int8_convrot.safetensors": {
+      "bytes": 5827874779,
+      "source": "black-forest-labs/flux-3-image-klein-comfy",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-colorization-0.9.safetensors": {
+      "bytes": 906080571,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Colorization",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-deblur-0.9.safetensors": {
+      "bytes": 906080571,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Deblur",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-decompression-0.9.safetensors": {
+      "bytes": 906080571,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Decompression",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-refine-details-1.0.safetensors": {
+      "bytes": 1308787534,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Refine-Details",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-restore-1.0.safetensors": {
+      "bytes": 1711643914,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Restore",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-sdr-to-hdr-1.0.safetensors": {
+      "bytes": 1308787472,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-SDR-To-HDR",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-ingredients-0.9.safetensors": {
+      "bytes": 1308787472,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Ingredients",
+      "set": "full",
+      "gated": true
+    },
+    "ltx-2.5-22b-ic-lora-layout-to-render-1.0.safetensors": {
+      "bytes": 1308787439,
+      "source": "Lightricks/LTX-2.5-22b-IC-LoRA-Layout-To-Render",
+      "set": "full",
+      "gated": true
+    }
+  },
+  "byName": [
+    {
+      "tools": "Voiceover, Video Translator",
+      "model": "VibeVoice-1.5B",
+      "folder": "tts/VibeVoice/VibeVoice-1.5B/",
+      "bytes": 5408328183,
+      "license": "MIT",
+      "source": "microsoft/VibeVoice-1.5B"
+    },
+    {
+      "tools": "Voiceover",
+      "model": "VibeVoice-Realtime-0.5B",
+      "folder": "tts/VibeVoice/VibeVoice-Realtime-0.5B/",
+      "bytes": 2035335365,
+      "license": "MIT",
+      "source": "microsoft/VibeVoice-Realtime-0.5B"
+    },
+    {
+      "tools": "Voiceover",
+      "model": "Kokoro-82M (model + voices)",
+      "folder": "tts/kokoro/Kokoro-82M/",
+      "bytes": 348674770,
+      "license": "Apache-2.0",
+      "source": "hexgrad/Kokoro-82M"
+    },
+    {
+      "tools": "Video Translator (transcribe)",
+      "model": "whisper-large-v3-turbo (Transformers folder)",
+      "folder": "stt/whisper/whisper-large-v3-turbo/",
+      "bytes": 1622443339,
+      "license": "MIT",
+      "source": "openai/whisper-large-v3-turbo"
+    },
+    {
+      "tools": "Voice Changer, Video Translator (Chatterbox engine)",
+      "model": "Chatterbox pack: ve.safetensors, t3_cfg.safetensors, s3gen.safetensors, tokenizer.json, conds.pt",
+      "folder": "tts/chatterbox/chatterbox_local/",
+      "bytes": 3191966992,
+      "license": "MIT",
+      "source": "ResembleAI/chatterbox"
+    },
+    {
+      "tools": "Make 3D (legacy)",
+      "model": "TripoSR",
+      "folder": "fetched by its node pack",
+      "bytes": null,
+      "license": "MIT",
+      "source": "stabilityai/TripoSR"
+    },
+    {
+      "tools": "Layer Split",
+      "model": "see-through LayerDiff3D (SDXL, diffusers folder)",
+      "folder": "SeeThrough/layerdifforg/seethroughv0.0.2_layerdiff3d/",
+      "bytes": 10159648468,
+      "license": "CreativeML Open RAIL++-M",
+      "source": "layerdifforg/seethroughv0.0.2_layerdiff3d"
+    },
+    {
+      "tools": "Layer Split",
+      "model": "see-through Marigold depth (diffusers folder)",
+      "folder": "SeeThrough/layerdifforg/seethroughv0.0.1_marigold/",
+      "bytes": 3276273124,
+      "license": "CreativeML Open RAIL++-M",
+      "source": "layerdifforg/seethroughv0.0.1_marigold"
+    },
+    {
+      "tools": "Photo upscale (VOSR2)",
+      "model": "VOSR 2.0 bundle (DiT + Qwen-Image VAE + DINOv2-L folder)",
+      "folder": "models/vosr2/VOSR2/ on first run",
+      "bytes": 6972312879,
+      "measured": "local copy",
+      "license": "Unstated (weights)",
+      "source": "CSWRY/VOSR"
+    }
+  ]
+}

@@ -1,0 +1,788 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "id": "figurine",
+      "name": "3D Figurine",
+      "category": "Characters & Games",
+      "description": "Your subject as a collectible vinyl figure on a desk",
+      "prompt": "Turn the main subject into a glossy collectible vinyl figurine about 20 cm tall, standing on a round display base on a tidy desk, with its retail box blurred in the background. Keep the subject's recognizable features, colors and outfit. Soft product lighting.",
+      "motion": "slow turntable rotation of the figurine, a soft light sweep across the glossy surface"
+    },
+    {
+      "id": "anim_render",
+      "name": "3D Render",
+      "category": "Style & Art",
+      "description": "Restage the photo as a polished animated-film render",
+      "prompt": "Turn the subject into a 3D animated-feature movie character: stylized proportions with larger expressive eyes, smooth soft subsurface skin, sculpted simplified hair, and the whole scene rendered as a polished CG film frame with rich bounce light and a warm cinematic palette. Keep their pose, outfit colors and recognizable features.",
+      "motion": "subtle idle animation with blinking and breathing while the camera drifts slowly forward"
+    },
+    {
+      "id": "sixties_cafe",
+      "name": "60s Cafe",
+      "category": "Scenes & FX",
+      "description": "Drop the person into a 1960s diner photo",
+      "prompt": "Place the same person in a 1960s American diner booth with chrome trim, a checkered floor and a milkshake on the table. Period-correct hair and clothing, faded Kodachrome colors, soft film grain. Keep their face and identity.",
+      "motion": "the person lifts the milkshake and smiles while a waitress passes in the background"
+    },
+    {
+      "id": "burning_sunset",
+      "name": "Burning Sunset",
+      "category": "Scenes & FX",
+      "description": "Silhouette against a blazing orange sky",
+      "prompt": "Restage the scene at a dramatic sunset: a blazing orange and magenta sky, the subject partly silhouetted with a hot rim light, heat haze near the horizon. Keep the subject and framing.",
+      "motion": "clouds stream across the burning sky while the sun sinks and the rim light flickers"
+    },
+    {
+      "id": "comic_book",
+      "name": "Comic Book",
+      "category": "Style & Art",
+      "description": "Inked comic panel with halftone color",
+      "prompt": "Redraw this image as a single comic-book panel: bold black ink outlines, flat bright colors, halftone dot shading and a dramatic angle. Keep the same characters and composition, no speech bubbles."
+    },
+    {
+      "id": "fridge_ad",
+      "name": "Fridge Ad",
+      "category": "Ads & Products",
+      "description": "The product shot inside a frosty, glowing fridge",
+      "prompt": "Show the product inside an open refrigerator glowing with cool white light, frost on the shelves, condensation droplets on the product, crisp commercial photography. Keep the product's shape, label and colors exactly.",
+      "motion": "the fridge door swings open, cold mist rolls out and the light flickers on"
+    },
+    {
+      "id": "giallo",
+      "name": "Giallo Horror",
+      "category": "Scenes & FX",
+      "description": "70s Italian horror film still",
+      "prompt": "Turn this into a still from a 1970s Italian giallo thriller: saturated red and green gel lighting, deep shadows, a gloved hand at the edge of the frame, grainy film stock. Keep the same person.",
+      "motion": "slow creeping dolly toward the subject as the colored lights pulse"
+    },
+    {
+      "id": "giant_product",
+      "name": "Giant Product",
+      "category": "Ads & Products",
+      "description": "Your product towering over a city street",
+      "prompt": "Make the product enormous, standing like a skyscraper in the middle of a busy city intersection, tiny people and cars around its base, realistic shadows and scale. Keep the product's design and label exact.",
+      "motion": "aerial drone shot circling the giant product as traffic moves below"
+    },
+    {
+      "id": "graffiti_ad",
+      "name": "Graffiti Ad",
+      "category": "Ads & Products",
+      "description": "The product as a spray-painted street mural",
+      "prompt": "Paint the product as a large spray-paint mural on a brick wall in an urban alley, drips and stencil edges, bright street-art colors, with the real wall texture visible. Keep the product recognizable."
+    },
+    {
+      "id": "magazine",
+      "name": "Magazine Cover",
+      "category": "Portraits",
+      "description": "Glossy fashion-magazine cover with your title",
+      "inputs": {
+        "text": {
+          "label": "Cover title",
+          "placeholder": "VELVET",
+          "default": "VELVET"
+        }
+      },
+      "prompt": "Turn this into a glossy fashion magazine cover of the same person: studio beauty lighting, the masthead \"{text}\" in large bold letters across the top, a few small cover lines on the side. Keep their face and identity."
+    },
+    {
+      "id": "macro_product",
+      "name": "Macro Product",
+      "category": "Ads & Products",
+      "description": "Extreme close-up hero shot with texture detail",
+      "prompt": "Re-shoot the product as an extreme macro hero shot: razor-thin depth of field, visible surface texture and fine details, a moody dark backdrop with one bright accent light. Keep the product's design exactly.",
+      "variantLabel": "Look",
+      "variants": [
+        {
+          "id": "focus_stack",
+          "label": "Focus stacked",
+          "prompt": "Re-shoot the product as a focus-stacked macro photograph: every detail tack-sharp from the nearest edge to the back, crisp micro texture across the whole surface, clean studio lighting on a seamless neutral backdrop, no bokeh. Keep the product's design exactly."
+        },
+        {
+          "id": "on_surface",
+          "label": "On a surface",
+          "prompt": "Re-shoot the product as a macro shot resting on a tactile surface such as wet slate, brushed stone or raw wood: low camera angle at surface level, shallow depth of field melting into the background, a soft reflection and contact shadow under the product, scattered droplets on the surface. Keep the product's design exactly."
+        }
+      ],
+      "motion": "slow macro slide across the product surface with a light glint moving over it"
+    },
+    {
+      "id": "mugshot",
+      "name": "Mugshot",
+      "category": "Portraits",
+      "description": "Police booking photo with height chart",
+      "prompt": "Make this a police booking photo of the same person: front-facing, neutral expression, harsh flat flash, a height chart on the wall behind them and a placard held at chest height. Keep their face and identity."
+    },
+    {
+      "id": "on_fire",
+      "name": "On Fire",
+      "category": "Scenes & FX",
+      "description": "Engulf the subject in stylized flames",
+      "prompt": "Surround the subject with roaring stylized flames and drifting embers, the fire lighting them in orange from below, dark smoky background. The subject stays calm and unburnt. Keep their identity.",
+      "motion": "flames roar and swirl upward while embers drift past the camera"
+    },
+    {
+      "id": "pixel_game",
+      "name": "Pixel Game",
+      "category": "Characters & Games",
+      "description": "Retro 16-bit game screenshot",
+      "prompt": "Convert this image into a 16-bit console game screenshot: chunky pixel art, a limited color palette, the subject as the playable sprite, a simple HUD with hearts and a score at the top."
+    },
+    {
+      "id": "movie_poster",
+      "name": "Movie Poster",
+      "category": "Ads & Products",
+      "description": "Theatrical poster with your film title",
+      "inputs": {
+        "text": {
+          "label": "Film title",
+          "placeholder": "THE LAST SIGNAL",
+          "default": "THE LAST SIGNAL"
+        }
+      },
+      "prompt": "Design a theatrical movie poster around the same person: dramatic key art, moody color grade, the title \"{text}\" in large cinematic type near the bottom with a small credits block. Keep their face and identity.",
+      "variantLabel": "Layout",
+      "variants": [
+        {
+          "id": "title_block",
+          "label": "Title block",
+          "prompt": "Design a bold title-led movie poster around the same person: the title \"{text}\" as a huge stacked title block filling the upper third, the person framed below in dramatic key art, strong negative space and a moody color grade, no other text. Keep their face and identity."
+        },
+        {
+          "id": "credits_block",
+          "label": "Credits block",
+          "prompt": "Design a theatrical one-sheet movie poster around the same person: dramatic key art, the title \"{text}\" in cinematic type in the lower third, and a full billing block of tall condensed credit lines along the bottom edge with a small release date line beneath it. Keep their face and identity."
+        },
+        {
+          "id": "tagline",
+          "label": "Tagline",
+          "prompt": "Design a teaser movie poster around the same person: moody close-up key art, a short evocative tagline in small spaced capitals across the top, and the title \"{text}\" in large cinematic type near the bottom with a small credits block. Keep their face and identity."
+        }
+      ]
+    },
+    {
+      "id": "renaissance",
+      "name": "Renaissance",
+      "category": "Style & Art",
+      "description": "Old-master oil portrait",
+      "prompt": "Repaint this as a Renaissance oil portrait: soft chiaroscuro, rich glazes, period clothing, a dark landscape background and fine craquelure on the varnish. Keep the subject's face and pose."
+    },
+    {
+      "id": "sketch_to_real",
+      "name": "Sketch to Real",
+      "category": "Style & Art",
+      "description": "Turn a drawing into a realistic photo",
+      "prompt": "Turn this sketch into a realistic photograph: real materials, natural lighting and believable depth, following the drawing's shapes, layout and proportions closely."
+    },
+    {
+      "id": "sketch_to_video",
+      "name": "Sketch to Video",
+      "category": "Scenes & FX",
+      "description": "Draw a scene, get a realistic moving shot in one click",
+      "inputs": {
+        "text": {
+          "label": "What is in the sketch (optional)",
+          "placeholder": "a lighthouse on a rocky coast at dusk",
+          "default": "the scene as drawn"
+        }
+      },
+      "prompt": "Turn this sketch into a realistic photograph of {text}: real materials, natural lighting and believable depth, following the drawing's shapes, layout, framing and proportions closely.",
+      "motion": "the scene comes to life with natural motion, slow cinematic push in",
+      "autoAnimate": true
+    },
+    {
+      "id": "storm_creature",
+      "name": "Storm Creature",
+      "category": "Scenes & FX",
+      "description": "A giant creature forms in the clouds behind you",
+      "prompt": "Add a colossal creature made of dark storm clouds and lightning looming in the sky behind the subject, rain sweeping over the landscape. Keep the subject in the foreground unchanged.",
+      "motion": "lightning flickers inside the cloud creature as it slowly turns its head"
+    },
+    {
+      "id": "trading_card",
+      "name": "Victory Card",
+      "category": "Characters & Games",
+      "description": "Holographic trading card of your subject",
+      "inputs": {
+        "text": {
+          "label": "Card name",
+          "placeholder": "Night Runner",
+          "default": "Champion"
+        }
+      },
+      "prompt": "Make a holographic collectible trading card featuring the same subject in a heroic pose, an ornate foil border, the name \"{text}\" on a banner at the top and a small stats panel at the bottom."
+    },
+    {
+      "id": "mascot",
+      "name": "Mascot",
+      "category": "Characters & Games",
+      "description": "Brand-style cartoon mascot of your subject",
+      "prompt": "Redesign the subject as a friendly cartoon brand mascot: simple bold shapes, a big expressive face, a limited cheerful palette, clean vector style on a plain background.",
+      "motion": "the mascot waves and bounces happily"
+    },
+    {
+      "id": "app_icon",
+      "name": "App Icon",
+      "category": "Style & Art",
+      "description": "Rounded glossy app icon",
+      "prompt": "Turn the main subject into a polished app icon: centered in a rounded square tile, soft gradient background, subtle 3D depth and glossy highlights, no text."
+    },
+    {
+      "id": "plushie",
+      "name": "Plushie",
+      "category": "Characters & Games",
+      "description": "Your subject as a soft plush toy",
+      "prompt": "Turn the subject into a soft plush toy with fuzzy fabric, visible stitching and button eyes, sitting on a bed with soft daylight. Keep its colors and recognizable features.",
+      "motion": "the plushie gets a gentle squeeze and wobbles back into shape"
+    },
+    {
+      "id": "packshot",
+      "name": "Packshot",
+      "category": "Ads & Products",
+      "description": "Clean e-commerce product photo",
+      "prompt": "Re-shoot the product as a clean e-commerce packshot: pure white seamless background, soft even lighting, a subtle reflection beneath, sharp edges. Keep the product exactly as it is."
+    },
+    {
+      "id": "glitter_sticker",
+      "name": "Glitter Sticker",
+      "category": "Style & Art",
+      "description": "Die-cut holographic sticker",
+      "prompt": "Turn the subject into a die-cut glitter sticker with a thick white border, sparkly holographic surface and a slight peel at one corner, lying on a desk."
+    },
+    {
+      "id": "signboard",
+      "name": "Signboard",
+      "category": "Ads & Products",
+      "description": "Put your text on a neon storefront sign",
+      "inputs": {
+        "text": {
+          "label": "Sign text",
+          "placeholder": "OPEN LATE",
+          "default": "OPEN LATE"
+        }
+      },
+      "prompt": "Add a glowing neon storefront sign that reads \"{text}\" into the scene, mounted where it fits naturally, casting colored light on nearby surfaces. Keep everything else unchanged."
+    },
+    {
+      "id": "style_snap",
+      "name": "Style Snap",
+      "category": "Portraits",
+      "description": "Copy the look of a reference photo onto yours",
+      "inputs": {
+        "second": { "label": "Style reference" }
+      },
+      "prompt": "Restyle image 1 to match the color grade, lighting, wardrobe style and mood of image 2, while keeping the person, pose and composition of image 1."
+    },
+    {
+      "id": "outfit_shot",
+      "name": "Outfit Swap",
+      "category": "Portraits",
+      "description": "Dress the person in an outfit from another photo",
+      "inputs": {
+        "second": { "label": "Outfit photo" }
+      },
+      "editMode": "tryon",
+      "prompt": "Dress the person in image 1 in the outfit shown in image 2, matching the fabric, color and fit, while keeping their face, pose and background.",
+      "motion": "the person turns slightly to show off the outfit, fabric moving naturally"
+    },
+    {
+      "id": "with_animals",
+      "name": "Surrounded by Animals",
+      "category": "Scenes & FX",
+      "description": "Put the person among the animal from a second photo",
+      "inputs": {
+        "second": { "label": "Animal photo" }
+      },
+      "editMode": "insert",
+      "prompt": "Surround the person in image 1 with several of the animal shown in image 2, interacting naturally around them, with matching light and shadows. Keep the person's identity.",
+      "motion": "the animals move around the person, who laughs and reaches out to one"
+    },
+    {
+      "id": "object_swap",
+      "name": "Object Swap",
+      "category": "Scenes & FX",
+      "description": "Replace something in the photo with the object from a second photo",
+      "inputs": {
+        "second": { "label": "Replacement object" },
+        "text": {
+          "label": "What to replace",
+          "placeholder": "coffee cup",
+          "default": "main object"
+        }
+      },
+      "editMode": "insert",
+      "prompt": "Replace the {text} in image 1 with the object shown in image 2, keeping that object's exact shape, colors, materials and details. Match image 1's perspective, scale, lighting and shadows, and leave everything else in image 1 unchanged.",
+      "motion": "subtle natural motion in the scene, the camera slowly pushes in toward the new object"
+    },
+    {
+      "id": "billboard_ad",
+      "name": "Billboard Ad",
+      "category": "Ads & Products",
+      "description": "Your product on a giant roadside billboard",
+      "inputs": {
+        "text": {
+          "label": "Tagline",
+          "placeholder": "MADE TO MOVE",
+          "default": "MADE TO MOVE"
+        }
+      },
+      "prompt": "Place the product as the hero image on a huge illuminated roadside billboard above a highway at dusk, the product large and centered on a clean colored background with the tagline \"{text}\" in bold letters beside it, steel scaffolding, catwalk and spotlights on the frame, a purple-orange sky and blurred car light trails below. Keep the product's shape, colors and details exactly.",
+      "motion": "slow push-in toward the billboard as cars stream past below and the spotlights flicker on"
+    },
+    {
+      "id": "truck_ad",
+      "name": "Truck Ad",
+      "category": "Ads & Products",
+      "description": "Your product wrapped on a box truck driving downtown",
+      "prompt": "Show the product printed as a giant full-side vinyl wrap on the cargo box of a white delivery truck driving down a sunny downtown street, the graphic following the panel seams and rivets, pedestrians turning to look, slight motion blur on the wheels. Keep the product's design and colors exactly.",
+      "motion": "tracking shot alongside the truck as it drives past storefronts"
+    },
+    {
+      "id": "volcano_ad",
+      "name": "Volcano Ad",
+      "category": "Ads & Products",
+      "description": "Your product bursting out of an erupting volcano",
+      "prompt": "Make the product rise out of the crater of an erupting volcano at night, rivers of glowing lava flowing around its base, sparks and ash clouds in the sky, the product lit hot orange from below but completely intact. Epic commercial key art. Keep the product's shape, label and colors exactly.",
+      "motion": "the volcano erupts, lava bursts upward and the camera slowly cranes up past the product"
+    },
+    {
+      "id": "chameleon",
+      "name": "Chameleon",
+      "category": "Ads & Products",
+      "description": "The product camouflaged into a jungle backdrop",
+      "prompt": "Place the product in a dense tropical jungle and paint its surface with the exact leaf pattern and greens behind it, so it is almost perfectly camouflaged like a chameleon, with only its silhouette, edges and a soft shadow giving it away. Keep the product's shape exactly.",
+      "motion": "the camouflage pattern ripples away and the product's true colors flow back across its surface"
+    },
+    {
+      "id": "magic_button",
+      "name": "Magic Button",
+      "category": "Ads & Products",
+      "description": "A glowing button summons your product",
+      "prompt": "Put the product on a dark stage floating just above a large round glowing red push button on a pedestal, a burst of sparkles, light streaks and confetti around it as if the button just made it appear. Keep the product's design and colors exactly.",
+      "motion": "a hand presses the glowing button and the product pops into existence in a burst of sparkles"
+    },
+    {
+      "id": "kick_ad",
+      "name": "Kick Ad",
+      "category": "Ads & Products",
+      "description": "The product mid-air after a powerful kick",
+      "prompt": "Show the product flying through the air in a sunny stadium, frozen at the instant a sneaker kicks it, a ring of dust and grass bits exploding from the impact point, motion streaks behind it, high-speed sports photography. Keep the product's shape and label exactly.",
+      "motion": "super slow motion: the kick connects and the product spins away toward the camera"
+    },
+    {
+      "id": "splash_shot",
+      "name": "Splash Shot",
+      "category": "Ads & Products",
+      "description": "Product frozen in a crown of liquid splash",
+      "prompt": "Re-shoot the product as a high-speed splash photo: it plunges into clear water, a crown of liquid and droplets frozen around it, bright backlight through the splash on a clean gradient background. Keep the product's design and colors exactly.",
+      "motion": "slow motion: the product drops in and the water crown rises and falls around it"
+    },
+    {
+      "id": "behind_scenes",
+      "name": "Behind the Scenes",
+      "category": "Portraits",
+      "description": "Reveal the film set around your photo",
+      "prompt": "Pull the camera back to reveal this is a professional film set: the same person in the same pose in the center, surrounded by a film camera on a dolly, a boom microphone overhead, softboxes and C-stands, an empty director's chair, and a few varied crew members working, one adjusting a light and one watching a monitor. No text or logos anywhere. Keep the person's face, outfit and pose.",
+      "motion": "the camera pulls back further as crew members move and the boom operator adjusts the mic"
+    },
+    {
+      "id": "contact_sheet",
+      "name": "Contact Sheet",
+      "category": "Portraits",
+      "description": "Nine-shot photo session of the same person",
+      "prompt": "Create a 3x3 contact sheet of nine photos of the same person from one photo session: close-up, profile, three-quarter, full body, laughing, looking over the shoulder, hands in pockets, from a low angle and from above. Same outfit, same lighting and location in every frame, thin white borders. Keep their face and identity consistent."
+    },
+    {
+      "id": "outfit_vending",
+      "name": "Outfit Vending",
+      "category": "Portraits",
+      "description": "Your outfit dispensed from a fashion vending machine",
+      "prompt": "Show the same person standing next to a glowing glass-front vending machine filled with neatly folded outfits on spiral coils, one coil holding a mini folded copy of the outfit they are wearing, colorful price buttons, a city street at night. Keep the person's face, outfit and pose.",
+      "motion": "the coil turns and the folded outfit drops into the tray while the person reaches for it"
+    },
+    {
+      "id": "idol",
+      "name": "Idol",
+      "category": "Portraits",
+      "description": "Pop idol on a concert stage",
+      "prompt": "Turn this into a concert photo of the same person as a pop idol on a big stage: a sparkly stage costume, a headset microphone, a confident pose, pink and blue stage lights, glitter in the air and a sea of glowing light sticks in the crowd. Keep their face and identity.",
+      "motion": "the idol finishes a dance move and waves as confetti falls and the crowd waves light sticks"
+    },
+    {
+      "id": "rap_star",
+      "name": "Rap Star",
+      "category": "Portraits",
+      "description": "Hip-hop performer on a smoky stage",
+      "prompt": "Turn this into a hip-hop concert photo of the same person rapping into a handheld microphone, one hand raised, an oversized jacket and chains, a dark stage with smoke, red strobe lights and the crowd's raised hands in silhouette. Keep their face and identity.",
+      "motion": "the rapper bounces to the beat and points at the crowd as the strobes flash"
+    },
+    {
+      "id": "latex",
+      "name": "Latex",
+      "category": "Portraits",
+      "description": "High-gloss latex fashion editorial",
+      "prompt": "Re-dress the same person in a high-gloss black latex outfit with mirror-like reflections and crisp highlights, posed in a minimal studio with a deep red backdrop and hard fashion lighting, high-end editorial photography. Keep their face, identity and pose.",
+      "motion": "the person turns slowly while light glides across the glossy latex"
+    },
+    {
+      "id": "mukbang",
+      "name": "Mukbang",
+      "category": "Portraits",
+      "description": "Live-stream eating show with a giant feast",
+      "prompt": "Show the same person seated at a table piled with a huge feast of noodles, fried chicken, dumplings and colorful sauces, chopsticks in hand, a ring light and a microphone in front of them, a cozy streaming room with LED strips, shot like a live-stream frame. Keep their face and identity.",
+      "motion": "the person lifts a big bite of noodles with chopsticks and smiles at the camera"
+    },
+    {
+      "id": "ghoul",
+      "name": "Ghoul",
+      "category": "Portraits",
+      "description": "Movie-grade ghoul makeup",
+      "prompt": "Give the same person film-quality ghoul special-effects makeup: grey cracked skin, sunken dark eyes, visible veins and torn ragged clothes, in a foggy moonlit graveyard with cold blue light. Keep their face shape, pose and identity recognizable.",
+      "motion": "the ghoul slowly lifts its head toward the camera as fog drifts past"
+    },
+    {
+      "id": "melting_doodle",
+      "name": "Melting Doodle",
+      "category": "Style & Art",
+      "description": "Marker doodle melting down the page",
+      "prompt": "Redraw the subject as a bold colorful marker doodle on white paper, thick wobbly outlines and flat colors, with the lower half of the drawing melting into long dripping streaks of ink running down the page.",
+      "motion": "the doodle melts further, colored drips sliding down the paper"
+    },
+    {
+      "id": "paint_app",
+      "name": "Paint App",
+      "category": "Style & Art",
+      "description": "Clumsy drawing in an old desktop paint program",
+      "prompt": "Redraw this image as a clumsy mouse-drawn picture in a 1990s desktop paint program: jagged pixel lines, flat bucket-fill colors and spray-can dots, shown inside the gray program window with a toolbar of tool icons on the left and a color palette strip along the bottom."
+    },
+    {
+      "id": "claymation",
+      "name": "Claymation",
+      "category": "Style & Art",
+      "description": "Stop-motion clay puppet scene",
+      "prompt": "Turn the subject into a stop-motion claymation puppet sculpted from plasticine, with visible fingerprints and tool marks, simple rounded clay features and dot eyes, standing in a miniature handmade clay set with soft studio lighting and a shallow depth of field. Keep their pose, colors and recognizable features.",
+      "motion": "stop-motion animation at a choppy frame rate, the clay figure waves and blinks"
+    },
+    {
+      "id": "meme",
+      "name": "Meme",
+      "category": "Style & Art",
+      "description": "Classic captioned meme",
+      "inputs": {
+        "text": {
+          "label": "Caption",
+          "placeholder": "WHEN THE COFFEE KICKS IN",
+          "default": "WHEN THE COFFEE KICKS IN"
+        }
+      },
+      "prompt": "Turn this photo into a classic internet meme: keep the photo unchanged and add the caption \"{text}\" in large bold white uppercase letters with a thick black outline, centered across the top of the image."
+    },
+    {
+      "id": "game_dump",
+      "name": "Game Dump",
+      "category": "Characters & Games",
+      "description": "Your photo as a screenshot from a video game genre",
+      "inputs": {
+        "text": {
+          "label": "Game style",
+          "placeholder": "16-bit platformer, open-world crime, cozy farming sim",
+          "default": "third-person open-world action game"
+        }
+      },
+      "prompt": "Completely redraw the whole image, the person included, as an in-game screenshot from a {text} video game: the person becomes the playable character in that game's graphics style, keeping their hair color and outfit colors, and the setting is rebuilt as a game level. No photographic parts remain. Add a simple HUD made of icons only, such as hearts, coins and a health bar, with no words.",
+      "variantLabel": "Layout",
+      "variants": [
+        {
+          "id": "style_grid",
+          "label": "12-style grid",
+          "prompt": "Completely redraw the whole image as a 4x3 grid of twelve in-game screenshots of the same person, each panel a different video game genre in its own graphics style: a {text}, a 16-bit platformer, a retro arcade fighter, a cozy farming sim, a kart racer, a tactical shooter, an isometric strategy game, a survival horror game, a cel-shaded adventure, a voxel sandbox, a visual novel and a pixel dungeon crawler. The person is the playable character in every panel, keeping their hair color and outfit colors. Thin black borders between panels, icon-only HUDs, no words."
+        }
+      ]
+    },
+    {
+      "id": "tactical_shooter",
+      "name": "Tactical Shooter",
+      "category": "Characters & Games",
+      "description": "Operator on a tactical game's character-select screen",
+      "prompt": "Turn this into the character-select screen of a team-based tactical shooter game: the same person as a playable operator in tactical gear, a helmet with goggles pushed up and a vest, standing on a dusty desert map backdrop, with menu panels, a stats bar and a SELECT button around them. Keep their face recognizable.",
+      "motion": "the operator does an idle animation, checking gear and nodding at the camera"
+    },
+    {
+      "id": "loading_screen",
+      "name": "Loading Screen",
+      "category": "Characters & Games",
+      "description": "Painted open-world crime game loading-screen art",
+      "prompt": "Repaint the subject as open-world crime game loading-screen art: bold flat cel-shaded illustration with thick black outlines, a confident pose, a palm-lined city street and a sunset sky behind them, framed in a thin border panel. Keep their face, outfit and identity."
+    },
+    {
+      "id": "life_sim",
+      "name": "Life Sim",
+      "category": "Characters & Games",
+      "description": "Character in a life-simulation game",
+      "prompt": "Turn this into a screenshot from a life-simulation video game: the same person as a slightly stylized 3D character standing in a cutaway dollhouse-style home seen from an isometric angle above, bright furniture, a floating mood icon above their head and a needs panel with colored bars in the corner. Keep their outfit and recognizable features."
+    },
+    {
+      "id": "brick_cube",
+      "name": "Brick Cube",
+      "category": "Characters & Games",
+      "description": "Your subject built from toy bricks in a cube",
+      "prompt": "Rebuild the subject as a sculpture built from small glossy plastic building blocks with round studs on top and blocky stepped edges: the clothes, shoes and hair are stacked blocks in the same colors as in the photo, and the face is a smooth plain block colored exactly like the person's real skin tone with simple printed eyes and smile. The sculpture stands in a clear acrylic display cube on a gray studded base plate, soft studio lighting. Keep the pose.",
+      "motion": "slow turntable rotation of the brick cube with light glinting off the plastic"
+    },
+    {
+      "id": "cloud_surf",
+      "name": "Cloud Surf",
+      "category": "Scenes & FX",
+      "description": "Surf a sea of clouds above the sunset",
+      "prompt": "Show the same person surfing on a surfboard across a sea of fluffy clouds high above the earth at sunset, knees bent and arms out for balance, a spray of cloud mist trailing behind the board, warm golden light. Keep their face, outfit and identity.",
+      "motion": "the person carves across the clouds, mist spraying behind the board as the camera follows"
+    },
+    {
+      "id": "roller_coaster",
+      "name": "Roller Coaster",
+      "category": "Scenes & FX",
+      "description": "Front row of a roller coaster mid-drop",
+      "prompt": "Put the same person in the front row of a roller coaster at the top of a steep drop, gripping the safety bar, hair blown back by the wind, an amusement park and blue sky far below behind them. Keep their face and identity.",
+      "motion": "the coaster plunges down the drop as the person screams with joy"
+    },
+    {
+      "id": "sand_worm",
+      "name": "Sand Worm",
+      "category": "Scenes & FX",
+      "description": "A colossal worm erupts from the dunes behind you",
+      "prompt": "Place the same person standing on desert dunes in the foreground while a colossal sand worm with a gaping round mouth full of teeth bursts out of the sand far behind them, sand pouring off its armored body, hazy orange sky. Keep the person's face, outfit and pose.",
+      "motion": "the sand worm rises higher and roars as sand cascades down, the person turns to look"
+    },
+    {
+      "id": "snow_globe",
+      "name": "Snow Globe",
+      "category": "Scenes & FX",
+      "description": "Your subject in a miniature snow globe",
+      "prompt": "Shrink the subject into a tiny figure inside a glass snow globe on a wooden mantel, a little snowy scene at their feet, falling snowflakes inside the glass, warm fairy lights blurred in the background. Keep the subject's colors and recognizable features.",
+      "motion": "the snow globe is gently shaken and snow swirls around the tiny figure"
+    },
+    {
+      "id": "frozen",
+      "name": "Frozen",
+      "category": "Scenes & FX",
+      "description": "Encased in a block of ice",
+      "prompt": "Encase the subject in a solid block of clear ice: frost crystals on the surface, trapped air bubbles, cold blue light shining through, the ice block standing on a snowy floor. The subject stays clearly visible inside and keeps their identity.",
+      "motion": "cracks spread across the ice block and shards begin to fall away"
+    },
+    {
+      "id": "japanese_show",
+      "name": "Japanese Show",
+      "category": "Scenes & FX",
+      "description": "Japanese variety TV show frame",
+      "prompt": "Turn this into a frame from a Japanese variety TV show: the same person in a bright colorful studio set with a reaction pose, big playful Japanese caption text in yellow and pink with thick outlines, a small inset window of laughing hosts in the corner and a channel logo bug. Keep their face and identity.",
+      "motion": "the person reacts with surprise as caption text pops on screen"
+    },
+    {
+      "id": "levitation_ad",
+      "name": "Levitation Ad",
+      "category": "Ads & Products",
+      "description": "The product floating above a pedestal",
+      "prompt": "Show the product floating in midair above a smooth stone pedestal, a soft shadow on the pedestal below it, a seamless warm-grey studio backdrop and gentle rim light that makes it look weightless. Keep the product's shape, label and colors exactly.",
+      "motion": "the product hovers and slowly rotates while drifting gently up and down"
+    },
+    {
+      "id": "podium_ad",
+      "name": "Podium Display",
+      "category": "Ads & Products",
+      "description": "Pastel geometric podiums, studio set",
+      "prompt": "Place the product on the tallest of three pastel geometric podiums (cylinder, cube, arch) in a minimal studio set, soft diffused light, subtle reflections and a clean color-blocked backdrop. Keep the product's shape, label and colors exactly."
+    },
+    {
+      "id": "ingredient_burst",
+      "name": "Ingredient Burst",
+      "category": "Ads & Products",
+      "description": "Its ingredients exploding around it",
+      "prompt": "Show the product in the center with its key natural ingredients (fruit slices, leaves, seeds or flowers that suit it) bursting outward around it, frozen in midair against a bold matching color backdrop, crisp high-speed studio lighting. Keep the product's shape, label and colors exactly.",
+      "motion": "the ingredients burst outward in slow motion and tumble past the camera"
+    },
+    {
+      "id": "marble_luxe",
+      "name": "Marble Luxe",
+      "category": "Ads & Products",
+      "description": "Luxury shot on marble with gold accents",
+      "prompt": "Stage the product on a polished white marble slab with fine grey veining, a thin brushed-gold tray beside it, soft window light from one side and long gentle shadows, a premium cosmetics-ad look. Keep the product's shape, label and colors exactly."
+    },
+    {
+      "id": "forest_floor",
+      "name": "Forest Floor",
+      "category": "Ads & Products",
+      "description": "Nestled in moss and ferns with sunbeams",
+      "prompt": "Nestle the product among bright green moss, small ferns and dewdrops on a forest floor, shafts of morning sunlight through the canopy, shallow depth of field, a natural eco-brand look. Keep the product's shape, label and colors exactly.",
+      "motion": "sunbeams shift through the trees and dew drips from a fern beside the product"
+    },
+    {
+      "id": "sunburst_ad",
+      "name": "Sunburst",
+      "category": "Ads & Products",
+      "description": "Bold poster with radiating color rays",
+      "prompt": "Make a bold poster-style ad: the product as the hero in the center, radiating rays of two saturated complementary colors behind it, hard midday sunlight with crisp graphic shadows, a punchy summer-campaign feel, no text. Keep the product's shape, label and colors exactly."
+    },
+    {
+      "id": "flare_ad",
+      "name": "Flare Hero",
+      "category": "Ads & Products",
+      "description": "Dramatic backlit hero shot with lens flare",
+      "prompt": "Make a dramatic hero shot: the product on a dark glossy surface, strongly backlit with a warm anamorphic lens flare streaking across the frame, haze in the air and a bright rim outlining its silhouette. Keep the product's shape, label and colors exactly.",
+      "motion": "the camera pushes in slowly as the lens flare sweeps across the product"
+    },
+    {
+      "id": "in_hand_ad",
+      "name": "In Hand",
+      "category": "Ads & Products",
+      "description": "Held in a hand, lifestyle background",
+      "prompt": "Show the product held naturally in a well-groomed hand at eye level, the label facing the camera, with a softly blurred bright lifestyle background such as a sunny street or a cozy cafe, natural daylight. Keep the product's shape, label and colors exactly."
+    },
+    {
+      "id": "creator_review",
+      "name": "Creator Review",
+      "category": "Ads & Products",
+      "description": "A creator holding it up in a selfie video frame",
+      "prompt": "Show a friendly content creator holding the product up next to their face in a vertical selfie-style frame, mid-sentence with an excited expression, a tidy bedroom studio with a ring-light catchlight in their eyes. Keep the product's shape, label and colors exactly.",
+      "motion": "the creator talks to the camera and tilts the product to show the label"
+    },
+    {
+      "id": "underwater_ad",
+      "name": "Underwater",
+      "category": "Ads & Products",
+      "description": "Submerged in clear water with bubbles",
+      "prompt": "Show the product submerged in crystal-clear blue water, streams of tiny bubbles rising around it, caustic light patterns dancing over its surface and a soft gradient to deep blue below. Keep the product's shape, label and colors exactly.",
+      "motion": "bubbles rise around the product as it sinks slowly and light ripples across it"
+    },
+    {
+      "id": "palm_shadow",
+      "name": "Palm Shadows",
+      "category": "Ads & Products",
+      "description": "Hard sun and palm-leaf shadows on a beige wall",
+      "prompt": "Place the product on a beige plaster ledge in hard late-afternoon sun, crisp palm-leaf shadows falling across it and the wall behind, warm terracotta and sand tones, a minimal summer-brand look. Keep the product's shape, label and colors exactly.",
+      "motion": "the palm shadows sway gently across the product in a light breeze"
+    },
+    {
+      "id": "seasonal_ad",
+      "name": "Seasonal Ad",
+      "category": "Ads & Products",
+      "description": "Restage the product for any season or holiday",
+      "inputs": {
+        "text": {
+          "label": "Season or occasion",
+          "placeholder": "cozy winter holidays",
+          "default": "cozy winter holidays"
+        }
+      },
+      "prompt": "Restage the product as the hero of a {text} campaign: surround it with fitting props, colors and lighting for that season or occasion, styled like a premium seasonal ad, no text. Keep the product's shape, label and colors exactly."
+    },
+    {
+      "id": "asmr_classic",
+      "name": "ASMR Classic",
+      "category": "Ads & Products",
+      "description": "Your object as a crisp close-up ASMR clip with matched sound",
+      "prompt": "Restage the main object as the star of a close-up ASMR video: macro framing on a clean wooden tabletop, soft warm key light, shallow depth of field and a dark blurred background, with a pair of hands in neutral gloves resting gently on it. Keep the object's shape, colors and surface details exactly.",
+      "motion": "gloved fingertips slowly tap and trace the object's surface, tiny macro push in, calm and steady",
+      "autoAnimate": true,
+      "sound": "soft close-up fingertip tapping and gentle scratching on a hard surface, crisp quiet ASMR detail"
+    },
+    {
+      "id": "asmr_addon",
+      "name": "ASMR Add-On",
+      "category": "Scenes & FX",
+      "description": "Turn any scene into a slow, satisfying ASMR moment",
+      "inputs": {
+        "text": {
+          "label": "Satisfying action",
+          "placeholder": "slicing through soft kinetic sand",
+          "default": "a slow, satisfying slicing motion"
+        }
+      },
+      "prompt": "Turn this into a calm macro ASMR shot centred on {text}: extreme close-up, soft diffused light, rich surface textures, shallow depth of field and an uncluttered background. Keep the main subject's colors and materials recognisable.",
+      "motion": "the satisfying action unfolds slowly in close-up, smooth and deliberate",
+      "autoAnimate": true,
+      "sound": "slow satisfying crunch and soft slicing textures, close microphone, no music"
+    },
+    {
+      "id": "asmr_host",
+      "name": "ASMR Host",
+      "category": "Portraits",
+      "description": "The person as a cozy ASMR host at a studio microphone",
+      "prompt": "Place the same person in a cozy ASMR studio: seated close to a round studio microphone on a desk, warm string lights and soft fabric behind them, gentle low-key lighting, calm friendly expression, hands raised near the microphone. Keep their face, hair and identity exactly.",
+      "motion": "the host gently brushes and taps the microphone with their fingertips, slight lean in, relaxed",
+      "autoAnimate": true,
+      "sound": "gentle brushing and soft tapping on a microphone, close quiet room tone"
+    },
+    {
+      "id": "sticker_swap_cut",
+      "name": "Sticker Swap Cut",
+      "category": "Scenes & FX",
+      "description": "Your photo becomes a die-cut sticker of itself, plus a match-cut clip",
+      "prompt": "Turn the main subject into a glossy die-cut vinyl sticker: the same subject in the same pose, position and size in the frame, bold flat illustrated shading, a thick clean white border following its outline and a soft drop shadow, on a plain flat light-grey background with nothing else. Keep the subject's silhouette, colors and key details recognizable so it lines up with the original photo.",
+      "followUp": {
+        "kind": "match_cut",
+        "label": "Step 2: Cut-out + match cut",
+        "prompt": "a match cut: the real scene snaps into its sticker version in one quick beat, the subject's outline locked in place while the background drops away to flat grey, a small paper-peel bounce at the end",
+        "cutout": true
+      }
+    },
+    {
+      "id": "frozen_orbit",
+      "name": "Frozen Moment Orbit",
+      "category": "Scenes & FX",
+      "description": "A clean background plate first, then a bullet-time sweep around the frozen subject",
+      "prompt": "Remove the main subject completely and rebuild the empty scene behind it: continue the floor, walls, scenery and lighting naturally where the subject stood, with no person, object, shadow or outline left behind. Keep the camera angle, perspective, framing, colors and lighting exactly the same, as a clean background plate.",
+      "followUp": {
+        "kind": "bullet_time",
+        "label": "Step 2: Bullet-time orbit",
+        "prompt": "the subject"
+      }
+    },
+    {
+      "id": "bullet_time_white",
+      "name": "Bullet Time White",
+      "category": "Scenes & FX",
+      "description": "The subject frozen mid-motion on a white studio sweep, then a bullet-time orbit",
+      "prompt": "Place the same subject in a seamless pure white studio cyclorama with soft even light, frozen mid-motion in a dynamic pose, hair and clothing caught in the air, a faint contact shadow on the white floor and nothing else in the scene. Keep their face, outfit and identity exactly.",
+      "motion": "bullet time: the camera sweeps a smooth half orbit around the frozen subject while time stands still"
+    },
+    {
+      "id": "bullet_time_splash",
+      "name": "Bullet Time Splash",
+      "category": "Scenes & FX",
+      "description": "The subject frozen inside a burst of water, then a bullet-time orbit",
+      "prompt": "Freeze the same subject at the center of a huge burst of splashing water: droplets and liquid ribbons suspended in mid-air all around them, crisp high-speed flash lighting against a dark backdrop, every droplet sharp. Keep their face, outfit and identity exactly.",
+      "motion": "bullet time: the camera orbits around the subject while the splash hangs frozen in mid-air"
+    },
+    {
+      "id": "yes_kiss",
+      "name": "Yes Kiss",
+      "category": "Portraits",
+      "description": "Your couple photo as a romantic close-up, then the kiss",
+      "prompt": "Re-frame this photo of two people as a romantic cinematic close-up: the same two people facing each other a breath apart, eyes half closed, soft warm backlight and a shallow depth of field, a dreamy evening background. Keep both faces, hair and outfits exactly.",
+      "motion": "the two people lean in slowly and share a gentle kiss as the camera drifts closer"
+    },
+    {
+      "id": "j_magazine",
+      "name": "J-Magazine",
+      "category": "Portraits",
+      "description": "Busy Japanese street-fashion magazine cover",
+      "prompt": "Turn this into the cover of a Japanese street-fashion magazine featuring the same person: bright flat studio light, a playful full-body pose, a large stylized masthead across the top, dense small cover lines and round price stickers stacked down both sides in a busy collage layout, pastel accent colors. Keep their face, hair, outfit and identity.",
+      "motion": "the person switches to a new playful pose as the cover lines pop in one by one"
+    },
+    {
+      "id": "j_poster",
+      "name": "J-Poster",
+      "category": "Ads & Products",
+      "description": "Japanese-style theatrical poster with your title",
+      "inputs": {
+        "text": {
+          "label": "Film title",
+          "placeholder": "NIGHT TRAIN",
+          "default": "NIGHT TRAIN"
+        }
+      },
+      "prompt": "Design a Japanese-style theatrical movie poster around the same person: dramatic key art, the title \"{text}\" in large bold type, tall vertical columns of small credit text along one side, a bold red and black accent palette on a hand-printed paper texture. Keep their face and identity.",
+      "motion": "slow push in on the poster art as warm light flickers across the person's face"
+    }
+  ]
+}

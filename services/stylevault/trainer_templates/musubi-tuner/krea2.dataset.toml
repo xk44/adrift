@@ -1,0 +1,11 @@
+[general]
+resolution = [{{resolution}}, {{resolution}}]
+caption_extension = "{{caption_ext}}"
+batch_size = 1
+enable_bucket = true
+bucket_no_upscale = false
+
+[[datasets]]
+image_directory = "{{dataset_dir}}"
+cache_directory = "{{output_dir}}/cache"
+num_repeats = 1

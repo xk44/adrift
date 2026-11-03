@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "trainers": {
+    "ai-toolkit": {
+      "repo": "ostris/ai-toolkit",
+      "tested_commits": {
+        "z-image-turbo": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending local testing with Z-Image Turbo base model"
+        },
+        "z-image-base": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending local testing with Z-Image Base model"
+        },
+        "sdxl": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending local testing with SDXL base"
+        }
+      }
+    },
+    "sd-scripts": {
+      "repo": "kohya-ss/sd-scripts",
+      "tested_commits": {
+        "sdxl": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending local testing with sdxl_train_network.py"
+        },
+        "flux": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending local testing with flux_train_network.py"
+        }
+      }
+    },
+    "musubi-tuner": {
+      "repo": "kohya-ss/musubi-tuner",
+      "tested_commits": {
+        "z-image-turbo": {
+          "commit": "",
+          "date": "",
+          "status": "untested",
+          "notes": "Pending confirmation of Z-Image family support"
+        }
+      }
+    }
+  }
+}

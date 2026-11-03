@@ -1,0 +1,66 @@
+---
+# UNTESTED SCAFFOLD: MOSS-Image LoRA via ai-toolkit (ostris).
+# The vendored trainers/ai-toolkit has NO `moss_image` arch yet; this config
+# only works once an upstream/ported arch exists. Nothing here was run.
+# Edit the three paths below to the real OpenMOSS SFT (or Base) checkpoint,
+# the frozen qwen3.5-9B text encoder, and the flux2 VAE before training.
+job: extension
+config:
+  name: "{{run_name}}"
+  process:
+    - type: sd_trainer
+      training_folder: "{{output_dir}}"
+      device: cuda:0
+      trigger_word: "{{trigger_word}}"
+      network:
+        type: lora
+        linear: {{rank}}
+        linear_alpha: {{rank}}
+      save:
+        dtype: float16
+        save_every: 500
+        max_step_saves_to_keep: 2
+      datasets:
+        - folder_path: "{{dataset_dir}}"
+          caption_ext: "{{caption_ext_nodot}}"
+          caption_dropout_rate: 0.05
+          shuffle_tokens: false
+          cache_latents_to_disk: true
+          resolution: [{{resolution}}]
+      train:
+        batch_size: 1
+        cache_text_embeddings: true
+        steps: {{steps}}
+        gradient_accumulation: 1
+        train_unet: true
+        train_text_encoder: false
+        gradient_checkpointing: true
+        noise_scheduler: flowmatch
+        optimizer: adamw8bit
+        lr: {{lr}}
+        dtype: bf16
+        skip_first_sample: true
+        disable_sampling: true
+      model:
+        name_or_path: "/path/to/OpenMOSS/MOSS-Image-Base-or-SFT"  # CONFIGURE ME
+        arch: moss_image
+        quantize: false  # bf16 only
+        quantize_te: false
+        low_vram: true
+        model_kwargs:
+          text_encoder_path: "/path/to/ComfyUI/models/text_encoders/qwen3.5_9b_bf16.safetensors"  # frozen, never trained
+          vae_path: "/path/to/ComfyUI/models/vae/flux2-vae.safetensors"
+      sample:
+        sampler: flowmatch
+        sample_every: 500
+        width: {{resolution}}
+        height: {{resolution}}
+        prompts:
+          - "{{trigger_word}} style sample"
+        neg: ""
+        seed: 42
+        guidance_scale: 3
+        sample_steps: 50
+meta:
+  name: "{{run_name}}"
+  model_family: "{{model_family}}"

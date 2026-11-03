@@ -1,0 +1,214 @@
+{
+  "_meta": {
+    "note": "ComfyUI-MatAnyone at 87cbce3, from /object_info"
+  },
+  "MatAnyone2": {
+    "input": {
+      "required": {
+        "src_video": [
+          "IMAGE"
+        ],
+        "mask_frame": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "step": 1
+          }
+        ],
+        "n_warmup": [
+          "INT",
+          {
+            "default": 10,
+            "min": 1,
+            "step": 1
+          }
+        ]
+      },
+      "optional": {
+        "foreground_mask": [
+          "IMAGE"
+        ],
+        "foreground_MASK": [
+          "MASK"
+        ],
+        "solid_color": [
+          "IMAGE"
+        ],
+        "r_erode": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "step": 1
+          }
+        ],
+        "r_dilate": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "step": 1
+          }
+        ],
+        "max_internal_size": [
+          "INT",
+          {
+            "default": -1,
+            "min": -1,
+            "step": 1
+          }
+        ],
+        "max_mem_frames": [
+          "INT",
+          {
+            "default": 5,
+            "min": 1,
+            "step": 1
+          }
+        ],
+        "use_long_term": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "src_video",
+        "mask_frame",
+        "n_warmup"
+      ],
+      "optional": [
+        "foreground_mask",
+        "foreground_MASK",
+        "solid_color",
+        "r_erode",
+        "r_dilate",
+        "max_internal_size",
+        "max_mem_frames",
+        "use_long_term"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "matte",
+      "green_screen"
+    ],
+    "name": "MatAnyone2",
+    "display_name": "MatAnyone2",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-MatAnyone",
+    "category": "MatAnyone",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "CJSampleFrames": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "samples": [
+          "INT",
+          {
+            "default": 32,
+            "min": 1,
+            "max": 256,
+            "tooltip": "Most frames to look at, evenly spaced from frame 0."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "samples"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE",
+      "INT"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "images",
+      "step"
+    ],
+    "name": "CJSampleFrames",
+    "display_name": "Sample frames (evenly spaced)",
+    "description": "",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "category": "cj/h3",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "CJFindSubjectFrame": {
+    "input": {
+      "required": {
+        "masks": [
+          "MASK"
+        ],
+        "bboxes": [
+          "BOUNDING_BOX",
+          {
+            "forceInput": true
+          }
+        ],
+        "step": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 100000,
+            "forceInput": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "masks",
+        "bboxes",
+        "step"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "MASK",
+      "INT"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "mask",
+      "frame_index"
+    ],
+    "name": "CJFindSubjectFrame",
+    "display_name": "Find subject frame",
+    "description": "",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "category": "cj/h3",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  }
+}

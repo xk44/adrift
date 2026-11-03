@@ -1,0 +1,119 @@
+{
+  "families": {
+    "krea2edit": {
+      "label": "Grounded Edit",
+      "action": "edit_instruct",
+      "structuralAction": "edit_structural",
+      "nodes": "comfyui-krea2edit",
+      "note": "Qwen3-VL grounded instruction edit; supports depth structure-lock."
+    },
+    "ostris": {
+      "label": "Ostris Multi-Ref",
+      "action": "edit_ostris",
+      "nodes": "ComfyUI-Krea2-Ostris-Edit",
+      "note": "Kontext-style reference edit (up to 3 refs), Ostris-trained LoRAs."
+    },
+    "qwen": {
+      "label": "Qwen-Image-Edit",
+      "action": "edit_qwen",
+      "nodes": "core (ComfyUI native Qwen-Image-Edit)",
+      "note": "Qwen-Image-Edit-2511 instruction edit with 4-step Lightning; multi-angle LoRA rotates the camera. Requires the Qwen edit UNET + qwen2.5-vl encoder."
+    },
+    "krea2inpaint": {
+      "label": "Inpaint",
+      "action": "edit_inpaint",
+      "nodes": "ComfyUI-Inpaint-CropAndStitch + ComfyUI-Krea2-Ostris-Edit",
+      "note": "Krea2 inpaint-edit v2 LoRA: mask-aware local editing via CropAndStitch (lquesada/ComfyUI-Inpaint-CropAndStitch). Crops around the mask, blacks it out, repaints it from the prompt with the Ostris edit encoder, then stitches it back. Requires the CropAndStitch + Krea2-Ostris-Edit custom nodes and the v2 inpaint weights."
+    }
+  },
+  "loras": [
+    {
+      "id": "style-reference",
+      "name": "Style Reference",
+      "file": "krea2_style_reference.safetensors",
+      "family": "ostris",
+      "base": "krea2-turbo",
+      "defaultStrength": 1.0,
+      "note": "Image style reference (--sv2): generate in the aesthetic of 1-3 reference images. No trigger word. Runs on Krea-2-Turbo (bf16, MPS-safe).",
+      "url": "https://huggingface.co/ostris/krea2_turbo_style_reference/resolve/main/krea2_style_reference.safetensors"
+    },
+    {
+      "id": "identity-edit",
+      "name": "Identity Edit",
+      "file": "krea2_identity_edit_v1_2.safetensors",
+      "family": "krea2edit",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "Identity-preserving instruction edit v1.2 (better face likeness from a 1024 hi-res pass). Skills: re-stage a person, local edits, restyle, 2-input person-into-scene (scene=img1, person=img2), virtual try-on, character reference sheets, head/face/eye/person swap, outpaint, FIT reference geometry (auto aspect match). Turbo 8-12 steps cfg 1; Raw 20 steps cfg 3 for removals. ref_boost ~4 for strong likeness, grounding_px 384-768. Low-VRAM: r128 (0.9GB) / r64 (0.4GB) variants.",
+      "url": "https://huggingface.co/conradlocke/krea2-identity-edit/resolve/main/krea2_identity_edit_v1_2.safetensors",
+      "variants": {
+        "r128": "krea2_identity_edit_v1_2_r128.safetensors",
+        "r64": "krea2_identity_edit_v1_2_r64.safetensors"
+      }
+    },
+    {
+      "id": "identity-edit-v2",
+      "name": "Identity Edit v2 (non-commercial)",
+      "file": "krea2_identity_edit_v2.safetensors",
+      "family": "krea2edit",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "NON-COMMERCIAL: Krea 2 Identity Edit V2 License, free for personal/non-commercial use only; commercial use needs a paid licence from the author (case by case), on top of the Krea 2 Community License. Identity edit v2: stronger likeness, sharper skin/fabric texture and freer restaging than v1.2. Needs comfyui-krea2edit >= 2.0.0. Turbo 8 steps cfg 1, ref_boost ~2, grounding_px 768.",
+      "url": "https://huggingface.co/conradlocke/krea2-identity-edit/resolve/main/krea2_identity_edit_v2.safetensors",
+      "variants": {
+        "r128": "krea2_identity_edit_v2_r128.safetensors",
+        "r64": "krea2_identity_edit_v2_r64.safetensors"
+      }
+    },
+    {
+      "id": "identity-edit-v2-r128",
+      "name": "Identity Edit v2 r128 (non-commercial)",
+      "file": "krea2_identity_edit_v2_r128.safetensors",
+      "family": "krea2edit",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "NON-COMMERCIAL: Krea 2 Identity Edit V2 License, free for personal/non-commercial use only; commercial use needs a paid licence from the author (case by case), on top of the Krea 2 Community License. Rank-128 reduction of Identity Edit v2 (0.9GB), near-identical quality.",
+      "url": "https://huggingface.co/conradlocke/krea2-identity-edit/resolve/main/krea2_identity_edit_v2_r128.safetensors"
+    },
+    {
+      "id": "general-edit-v2",
+      "name": "General Edit v2",
+      "file": "edit_tools/krea2_general_edit_v2_r64.safetensors",
+      "family": "krea2edit",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "General instruction edit v2 (rank 64): recolor, replace, restyle or remove by plain instruction. Needs comfyui-krea2edit >= 2.0.0. Also exposed as the \"krea2-general-edit\" tool in /api/tools.",
+      "url": "https://huggingface.co/conradlocke/krea2-identity-edit"
+    },
+    {
+      "id": "selfie",
+      "name": "Selfie Closeup",
+      "file": "krea2_selfie_v1.safetensors",
+      "family": "ostris",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "Reframe the subject as an arm's-length selfie closeup.",
+      "url": "https://huggingface.co/siraxe/krea2_to_selfie_edit/resolve/main/krea2_selfie_000005050.safetensors"
+    },
+    {
+      "id": "qwen-multi-angle",
+      "name": "Multi-Angle (Qwen)",
+      "file": "qwen-image-edit-2511-multiple-angles-lora.safetensors",
+      "family": "qwen",
+      "base": "qwen-image-edit",
+      "defaultStrength": 1.0,
+      "note": "Rotate the camera around the subject (front/side/back/3-4 views) while preserving identity. Qwen-Image-Edit-2511.",
+      "url": "https://huggingface.co/fal/Qwen-Image-Edit-2511-Multiple-Angles-LoRA/resolve/main/qwen-image-edit-2511-multiple-angles-lora.safetensors"
+    },
+    {
+      "id": "inpaint-edit",
+      "name": "Inpaint",
+      "file": "edit_tools/krea2_inpaint_edit_v2_17500.safetensors",
+      "family": "krea2inpaint",
+      "base": "krea2-raw",
+      "defaultStrength": 1.0,
+      "note": "Mask-aware local editing via CropAndStitch: crops around the mask, blacks the masked area out and repaints it from your prompt through the Ostris edit encoder (v2 inpaint LoRA), then stitches it back so everything outside the mask is untouched. Trained on Krea-2-Raw; runs on Krea-2 Turbo, 8 steps CFG 1 euler_ancestral (the LoRA card's recipe; Raw at CFG>1 fills the mask with speckle noise). Weights not bundled — download separately.",
+      "url": "https://huggingface.co/Cierpliwy/krea2-inpaint-edit/resolve/main/krea2_inpaint_edit_v2_17500.safetensors"
+    }
+  ]
+}

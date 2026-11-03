@@ -1,0 +1,279 @@
+{
+  "_meta": {
+    "source": "Copied from a live ComfyUI /object_info (core comfy_extras/nodes_moge.py + nodes_string.py) for nodes absent from graphLint.objectInfo.json. Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-31"
+  },
+  "MoGePanoramaInference": {
+    "input": {
+      "required": {
+        "moge_model": [
+          "MOGE_MODEL",
+          {}
+        ],
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "Equirectangular panorama (any aspect)."
+          }
+        ],
+        "resolution_level": [
+          "INT",
+          {
+            "tooltip": "Per-view detail (0 = fastest, 9 = most detailed).",
+            "default": 9,
+            "min": 0,
+            "max": 9
+          }
+        ],
+        "split_resolution": [
+          "INT",
+          {
+            "tooltip": "Resolution of each perspective split.",
+            "default": 512,
+            "min": 256,
+            "max": 1024
+          }
+        ],
+        "merge_resolution": [
+          "INT",
+          {
+            "tooltip": "Long-side resolution of the merged equirect distance map.",
+            "default": 1920,
+            "min": 256,
+            "max": 8192
+          }
+        ],
+        "batch_size": [
+          "INT",
+          {
+            "tooltip": "Views per inference batch (12 splits total).",
+            "default": 4,
+            "min": 1,
+            "max": 12
+          }
+        ],
+        "refine_steps": [
+          "INT",
+          {
+            "tooltip": "MoGe-3 only: sparse volumetric refinement passes over the predicted depth. More passes sharpen fine detail and edges at a roughly linear cost. 0 disables refinement. Ignored by MoGe-1 / MoGe-2.",
+            "advanced": true,
+            "default": 3,
+            "min": 0,
+            "max": 8
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "moge_model",
+        "image",
+        "resolution_level",
+        "split_resolution",
+        "merge_resolution",
+        "batch_size",
+        "refine_steps"
+      ]
+    },
+    "output": [
+      "MOGE_GEOMETRY"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "moge_geometry"
+    ],
+    "name": "MoGePanoramaInference",
+    "display_name": "Run MoGe Panorama Inference",
+    "category": "image/geometry estimation",
+    "output_node": false
+  },
+  "MoGeRender": {
+    "input": {
+      "required": {
+        "moge_geometry": [
+          "MOGE_GEOMETRY",
+          {}
+        ],
+        "output": [
+          "COMBO",
+          {
+            "tooltip": "DirectX vs OpenGL controls the normal-map green-channel convention. DirectX: green = -Y down (Unreal). OpenGL: green = +Y up (Blender, Substance, Unity, glTF).",
+            "default": "depth",
+            "multiselect": false,
+            "options": [
+              "depth",
+              "depth_colored",
+              "normal_opengl",
+              "normal_directx",
+              "mask"
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "moge_geometry",
+        "output"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "name": "MoGeRender",
+    "display_name": "Render MoGe Geometry",
+    "category": "image/geometry estimation",
+    "output_node": false
+  },
+  "MoGePointMapToMesh": {
+    "input": {
+      "required": {
+        "moge_geometry": [
+          "MOGE_GEOMETRY",
+          {}
+        ],
+        "batch_index": [
+          "INT",
+          {
+            "tooltip": "Which image of a batched MoGe geometry to mesh. Per-image vertex counts differ, so batches can't be stacked into a single MESH.",
+            "default": 0,
+            "min": 0,
+            "max": 4096
+          }
+        ],
+        "decimation": [
+          "INT",
+          {
+            "tooltip": "Vertex stride; 1 = full resolution.",
+            "default": 1,
+            "min": 1,
+            "max": 8
+          }
+        ],
+        "discontinuity_threshold": [
+          "FLOAT",
+          {
+            "tooltip": "Drop pixels whose 3x3 depth span exceeds this fraction. 0 = off.",
+            "default": 0.04,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01
+          }
+        ],
+        "texture": [
+          "BOOLEAN",
+          {
+            "tooltip": "Carry the source image through as the baseColor texture.",
+            "default": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "moge_geometry",
+        "batch_index",
+        "decimation",
+        "discontinuity_threshold",
+        "texture"
+      ]
+    },
+    "output": [
+      "MESH"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "MESH"
+    ],
+    "name": "MoGePointMapToMesh",
+    "display_name": "Convert MoGe Point Map to Mesh",
+    "category": "image/geometry estimation",
+    "output_node": false
+  },
+  "StringFormat": {
+    "input": {
+      "required": {
+        "values": [
+          "COMFY_AUTOGROW_V3",
+          {
+            "template": {
+              "input": {
+                "required": {
+                  "value": [
+                    "*",
+                    {}
+                  ]
+                }
+              },
+              "names": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n",
+                "o",
+                "p",
+                "q",
+                "r",
+                "s",
+                "t",
+                "u",
+                "v",
+                "w",
+                "x",
+                "y",
+                "z"
+              ],
+              "min": 0
+            }
+          }
+        ],
+        "f_string": [
+          "STRING",
+          {
+            "default": "{a}",
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "values",
+        "f_string"
+      ]
+    },
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "STRING"
+    ],
+    "name": "StringFormat",
+    "display_name": "Format Text",
+    "category": "text",
+    "output_node": false
+  }
+}

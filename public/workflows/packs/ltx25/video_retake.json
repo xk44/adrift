@@ -1,0 +1,631 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "LTX-2.5 22B distilled"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+    },
+    "_meta": {
+      "title": "Video VAE"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+    },
+    "_meta": {
+      "title": "Audio VAE"
+    }
+  },
+  "6": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+      "type": "ltxv",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Gemma 4 text encoder"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "6",
+        0
+      ],
+      "text": "the same scene, continuous natural motion, consistent lighting"
+    },
+    "_meta": {
+      "title": "Prompt (new segment)"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "6",
+        0
+      ],
+      "text": "jump cut, flicker, morphing, distorted, blurry, text, watermark, worst quality"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "9": {
+    "class_type": "LTXVConditioning",
+    "inputs": {
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "frame_rate": [
+        "22",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Frame rate (source fps)"
+    }
+  },
+  "12": {
+    "class_type": "LTXVEmptyLatentAudio",
+    "inputs": {
+      "frames_number": [
+        "26",
+        1
+      ],
+      "frame_rate": [
+        "22",
+        2
+      ],
+      "batch_size": 1,
+      "audio_vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Audio latent (keep: generated, discarded)"
+    }
+  },
+  "13": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": {
+      "video_latent": [
+        "37",
+        0
+      ],
+      "audio_latent": [
+        "12",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "AV latent"
+    }
+  },
+  "14": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 4242
+    },
+    "_meta": {
+      "title": "Seed"
+    }
+  },
+  "15": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler_ancestral"
+    },
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "16": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+    },
+    "_meta": {
+      "title": "Distilled sigmas"
+    }
+  },
+  "17": {
+    "class_type": "LTXVDualCFGGuider",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "9",
+        1
+      ],
+      "video_cfg": 1,
+      "audio_cfg": 1
+    },
+    "_meta": {
+      "title": "Guider (cfg 1)"
+    }
+  },
+  "18": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "14",
+        0
+      ],
+      "guider": [
+        "17",
+        0
+      ],
+      "sampler": [
+        "15",
+        0
+      ],
+      "sigmas": [
+        "16",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample"
+    }
+  },
+  "19": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "18",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Split AV"
+    }
+  },
+  "20": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "21": {
+    "class_type": "VideoTemporalCrop",
+    "inputs": {
+      "video": [
+        "20",
+        0
+      ],
+      "start_frame": 0,
+      "length": 121
+    },
+    "_meta": {
+      "title": "First 121 frames (native fps)"
+    }
+  },
+  "22": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source frames / audio / fps"
+    }
+  },
+  "24": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source size + frame count"
+    }
+  },
+  "26": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "8 * ((a + 6) // 8) + 1",
+      "values.a": [
+        "24",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Frames: smallest 8n+1 >= clip"
+    }
+  },
+  "27": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "(a - 1) // 8 + 1",
+      "values.a": [
+        "26",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Latent frames"
+    }
+  },
+  "28": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ],
+      "batch_index": -1,
+      "length": 1
+    },
+    "_meta": {
+      "title": "Last frame"
+    }
+  },
+  "29": {
+    "class_type": "RepeatImageBatch",
+    "inputs": {
+      "image": [
+        "28",
+        0
+      ],
+      "amount": 8
+    },
+    "_meta": {
+      "title": "Hold last frame"
+    }
+  },
+  "30": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "22",
+        0
+      ],
+      "image2": [
+        "29",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Clip + held tail"
+    }
+  },
+  "31": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "26",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Pad to 8n+1"
+    }
+  },
+  "32": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "31",
+        0
+      ],
+      "upscale_method": "area",
+      "width": 1024,
+      "height": 576,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Generation size (/32)"
+    }
+  },
+  "33": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "35": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "100",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "27",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Latent mask: first T values"
+    }
+  },
+  "36": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "35",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Latent mask (per latent frame)"
+    }
+  },
+  "37": {
+    "class_type": "SetLatentNoiseMask",
+    "inputs": {
+      "samples": [
+        "33",
+        0
+      ],
+      "mask": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Regenerate masked latent frames"
+    }
+  },
+  "38": {
+    "class_type": "LTXVAudioVAEEncode",
+    "inputs": {
+      "audio": [
+        "22",
+        1
+      ],
+      "audio_vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source audio"
+    }
+  },
+  "39": {
+    "class_type": "LTXVFreezeLatent",
+    "inputs": {
+      "latent": [
+        "38",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source audio as fixed context"
+    }
+  },
+  "41": {
+    "class_type": "LTXVAudioVideoMask",
+    "inputs": {
+      "audio_latent": [
+        "38",
+        0
+      ],
+      "video_fps": [
+        "22",
+        2
+      ],
+      "video_start_time": 0,
+      "video_end_time": 0,
+      "audio_start_time": 1,
+      "audio_end_time": 2,
+      "max_length": "partial",
+      "existing_mask_mode": "overwrite"
+    },
+    "_meta": {
+      "title": "Audio mask: regenerate the range (KJNodes)"
+    }
+  },
+  "40": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "samples": [
+        "19",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "tile_size": 512,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 16
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "42": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "40",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": [
+        "24",
+        0
+      ],
+      "height": [
+        "24",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Generation to source size"
+    }
+  },
+  "44": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Pixel alpha (per frame)"
+    }
+  },
+  "45": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "22",
+        0
+      ],
+      "source": [
+        "42",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "44",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Range from generation, rest = source frames"
+    }
+  },
+  "46": {
+    "class_type": "LTXVAudioVAEDecode",
+    "inputs": {
+      "samples": [
+        "19",
+        1
+      ],
+      "audio_vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode audio (regen)"
+    }
+  },
+  "54": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "45",
+        0
+      ],
+      "fps": [
+        "22",
+        2
+      ],
+      "audio": [
+        "22",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Video (source fps + audio)"
+    }
+  },
+  "55": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "54",
+        0
+      ],
+      "filename_prefix": "video/CJ_VideoRetake_LTX",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  },
+  "100": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 1,
+      "height": 1,
+      "batch_size": 16,
+      "color": 0
+    },
+    "_meta": {
+      "title": "Latent mask values (builder)"
+    }
+  },
+  "200": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 1,
+      "height": 1,
+      "batch_size": 121,
+      "color": 0
+    },
+    "_meta": {
+      "title": "Pixel alpha values (builder)"
+    }
+  },
+  "_meta": {
+    "title": "Video Retake (LTX-2.5)",
+    "description": "Core ComfyUI nodes (+ KJNodes LTXVAudioVideoMask for audio regen only). Regenerates a time range of a clip with the distilled LTX-2.5 22B model and keeps everything else. The first 121 source frames (native fps) are padded to the smallest 8n+1 by holding the last frame, scaled to a /32 generation size and VAE-encoded as the init latent; SetLatentNoiseMask carries one value per latent frame (1 = regenerate, 0 = keep, fractions = partial, the strength control), so the model sees the untouched frames as clean context (per-token timesteps). 8 ManualSigmas, euler_ancestral, LTXVDualCFGGuider cfg 1. The builder (src/lib/oj/videoRetake.ts) writes the latent mask and a per-frame pixel alpha as runs of 1x1 EmptyImage batches (red channel = value) chained with ImageBatch. After decode the generation is scaled back to the source size and composited over the ORIGINAL frames with the pixel alpha: 0 outside the range (source pixels unchanged), a short ramp inside each range edge. Audio: keep (default; the source track is muxed back), follow (source audio encoded and frozen as conditioning, source track kept) or regen (source audio latent with the range masked; the decoded track replaces the source, a VAE round trip outside the range)."
+  }
+}

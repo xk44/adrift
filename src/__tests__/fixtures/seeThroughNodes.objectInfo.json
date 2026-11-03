@@ -1,0 +1,599 @@
+{
+  "_meta": {
+    "source": "Recorded from a live ComfyUI GET /object_info/<class>: ComfyUI-See-through custom node pack (github.com/shitagaki-lab/see-through @ 98d754bf, MIT) plus Adrift's CJLayerPreview (cj_image_tools) and core PreviewAny / LoadImage / SaveImage. LoadImage file options trimmed to example.png.",
+    "transcribed_at": "2026-10-31"
+  },
+  "SeeThrough_LoadLayerDiffModel": {
+    "input": {
+      "required": {
+        "model": [
+          [
+            "layerdifforg/seethroughv0.0.1_marigold",
+            "layerdifforg/seethroughv0.0.2_layerdiff3d",
+            "layerdifforg/seethroughv0.0.2_layerdiff3d",
+            "24yearsold/seethroughv0.0.2_layerdiff3d_nf4"
+          ],
+          {
+            "default": "layerdifforg/seethroughv0.0.2_layerdiff3d",
+            "tooltip": "HuggingFace repo ID or local model folder in models/SeeThrough/"
+          }
+        ]
+      },
+      "optional": {
+        "vae_ckpt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Optional path to a custom VAE checkpoint (.safetensors)"
+          }
+        ],
+        "unet_ckpt": [
+          "STRING",
+          {
+            "default": "",
+            "tooltip": "Optional path to a custom UNet checkpoint"
+          }
+        ],
+        "quant_mode": [
+          [
+            "none",
+            "nf4"
+          ],
+          {
+            "default": "none",
+            "tooltip": "Quantization mode: 'none' for bf16, 'nf4' for 4-bit NormalFloat quantization (~8GB VRAM). Requires bitsandbytes."
+          }
+        ],
+        "cache_tag_embeds": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Pre-compute and cache tag embeddings, then unload text encoders to save VRAM"
+          }
+        ],
+        "group_offload": [
+          "BOOLEAN",
+          {
+            "default": false,
+            "tooltip": "Enable group offload to reduce peak VRAM (~10GB) at cost of ~1.5x slower speed"
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "If model is not found locally, download from HuggingFace. Disable to force local-only and error out instead of downloading."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model"
+      ],
+      "optional": [
+        "vae_ckpt",
+        "unet_ckpt",
+        "quant_mode",
+        "cache_tag_embeds",
+        "group_offload",
+        "auto_download"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "SEETHROUGH_LAYERDIFF_MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "layerdiff_model"
+    ],
+    "name": "SeeThrough_LoadLayerDiffModel",
+    "display_name": "SeeThrough Load LayerDiff Model",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "SeeThrough_LoadDepthModel": {
+    "input": {
+      "required": {
+        "model": [
+          [
+            "layerdifforg/seethroughv0.0.1_marigold",
+            "layerdifforg/seethroughv0.0.2_layerdiff3d",
+            "layerdifforg/seethroughv0.0.1_marigold",
+            "24yearsold/seethroughv0.0.1_marigold_nf4"
+          ],
+          {
+            "default": "layerdifforg/seethroughv0.0.1_marigold",
+            "tooltip": "HuggingFace repo ID or local model folder in models/SeeThrough/"
+          }
+        ]
+      },
+      "optional": {
+        "quant_mode": [
+          [
+            "none",
+            "nf4"
+          ],
+          {
+            "default": "none",
+            "tooltip": "Quantization mode: 'none' for bf16, 'nf4' for 4-bit NormalFloat quantization. Requires bitsandbytes."
+          }
+        ],
+        "cache_tag_embeds": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Pre-compute empty text embedding and unload text encoder to save VRAM"
+          }
+        ],
+        "group_offload": [
+          "BOOLEAN",
+          {
+            "default": false,
+            "tooltip": "Enable group offload to reduce peak VRAM at cost of slower speed"
+          }
+        ],
+        "auto_download": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "If model is not found locally, download from HuggingFace. Disable to force local-only and error out instead of downloading."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model"
+      ],
+      "optional": [
+        "quant_mode",
+        "cache_tag_embeds",
+        "group_offload",
+        "auto_download"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "SEETHROUGH_DEPTH_MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "depth_model"
+    ],
+    "name": "SeeThrough_LoadDepthModel",
+    "display_name": "SeeThrough Load Depth Model",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "SeeThrough_GenerateLayers": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE"
+        ],
+        "layerdiff_model": [
+          "SEETHROUGH_LAYERDIFF_MODEL"
+        ],
+        "seed": [
+          "INT",
+          {
+            "default": 42,
+            "min": 0,
+            "max": 4294967295
+          }
+        ],
+        "resolution": [
+          "INT",
+          {
+            "default": 1280,
+            "min": 512,
+            "max": 2048,
+            "step": 64
+          }
+        ],
+        "num_inference_steps": [
+          "INT",
+          {
+            "default": 30,
+            "min": 1,
+            "max": 100
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image",
+        "layerdiff_model",
+        "seed",
+        "resolution",
+        "num_inference_steps"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "SEETHROUGH_LAYERS",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "layers",
+      "preview"
+    ],
+    "name": "SeeThrough_GenerateLayers",
+    "display_name": "SeeThrough Generate Layers",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "SeeThrough_GenerateDepth": {
+    "input": {
+      "required": {
+        "layers": [
+          "SEETHROUGH_LAYERS"
+        ],
+        "depth_model": [
+          "SEETHROUGH_DEPTH_MODEL"
+        ],
+        "seed": [
+          "INT",
+          {
+            "default": 42,
+            "min": 0,
+            "max": 4294967295
+          }
+        ]
+      },
+      "optional": {
+        "resolution_depth": [
+          "INT",
+          {
+            "default": -1,
+            "min": -1,
+            "max": 2048,
+            "step": 64,
+            "tooltip": "Resolution for depth inference. -1 uses the same resolution as layers. Lower values save VRAM and speed up inference."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "layers",
+        "depth_model",
+        "seed"
+      ],
+      "optional": [
+        "resolution_depth"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "SEETHROUGH_LAYERS_DEPTH",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "layers_depth",
+      "preview"
+    ],
+    "name": "SeeThrough_GenerateDepth",
+    "display_name": "SeeThrough Generate Depth",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "SeeThrough_PostProcess": {
+    "input": {
+      "required": {
+        "layers_depth": [
+          "SEETHROUGH_LAYERS_DEPTH"
+        ],
+        "tblr_split": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Split symmetric parts (eyes, ears, handwear) into left/right"
+          }
+        ],
+        "use_lama": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Use LaMa inpainting for hair splitting (better quality). Falls back to OpenCV if disabled."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "layers_depth",
+        "tblr_split",
+        "use_lama"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "SEETHROUGH_PARTS",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "parts",
+      "preview"
+    ],
+    "name": "SeeThrough_PostProcess",
+    "display_name": "SeeThrough Post Process",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "SeeThrough_SavePSD": {
+    "input": {
+      "required": {
+        "parts": [
+          "SEETHROUGH_PARTS"
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": "seethrough"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "parts",
+        "filename_prefix"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "info_file"
+    ],
+    "name": "SeeThrough_SavePSD",
+    "display_name": "SeeThrough Save PSD",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-See-through",
+    "category": "SeeThrough",
+    "output_node": true,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "PreviewAny": {
+    "input": {
+      "required": {
+        "source": [
+          "*",
+          {}
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "source"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "STRING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "STRING"
+    ],
+    "name": "PreviewAny",
+    "display_name": "Preview as Text",
+    "description": "Preview any input value as text.",
+    "python_module": "comfy_extras.nodes_preview_any",
+    "category": "utilities",
+    "output_node": true,
+    "has_intermediate_output": false,
+    "search_aliases": [
+      "preview",
+      "preview text",
+      "show output",
+      "inspect",
+      "debug",
+      "print value",
+      "show text"
+    ]
+  },
+  "LoadImage": {
+    "input": {
+      "required": {
+        "image": [
+          [
+            "example.png"
+          ],
+          {
+            "image_upload": true
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE",
+      "MASK"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "IMAGE",
+      "MASK"
+    ],
+    "name": "LoadImage",
+    "display_name": "Load Image",
+    "description": "",
+    "python_module": "nodes",
+    "category": "image",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": [
+      "load image",
+      "open image",
+      "import image",
+      "image input",
+      "upload image",
+      "read image",
+      "image loader"
+    ],
+    "essentials_category": "Basics"
+  },
+  "SaveImage": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE",
+          {
+            "tooltip": "The images to save."
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": "ComfyUI",
+            "tooltip": "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes."
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": "PROMPT",
+        "extra_pnginfo": "EXTRA_PNGINFO"
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "filename_prefix"
+      ],
+      "hidden": [
+        "prompt",
+        "extra_pnginfo"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "images"
+    ],
+    "name": "SaveImage",
+    "display_name": "Save Image",
+    "description": "Saves the input images to your ComfyUI output directory.",
+    "python_module": "nodes",
+    "category": "image",
+    "output_node": true,
+    "has_intermediate_output": false,
+    "search_aliases": [
+      "save",
+      "save image",
+      "export image",
+      "output image",
+      "write image",
+      "download"
+    ],
+    "essentials_category": "Basics"
+  },
+  "CJLayerPreview": {
+    "input": {
+      "required": {
+        "parts": [
+          "SEETHROUGH_PARTS",
+          {
+            "tooltip": "parts from SeeThrough_PostProcess"
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 1024,
+            "min": 256,
+            "max": 4096,
+            "step": 64
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "parts",
+        "height"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE",
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_name": [
+      "preview",
+      "composite"
+    ],
+    "name": "CJLayerPreview",
+    "display_name": "Layer Split Preview",
+    "description": "",
+    "python_module": "custom_nodes.cj_image_tools",
+    "category": "image/layers",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  }
+}

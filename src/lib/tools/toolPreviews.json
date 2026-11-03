@@ -1,0 +1,481 @@
+{
+  "previews": {
+    "action--animate": {
+      "still": "action--animate.webp",
+      "video": [
+        "action--animate.webm"
+      ]
+    },
+    "action--bg_remove": {
+      "still": "action--bg_remove.webp"
+    },
+    "action--camera_move": {
+      "still": "action--camera_move.webp",
+      "video": [
+        "action--camera_move.webm"
+      ]
+    },
+    "action--edit_fibo": {
+      "still": "action--edit_fibo.webp"
+    },
+    "action--edit_photo": {
+      "still": "action--edit_photo.webp"
+    },
+    "action--interpolate": {
+      "still": "action--interpolate.webp",
+      "video": [
+        "action--interpolate.webm"
+      ]
+    },
+    "action--ltx25_animate": {
+      "still": "action--ltx25_animate.webp",
+      "video": [
+        "action--ltx25_animate.webm"
+      ]
+    },
+    "action--ltx25_transition": {
+      "still": "action--ltx25_transition.webp",
+      "video": [
+        "action--ltx25_transition.webm"
+      ]
+    },
+    "action--ltx_cinemagraph": {
+      "still": "action--ltx_cinemagraph.webp",
+      "video": [
+        "action--ltx_cinemagraph.webm"
+      ]
+    },
+    "action--ltx_day_to_night": {
+      "still": "action--ltx_day_to_night.webp",
+      "video": [
+        "action--ltx_day_to_night.webm"
+      ]
+    },
+    "action--ltx_slow_motion": {
+      "still": "action--ltx_slow_motion.webp",
+      "video": [
+        "action--ltx_slow_motion.webm"
+      ]
+    },
+    "action--orbit_360": {
+      "still": "action--orbit_360.webp",
+      "video": [
+        "action--orbit_360.webm"
+      ]
+    },
+    "action--person_remove": {
+      "still": "action--person_remove.webp",
+      "video": [
+        "action--person_remove.webm"
+      ]
+    },
+    "action--ref_video": {
+      "still": "action--ref_video.webp",
+      "video": [
+        "action--ref_video.webm"
+      ]
+    },
+    "action--relight": {
+      "still": "action--relight.webp"
+    },
+    "action--remove_object": {
+      "still": "action--remove_object.webp"
+    },
+    "action--restyle_locked": {
+      "still": "action--restyle_locked.webp"
+    },
+    "action--shots": {
+      "still": "action--shots.webp"
+    },
+    "action--transition": {
+      "still": "action--transition.webp",
+      "video": [
+        "action--transition.webm"
+      ]
+    },
+    "action--upscale": {
+      "still": "action--upscale.webp"
+    },
+    "action--upscale_seedvr2": {
+      "still": "action--upscale_seedvr2.webp"
+    },
+    "action--upscale_video": {
+      "still": "action--upscale_video.webp",
+      "video": [
+        "action--upscale_video.webm"
+      ]
+    },
+    "action--vace_extend": {
+      "still": "action--vace_extend.webp",
+      "video": [
+        "action--vace_extend.webm"
+      ]
+    },
+    "action--vace_reframe": {
+      "still": "action--vace_reframe.webp",
+      "video": [
+        "action--vace_reframe.webm"
+      ]
+    },
+    "action--vace_restyle": {
+      "still": "action--vace_restyle.webp",
+      "video": [
+        "action--vace_restyle.webm"
+      ]
+    },
+    "action--video_bg_change": {
+      "still": "action--video_bg_change.webp",
+      "video": [
+        "action--video_bg_change.webm"
+      ]
+    },
+    "action--video_bg_remove": {
+      "still": "action--video_bg_remove.webp",
+      "video": [
+        "action--video_bg_remove.webm"
+      ]
+    },
+    "action--video_edit": {
+      "still": "action--video_edit.webp",
+      "video": [
+        "action--video_edit.webm"
+      ]
+    },
+    "action--video_object_remove": {
+      "still": "action--video_object_remove.webp",
+      "video": [
+        "action--video_object_remove.webm"
+      ]
+    },
+    "action--video_object_swap": {
+      "still": "action--video_object_swap.webp",
+      "video": [
+        "action--video_object_swap.webm"
+      ]
+    },
+    "action--video_remove_text": {
+      "still": "action--video_remove_text.webp",
+      "video": [
+        "action--video_remove_text.webm"
+      ]
+    },
+    "action--wan_camera": {
+      "still": "action--wan_camera.webp",
+      "video": [
+        "action--wan_camera.webm"
+      ]
+    },
+    "action--wan_motion": {
+      "still": "action--wan_motion.webp",
+      "video": [
+        "action--wan_motion.webm"
+      ]
+    },
+    "action--wan_move": {
+      "still": "action--wan_move.webp",
+      "video": [
+        "action--wan_move.webm"
+      ]
+    },
+    "action--zooms": {
+      "still": "action--zooms.webp"
+    },
+    "app--anim_render": {
+      "still": "app--anim_render.webp"
+    },
+    "app--app_icon": {
+      "still": "app--app_icon.webp"
+    },
+    "app--asmr_addon": {
+      "still": "app--asmr_addon.webp"
+    },
+    "app--asmr_classic": {
+      "still": "app--asmr_classic.webp"
+    },
+    "app--asmr_host": {
+      "still": "app--asmr_host.webp"
+    },
+    "app--behind_scenes": {
+      "still": "app--behind_scenes.webp"
+    },
+    "app--billboard_ad": {
+      "still": "app--billboard_ad.webp"
+    },
+    "app--brick_cube": {
+      "still": "app--brick_cube.webp"
+    },
+    "app--bullet_time_splash": {
+      "still": "app--bullet_time_splash.webp"
+    },
+    "app--bullet_time_white": {
+      "still": "app--bullet_time_white.webp"
+    },
+    "app--burning_sunset": {
+      "still": "app--burning_sunset.webp"
+    },
+    "app--chameleon": {
+      "still": "app--chameleon.webp"
+    },
+    "app--claymation": {
+      "still": "app--claymation.webp"
+    },
+    "app--cloud_surf": {
+      "still": "app--cloud_surf.webp"
+    },
+    "app--comic_book": {
+      "still": "app--comic_book.webp"
+    },
+    "app--contact_sheet": {
+      "still": "app--contact_sheet.webp"
+    },
+    "app--creator_review": {
+      "still": "app--creator_review.webp"
+    },
+    "app--figurine": {
+      "still": "app--figurine.webp"
+    },
+    "app--flare_ad": {
+      "still": "app--flare_ad.webp"
+    },
+    "app--forest_floor": {
+      "still": "app--forest_floor.webp"
+    },
+    "app--fridge_ad": {
+      "still": "app--fridge_ad.webp"
+    },
+    "app--frozen": {
+      "still": "app--frozen.webp"
+    },
+    "app--frozen_orbit": {
+      "still": "app--frozen_orbit.webp"
+    },
+    "app--game_dump": {
+      "still": "app--game_dump.webp"
+    },
+    "app--ghoul": {
+      "still": "app--ghoul.webp"
+    },
+    "app--giallo": {
+      "still": "app--giallo.webp"
+    },
+    "app--giant_product": {
+      "still": "app--giant_product.webp"
+    },
+    "app--glitter_sticker": {
+      "still": "app--glitter_sticker.webp"
+    },
+    "app--graffiti_ad": {
+      "still": "app--graffiti_ad.webp"
+    },
+    "app--idol": {
+      "still": "app--idol.webp"
+    },
+    "app--in_hand_ad": {
+      "still": "app--in_hand_ad.webp"
+    },
+    "app--ingredient_burst": {
+      "still": "app--ingredient_burst.webp"
+    },
+    "app--j_magazine": {
+      "still": "app--j_magazine.webp"
+    },
+    "app--j_poster": {
+      "still": "app--j_poster.webp"
+    },
+    "app--japanese_show": {
+      "still": "app--japanese_show.webp"
+    },
+    "app--kick_ad": {
+      "still": "app--kick_ad.webp"
+    },
+    "app--latex": {
+      "still": "app--latex.webp"
+    },
+    "app--levitation_ad": {
+      "still": "app--levitation_ad.webp"
+    },
+    "app--life_sim": {
+      "still": "app--life_sim.webp"
+    },
+    "app--loading_screen": {
+      "still": "app--loading_screen.webp"
+    },
+    "app--macro_product": {
+      "still": "app--macro_product.webp"
+    },
+    "app--magazine": {
+      "still": "app--magazine.webp"
+    },
+    "app--magic_button": {
+      "still": "app--magic_button.webp"
+    },
+    "app--marble_luxe": {
+      "still": "app--marble_luxe.webp"
+    },
+    "app--mascot": {
+      "still": "app--mascot.webp"
+    },
+    "app--melting_doodle": {
+      "still": "app--melting_doodle.webp"
+    },
+    "app--meme": {
+      "still": "app--meme.webp"
+    },
+    "app--movie_poster": {
+      "still": "app--movie_poster.webp"
+    },
+    "app--mugshot": {
+      "still": "app--mugshot.webp"
+    },
+    "app--mukbang": {
+      "still": "app--mukbang.webp"
+    },
+    "app--on_fire": {
+      "still": "app--on_fire.webp"
+    },
+    "app--outfit_vending": {
+      "still": "app--outfit_vending.webp"
+    },
+    "app--packshot": {
+      "still": "app--packshot.webp"
+    },
+    "app--paint_app": {
+      "still": "app--paint_app.webp"
+    },
+    "app--palm_shadow": {
+      "still": "app--palm_shadow.webp"
+    },
+    "app--pixel_game": {
+      "still": "app--pixel_game.webp"
+    },
+    "app--plushie": {
+      "still": "app--plushie.webp"
+    },
+    "app--podium_ad": {
+      "still": "app--podium_ad.webp"
+    },
+    "app--rap_star": {
+      "still": "app--rap_star.webp"
+    },
+    "app--renaissance": {
+      "still": "app--renaissance.webp"
+    },
+    "app--roller_coaster": {
+      "still": "app--roller_coaster.webp"
+    },
+    "app--sand_worm": {
+      "still": "app--sand_worm.webp"
+    },
+    "app--seasonal_ad": {
+      "still": "app--seasonal_ad.webp"
+    },
+    "app--signboard": {
+      "still": "app--signboard.webp"
+    },
+    "app--sixties_cafe": {
+      "still": "app--sixties_cafe.webp"
+    },
+    "app--snow_globe": {
+      "still": "app--snow_globe.webp"
+    },
+    "app--splash_shot": {
+      "still": "app--splash_shot.webp"
+    },
+    "app--sticker_swap_cut": {
+      "still": "app--sticker_swap_cut.webp"
+    },
+    "app--storm_creature": {
+      "still": "app--storm_creature.webp"
+    },
+    "app--sunburst_ad": {
+      "still": "app--sunburst_ad.webp"
+    },
+    "app--tactical_shooter": {
+      "still": "app--tactical_shooter.webp"
+    },
+    "app--trading_card": {
+      "still": "app--trading_card.webp"
+    },
+    "app--truck_ad": {
+      "still": "app--truck_ad.webp"
+    },
+    "app--underwater_ad": {
+      "still": "app--underwater_ad.webp"
+    },
+    "app--volcano_ad": {
+      "still": "app--volcano_ad.webp"
+    },
+    "app--yes_kiss": {
+      "still": "app--yes_kiss.webp"
+    },
+    "catalog--flux3-camera": {
+      "still": "catalog--flux3-camera.webp"
+    },
+    "catalog--krea2-general-edit": {
+      "still": "catalog--krea2-general-edit.webp"
+    },
+    "catalog--krea2-restyle-depth": {
+      "still": "catalog--krea2-restyle-depth.webp"
+    },
+    "catalog--outpaint": {
+      "still": "catalog--outpaint.webp"
+    },
+    "catalog--qwen21-anything2real": {
+      "still": "catalog--qwen21-anything2real.webp"
+    },
+    "catalog--qwen21-camera": {
+      "still": "catalog--qwen21-camera.webp"
+    },
+    "catalog--qwen21-character-sheet": {
+      "still": "catalog--qwen21-character-sheet.webp"
+    },
+    "catalog--qwen21-next-scene": {
+      "still": "catalog--qwen21-next-scene.webp"
+    },
+    "catalog--qwen21-pano360": {
+      "still": "catalog--qwen21-pano360.webp"
+    },
+    "catalog--qwen21-realism": {
+      "still": "catalog--qwen21-realism.webp"
+    },
+    "catalog--qwen21-remove-bg": {
+      "still": "catalog--qwen21-remove-bg.webp"
+    },
+    "catalog--qwen21-restore": {
+      "still": "catalog--qwen21-restore.webp"
+    },
+    "catalog--qwen21-unblur-background": {
+      "still": "catalog--qwen21-unblur-background.webp"
+    },
+    "special--click_to_ad": {
+      "still": "special--click_to_ad.webp",
+      "video": [
+        "special--click_to_ad.webm"
+      ]
+    },
+    "special--product_studio": {
+      "still": "special--product_studio.webp"
+    },
+    "template--ai_stylist": {
+      "still": "template--ai_stylist.webp"
+    },
+    "template--batch_restyle": {
+      "still": "template--batch_restyle.webp"
+    },
+    "template--commercial_faces": {
+      "still": "template--commercial_faces.webp"
+    },
+    "template--fashion_factory": {
+      "still": "template--fashion_factory.webp"
+    },
+    "template--headshot": {
+      "still": "template--headshot.webp"
+    },
+    "template--remove_text": {
+      "still": "template--remove_text.webp"
+    },
+    "template--skin_enhancer": {
+      "still": "template--skin_enhancer.webp"
+    }
+  }
+}

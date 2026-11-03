@@ -1,0 +1,1996 @@
+{
+  "_meta": {
+    "title": "Replace several people in video (MiniMax H3, one masked pass per person)",
+    "description": "SAM 3.1 tracks up to 3 people. Qwen3-VL 8B sees frame 0 with each tracked person tinted (red 0 / green 1 / blue 2) next to each character photo and picks the person that photo replaces (role text helps). Each person then gets its own masked H3 pass (grey mannequin motion reference, only that person's mask; masks of people already done are subtracted so faces never mix), and the union is pasted back at source resolution with the source audio."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "UNETLoader"
+    }
+  },
+  "2": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift_video": 12.0,
+      "shift_audio": 3.0
+    },
+    "_meta": {
+      "title": "MiniMaxH3SigmaShift"
+    }
+  },
+  "3": {
+    "class_type": "ModelAttentionBackend",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "attention": "comfy kitchen attention"
+    },
+    "_meta": {
+      "title": "ModelAttentionBackend"
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "lora_name": "minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "H3 Turbo 8-step"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "CLIPLoader"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "Video VAE"
+    }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "_meta": {
+      "title": "Audio VAE"
+    }
+  },
+  "7": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "29": {
+    "class_type": "LabsH3PrepareVideo",
+    "inputs": {
+      "video": [
+        "7",
+        0
+      ],
+      "resolution": "480",
+      "duration_seconds": 3.0
+    },
+    "_meta": {
+      "title": "Prepare 24 fps / 480 / 17n+5"
+    }
+  },
+  "26": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "er_sde"
+    },
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "27": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "scheduler": "normal",
+      "steps": 8,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "9": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "lora_name": "h3_character_swap_v1.5.safetensors",
+      "strength_model": 0.5
+    },
+    "_meta": {
+      "title": "Character Swap LoRA"
+    }
+  },
+  "11": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "SAM 3.1"
+    }
+  },
+  "17": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "11",
+        1
+      ],
+      "text": "person"
+    },
+    "_meta": {
+      "title": "Who (SAM text)"
+    }
+  },
+  "12": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "29",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "Frame 0"
+    }
+  },
+  "15": {
+    "class_type": "SAM3_VideoTrack",
+    "inputs": {
+      "images": [
+        "29",
+        0
+      ],
+      "model": [
+        "11",
+        0
+      ],
+      "conditioning": [
+        "17",
+        0
+      ],
+      "detection_threshold": 0.5,
+      "max_objects": 3,
+      "detect_interval": 1
+    },
+    "_meta": {
+      "title": "SAM3_VideoTrack"
+    }
+  },
+  "30": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "29",
+        0
+      ],
+      "channel": "green"
+    },
+    "_meta": {
+      "title": "Luma (green)"
+    }
+  },
+  "31": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "30",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MaskToImage"
+    }
+  },
+  "32": {
+    "class_type": "ImageBlur",
+    "inputs": {
+      "image": [
+        "31",
+        0
+      ],
+      "blur_radius": 5,
+      "sigma": 2.0
+    },
+    "_meta": {
+      "title": "ImageBlur"
+    }
+  },
+  "33": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "batch_size": 1,
+      "color": 13750737
+    },
+    "_meta": {
+      "title": "Light grey"
+    }
+  },
+  "34": {
+    "class_type": "ImageBlend",
+    "inputs": {
+      "image1": [
+        "33",
+        0
+      ],
+      "image2": [
+        "32",
+        0
+      ],
+      "blend_factor": 0.45,
+      "blend_mode": "normal"
+    },
+    "_meta": {
+      "title": "Grey figure shading"
+    }
+  },
+  "72": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_bf16.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen3-VL 8B"
+    }
+  },
+  "73": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": "0"
+    },
+    "_meta": {
+      "title": "Person 0 mask"
+    }
+  },
+  "74": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "73",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MaskToImage"
+    }
+  },
+  "75": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "74",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "ImageFromBatch"
+    }
+  },
+  "76": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "75",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "ImageToMask"
+    }
+  },
+  "77": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "batch_size": 1,
+      "color": 16719904
+    },
+    "_meta": {
+      "title": "Tint red"
+    }
+  },
+  "78": {
+    "class_type": "ImageBlend",
+    "inputs": {
+      "image1": [
+        "12",
+        0
+      ],
+      "image2": [
+        "77",
+        0
+      ],
+      "blend_factor": 0.5,
+      "blend_mode": "normal"
+    },
+    "_meta": {
+      "title": "ImageBlend"
+    }
+  },
+  "79": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "12",
+        0
+      ],
+      "source": [
+        "78",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "76",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Tint person 0 red"
+    }
+  },
+  "80": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": "1"
+    },
+    "_meta": {
+      "title": "Person 1 mask"
+    }
+  },
+  "81": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "80",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MaskToImage"
+    }
+  },
+  "82": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "81",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "ImageFromBatch"
+    }
+  },
+  "83": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "82",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "ImageToMask"
+    }
+  },
+  "84": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "batch_size": 1,
+      "color": 2150432
+    },
+    "_meta": {
+      "title": "Tint green"
+    }
+  },
+  "85": {
+    "class_type": "ImageBlend",
+    "inputs": {
+      "image1": [
+        "12",
+        0
+      ],
+      "image2": [
+        "84",
+        0
+      ],
+      "blend_factor": 0.5,
+      "blend_mode": "normal"
+    },
+    "_meta": {
+      "title": "ImageBlend"
+    }
+  },
+  "86": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "79",
+        0
+      ],
+      "source": [
+        "85",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "83",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Tint person 1 green"
+    }
+  },
+  "87": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": "2"
+    },
+    "_meta": {
+      "title": "Person 2 mask"
+    }
+  },
+  "88": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "87",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MaskToImage"
+    }
+  },
+  "89": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "88",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "ImageFromBatch"
+    }
+  },
+  "90": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "89",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "ImageToMask"
+    }
+  },
+  "91": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "batch_size": 1,
+      "color": 3170559
+    },
+    "_meta": {
+      "title": "Tint blue"
+    }
+  },
+  "92": {
+    "class_type": "ImageBlend",
+    "inputs": {
+      "image1": [
+        "12",
+        0
+      ],
+      "image2": [
+        "91",
+        0
+      ],
+      "blend_factor": 0.5,
+      "blend_mode": "normal"
+    },
+    "_meta": {
+      "title": "ImageBlend"
+    }
+  },
+  "93": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "86",
+        0
+      ],
+      "source": [
+        "92",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "90",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Tint person 2 blue"
+    }
+  },
+  "100": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Character 1 photo"
+    }
+  },
+  "101": {
+    "class_type": "ImageStitch",
+    "inputs": {
+      "image1": [
+        "93",
+        0
+      ],
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 16,
+      "spacing_color": "white",
+      "image2": [
+        "100",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frame | character 1"
+    }
+  },
+  "102": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Role prompt 1"
+    }
+  },
+  "103": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "101",
+        0
+      ],
+      "prompt": [
+        "102",
+        0
+      ],
+      "max_length": 8,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Pick person 1"
+    }
+  },
+  "104": {
+    "class_type": "RegexExtract",
+    "inputs": {
+      "string": [
+        "103",
+        0
+      ],
+      "regex_pattern": "[0-2]",
+      "mode": "First Match",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "group_index": 0
+    },
+    "_meta": {
+      "title": "First digit 0-2"
+    }
+  },
+  "105": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": [
+        "104",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Person for character 1"
+    }
+  },
+  "106": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "105",
+        0
+      ],
+      "mode": "max",
+      "radius": 2
+    },
+    "_meta": {
+      "title": "CJMaskTemporal"
+    }
+  },
+  "107": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "106",
+        0
+      ],
+      "expand": 6,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Mannequin cover"
+    }
+  },
+  "108": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "106",
+        0
+      ],
+      "expand": 40,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Edit area (+40 px)"
+    }
+  },
+  "110": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "29",
+        0
+      ],
+      "source": [
+        "34",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "107",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mannequin 1"
+    }
+  },
+  "123": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "100",
+        0
+      ],
+      "prompt": "Describe the person in this photo for a costume department in one sentence that starts with 'They wear'. Name the hair and every visible garment with its colour. If the photo stops above the knees, finish the outfit with plain dark trousers and simple shoes. No background, pose, face or expression.",
+      "max_length": 80,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Describe character outfit"
+    }
+  },
+  "124": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": [
+        "123",
+        0
+      ],
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Prompt head + outfit"
+    }
+  },
+  "125": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": [
+        "124",
+        0
+      ],
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "+ prompt tail"
+    }
+  },
+  "111": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "prompt": [
+        "125",
+        0
+      ],
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "length": [
+        "29",
+        4
+      ],
+      "ref_image_size": "match",
+      "vae": [
+        "5",
+        0
+      ],
+      "audio_vae": [
+        "6",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "100",
+        0
+      ],
+      "ref_videos.ref_video_0": [
+        "110",
+        0
+      ],
+      "ref_video_audios.ref_video_audio_0": [
+        "29",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "MiniMaxH3ReferenceToVideo"
+    }
+  },
+  "112": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "29",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "113": {
+    "class_type": "H3RelayApplyEditMask",
+    "inputs": {
+      "latent": [
+        "111",
+        1
+      ],
+      "source_latent": [
+        "112",
+        0
+      ],
+      "mask": [
+        "108",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Edit only inside mask"
+    }
+  },
+  "114": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 43
+    },
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "115": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "conditioning": [
+        "111",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "116": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "114",
+        0
+      ],
+      "guider": [
+        "115",
+        0
+      ],
+      "sampler": [
+        "26",
+        0
+      ],
+      "sigmas": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "113",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "117": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "116",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "LTXVSeparateAVLatent"
+    }
+  },
+  "118": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "117",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "119": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "29",
+        0
+      ],
+      "source": [
+        "118",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "108",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Composite person 1"
+    }
+  },
+  "200": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Character 2 photo"
+    }
+  },
+  "201": {
+    "class_type": "ImageStitch",
+    "inputs": {
+      "image1": [
+        "93",
+        0
+      ],
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 16,
+      "spacing_color": "white",
+      "image2": [
+        "200",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frame | character 2"
+    }
+  },
+  "202": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Role prompt 2"
+    }
+  },
+  "203": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "201",
+        0
+      ],
+      "prompt": [
+        "202",
+        0
+      ],
+      "max_length": 8,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Pick person 2"
+    }
+  },
+  "204": {
+    "class_type": "RegexExtract",
+    "inputs": {
+      "string": [
+        "203",
+        0
+      ],
+      "regex_pattern": "[0-2]",
+      "mode": "First Match",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "group_index": 0
+    },
+    "_meta": {
+      "title": "First digit 0-2"
+    }
+  },
+  "205": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": [
+        "204",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Person for character 2"
+    }
+  },
+  "206": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "205",
+        0
+      ],
+      "mode": "max",
+      "radius": 2
+    },
+    "_meta": {
+      "title": "CJMaskTemporal"
+    }
+  },
+  "207": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "206",
+        0
+      ],
+      "expand": 6,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Mannequin cover"
+    }
+  },
+  "208": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "206",
+        0
+      ],
+      "expand": 40,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Edit area (+40 px)"
+    }
+  },
+  "209": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "208",
+        0
+      ],
+      "source": [
+        "106",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "subtract"
+    },
+    "_meta": {
+      "title": "Keep people already done"
+    }
+  },
+  "210": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "119",
+        0
+      ],
+      "source": [
+        "34",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "207",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mannequin 2"
+    }
+  },
+  "223": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "200",
+        0
+      ],
+      "prompt": "Describe the person in this photo for a costume department in one sentence that starts with 'They wear'. Name the hair and every visible garment with its colour. If the photo stops above the knees, finish the outfit with plain dark trousers and simple shoes. No background, pose, face or expression.",
+      "max_length": 80,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Describe character outfit"
+    }
+  },
+  "224": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": [
+        "223",
+        0
+      ],
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Prompt head + outfit"
+    }
+  },
+  "225": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": [
+        "224",
+        0
+      ],
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "+ prompt tail"
+    }
+  },
+  "211": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "prompt": [
+        "225",
+        0
+      ],
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "length": [
+        "29",
+        4
+      ],
+      "ref_image_size": "match",
+      "vae": [
+        "5",
+        0
+      ],
+      "audio_vae": [
+        "6",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "200",
+        0
+      ],
+      "ref_videos.ref_video_0": [
+        "210",
+        0
+      ],
+      "ref_video_audios.ref_video_audio_0": [
+        "29",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "MiniMaxH3ReferenceToVideo"
+    }
+  },
+  "212": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "119",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "213": {
+    "class_type": "H3RelayApplyEditMask",
+    "inputs": {
+      "latent": [
+        "211",
+        1
+      ],
+      "source_latent": [
+        "212",
+        0
+      ],
+      "mask": [
+        "209",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Edit only inside mask"
+    }
+  },
+  "214": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 44
+    },
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "215": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "conditioning": [
+        "211",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "216": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "214",
+        0
+      ],
+      "guider": [
+        "215",
+        0
+      ],
+      "sampler": [
+        "26",
+        0
+      ],
+      "sigmas": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "213",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "217": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "216",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "LTXVSeparateAVLatent"
+    }
+  },
+  "218": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "217",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "219": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "119",
+        0
+      ],
+      "source": [
+        "218",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "209",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Composite person 2"
+    }
+  },
+  "220": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "106",
+        0
+      ],
+      "source": [
+        "206",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "add"
+    },
+    "_meta": {
+      "title": "Union raw"
+    }
+  },
+  "221": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "108",
+        0
+      ],
+      "source": [
+        "209",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "add"
+    },
+    "_meta": {
+      "title": "Union edit"
+    }
+  },
+  "300": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Character 3 photo"
+    }
+  },
+  "301": {
+    "class_type": "ImageStitch",
+    "inputs": {
+      "image1": [
+        "93",
+        0
+      ],
+      "direction": "right",
+      "match_image_size": true,
+      "spacing_width": 16,
+      "spacing_color": "white",
+      "image2": [
+        "300",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frame | character 3"
+    }
+  },
+  "302": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Role prompt 3"
+    }
+  },
+  "303": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "301",
+        0
+      ],
+      "prompt": [
+        "302",
+        0
+      ],
+      "max_length": 8,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Pick person 3"
+    }
+  },
+  "304": {
+    "class_type": "RegexExtract",
+    "inputs": {
+      "string": [
+        "303",
+        0
+      ],
+      "regex_pattern": "[0-2]",
+      "mode": "First Match",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "group_index": 0
+    },
+    "_meta": {
+      "title": "First digit 0-2"
+    }
+  },
+  "305": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "15",
+        0
+      ],
+      "object_indices": [
+        "304",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Person for character 3"
+    }
+  },
+  "306": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "305",
+        0
+      ],
+      "mode": "max",
+      "radius": 2
+    },
+    "_meta": {
+      "title": "CJMaskTemporal"
+    }
+  },
+  "307": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "306",
+        0
+      ],
+      "expand": 6,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Mannequin cover"
+    }
+  },
+  "308": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "306",
+        0
+      ],
+      "expand": 40,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Edit area (+40 px)"
+    }
+  },
+  "309": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "308",
+        0
+      ],
+      "source": [
+        "220",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "subtract"
+    },
+    "_meta": {
+      "title": "Keep people already done"
+    }
+  },
+  "310": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "219",
+        0
+      ],
+      "source": [
+        "34",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "307",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mannequin 3"
+    }
+  },
+  "323": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": [
+        "72",
+        0
+      ],
+      "image": [
+        "300",
+        0
+      ],
+      "prompt": "Describe the person in this photo for a costume department in one sentence that starts with 'They wear'. Name the hair and every visible garment with its colour. If the photo stops above the knees, finish the outfit with plain dark trousers and simple shoes. No background, pose, face or expression.",
+      "max_length": 80,
+      "sampling_mode": "off",
+      "thinking": false,
+      "use_default_template": true,
+      "mtp": "off"
+    },
+    "_meta": {
+      "title": "Describe character outfit"
+    }
+  },
+  "324": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": "",
+      "string_b": [
+        "323",
+        0
+      ],
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "Prompt head + outfit"
+    }
+  },
+  "325": {
+    "class_type": "StringConcatenate",
+    "inputs": {
+      "string_a": [
+        "324",
+        0
+      ],
+      "string_b": "",
+      "delimiter": ""
+    },
+    "_meta": {
+      "title": "+ prompt tail"
+    }
+  },
+  "311": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "prompt": [
+        "325",
+        0
+      ],
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "length": [
+        "29",
+        4
+      ],
+      "ref_image_size": "match",
+      "vae": [
+        "5",
+        0
+      ],
+      "audio_vae": [
+        "6",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "300",
+        0
+      ],
+      "ref_videos.ref_video_0": [
+        "310",
+        0
+      ],
+      "ref_video_audios.ref_video_audio_0": [
+        "29",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "MiniMaxH3ReferenceToVideo"
+    }
+  },
+  "312": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "219",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "313": {
+    "class_type": "H3RelayApplyEditMask",
+    "inputs": {
+      "latent": [
+        "311",
+        1
+      ],
+      "source_latent": [
+        "312",
+        0
+      ],
+      "mask": [
+        "309",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Edit only inside mask"
+    }
+  },
+  "314": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 45
+    },
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "315": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "conditioning": [
+        "311",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "316": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "314",
+        0
+      ],
+      "guider": [
+        "315",
+        0
+      ],
+      "sampler": [
+        "26",
+        0
+      ],
+      "sigmas": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "313",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "317": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "316",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "LTXVSeparateAVLatent"
+    }
+  },
+  "318": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "317",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "319": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "219",
+        0
+      ],
+      "source": [
+        "318",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "309",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Composite person 3"
+    }
+  },
+  "320": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "220",
+        0
+      ],
+      "source": [
+        "306",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "add"
+    },
+    "_meta": {
+      "title": "Union raw"
+    }
+  },
+  "321": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "221",
+        0
+      ],
+      "source": [
+        "309",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "operation": "add"
+    },
+    "_meta": {
+      "title": "Union edit"
+    }
+  },
+  "51": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "319",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "29",
+        5
+      ]
+    },
+    "_meta": {
+      "title": "Trim to source frames"
+    }
+  },
+  "52": {
+    "class_type": "CJPasteBackSave",
+    "inputs": {
+      "frames": [
+        "51",
+        0
+      ],
+      "source": [
+        "7",
+        0
+      ],
+      "raw_mask": [
+        "320",
+        0
+      ],
+      "expanded_mask": [
+        "321",
+        0
+      ],
+      "filename_prefix": "video/CJ_H3_CastSwap",
+      "crf": 17,
+      "diff_thresh": 6.0,
+      "grow_px": 8,
+      "feather_px": 6,
+      "t_radius": 2,
+      "protect_text": false
+    },
+    "_meta": {
+      "title": "Paste back inside mask (source res, source audio)"
+    }
+  }
+}

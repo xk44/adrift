@@ -1,0 +1,646 @@
+{
+  "name": "video_expand",
+  "tool": "video_expand",
+  "action": "video_expand",
+  "workflow": "packs/ltx25/video_expand.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "LTX-2.5 22B distilled",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "IC-LoRA Outpaint (oumoumad, LTX-2.3 22B)",
+      "inputs": {
+        "lora_name": "ltx25/ltx-2.3-22b-ic-lora-outpaint.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "3": {
+      "class_type": "GetICLoRAParameters",
+      "title": "IC-LoRA parameters",
+      "inputs": {
+        "iclora_model": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPLoader",
+      "title": "Gemma 4 text encoder",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "device": "default",
+        "type": "ltxv"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "title": "Prompt",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "golden test subject. A wider shot of the same scene shows more of the surroundings, consistent lighting and camera motion."
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "black bars, letterbox, border, frame, text, watermark, blurry, distorted, jitter, worst quality"
+      }
+    },
+    "9": {
+      "class_type": "LTXVConditioning",
+      "title": "Frame rate (source fps)",
+      "inputs": {
+        "frame_rate": [
+          "22",
+          2
+        ],
+        "negative": [
+          "8",
+          0
+        ],
+        "positive": [
+          "7",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "title": "Canvas latent (/32, 8n+1 frames)",
+      "inputs": {
+        "batch_size": 1,
+        "height": 576,
+        "length": [
+          "26",
+          1
+        ],
+        "width": 1024
+      }
+    },
+    "11": {
+      "class_type": "LTXVAddGuide",
+      "title": "IC-LoRA guide (source on black canvas)",
+      "inputs": {
+        "frame_idx": 0,
+        "iclora_parameters": [
+          "3",
+          0
+        ],
+        "image": [
+          "32",
+          0
+        ],
+        "latent": [
+          "10",
+          0
+        ],
+        "negative": [
+          "9",
+          1
+        ],
+        "positive": [
+          "9",
+          0
+        ],
+        "strength": 1,
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "title": "Audio latent",
+      "inputs": {
+        "audio_vae": [
+          "5",
+          0
+        ],
+        "batch_size": 1,
+        "frame_rate": [
+          "22",
+          2
+        ],
+        "frames_number": [
+          "26",
+          1
+        ]
+      }
+    },
+    "13": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "AV latent",
+      "inputs": {
+        "audio_latent": [
+          "12",
+          0
+        ],
+        "video_latent": [
+          "11",
+          2
+        ]
+      }
+    },
+    "14": {
+      "class_type": "RandomNoise",
+      "title": "Seed",
+      "inputs": {
+        "noise_seed": 314799534
+      }
+    },
+    "15": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      }
+    },
+    "16": {
+      "class_type": "ManualSigmas",
+      "title": "Distilled sigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      }
+    },
+    "17": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Guider (cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "2",
+          0
+        ],
+        "negative": [
+          "11",
+          1
+        ],
+        "positive": [
+          "11",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "18": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "17",
+          0
+        ],
+        "latent_image": [
+          "13",
+          0
+        ],
+        "noise": [
+          "14",
+          0
+        ],
+        "sampler": [
+          "15",
+          0
+        ],
+        "sigmas": [
+          "16",
+          0
+        ]
+      }
+    },
+    "19": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Split AV",
+      "inputs": {
+        "av_latent": [
+          "18",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LoadVideo",
+      "title": "Source video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "21": {
+      "class_type": "VideoTemporalCrop",
+      "title": "First 121 frames (native fps)",
+      "inputs": {
+        "length": 121,
+        "start_frame": 0,
+        "video": [
+          "20",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "GetVideoComponents",
+      "title": "Source frames / fps",
+      "inputs": {
+        "video": [
+          "21",
+          0
+        ]
+      }
+    },
+    "23": {
+      "class_type": "ImageScale",
+      "title": "Fit source (even size, expanded frame ≤ 2560 px)",
+      "inputs": {
+        "crop": "disabled",
+        "height": [
+          "47",
+          1
+        ],
+        "image": [
+          "27",
+          0
+        ],
+        "upscale_method": "area",
+        "width": [
+          "46",
+          1
+        ]
+      }
+    },
+    "24": {
+      "class_type": "GetImageSize",
+      "title": "Source frame count",
+      "inputs": {
+        "image": [
+          "22",
+          0
+        ]
+      }
+    },
+    "25": {
+      "class_type": "LTXVCropGuides",
+      "title": "Drop guide frames",
+      "inputs": {
+        "latent": [
+          "19",
+          0
+        ],
+        "negative": [
+          "11",
+          1
+        ],
+        "positive": [
+          "11",
+          0
+        ]
+      }
+    },
+    "26": {
+      "class_type": "ComfyMathExpression",
+      "title": "Frames: largest 8n+1",
+      "inputs": {
+        "expression": "8 * ((a - 1) // 8) + 1",
+        "values.a": [
+          "24",
+          2
+        ]
+      }
+    },
+    "27": {
+      "class_type": "ImageFromBatch",
+      "title": "Trim frames to 8n+1",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "22",
+          0
+        ],
+        "length": [
+          "26",
+          1
+        ]
+      }
+    },
+    "28": {
+      "class_type": "VideoTemporalCrop",
+      "title": "Audio window (8n+1 frames)",
+      "inputs": {
+        "length": [
+          "26",
+          1
+        ],
+        "start_frame": 0,
+        "video": [
+          "21",
+          0
+        ]
+      }
+    },
+    "29": {
+      "class_type": "GetVideoComponents",
+      "title": "Source audio (trimmed)",
+      "inputs": {
+        "video": [
+          "28",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "ImageScale",
+      "title": "Source into canvas rect",
+      "inputs": {
+        "crop": "disabled",
+        "height": 384,
+        "image": [
+          "23",
+          0
+        ],
+        "upscale_method": "area",
+        "width": 682
+      }
+    },
+    "31": {
+      "class_type": "EmptyImage",
+      "title": "Black canvas (= area to generate)",
+      "inputs": {
+        "batch_size": [
+          "26",
+          1
+        ],
+        "color": 0,
+        "height": 576,
+        "width": 1024
+      }
+    },
+    "32": {
+      "class_type": "ImageCompositeMasked",
+      "title": "Source on black canvas",
+      "inputs": {
+        "destination": [
+          "31",
+          0
+        ],
+        "resize_source": false,
+        "source": [
+          "30",
+          0
+        ],
+        "x": 171,
+        "y": 96
+      }
+    },
+    "35": {
+      "class_type": "GetImageSize",
+      "title": "Original size",
+      "inputs": {
+        "image": [
+          "23",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode",
+      "inputs": {
+        "overlap": 64,
+        "samples": [
+          "25",
+          2
+        ],
+        "temporal_overlap": 16,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "42": {
+      "class_type": "ComfyMathExpression",
+      "title": "Output width",
+      "inputs": {
+        "expression": "2 * ((a * 1024 + 682) // 1364)",
+        "values.a": [
+          "35",
+          0
+        ]
+      }
+    },
+    "43": {
+      "class_type": "ComfyMathExpression",
+      "title": "Output height",
+      "inputs": {
+        "expression": "2 * ((a * 576 + 384) // 768)",
+        "values.a": [
+          "35",
+          1
+        ]
+      }
+    },
+    "44": {
+      "class_type": "ComfyMathExpression",
+      "title": "Paste-back x",
+      "inputs": {
+        "expression": "(342 * b + 1024) // 2048",
+        "values.a": [
+          "35",
+          0
+        ],
+        "values.b": [
+          "42",
+          1
+        ]
+      }
+    },
+    "45": {
+      "class_type": "ComfyMathExpression",
+      "title": "Paste-back y",
+      "inputs": {
+        "expression": "(192 * b + 576) // 1152",
+        "values.a": [
+          "35",
+          1
+        ],
+        "values.b": [
+          "43",
+          1
+        ]
+      }
+    },
+    "46": {
+      "class_type": "ComfyMathExpression",
+      "title": "Fit width",
+      "inputs": {
+        "expression": "2 * int(a * min(1, 2560 * 682 / (a * 1024), 2560 * 384 / (b * 576)) / 2)",
+        "values.a": [
+          "24",
+          0
+        ],
+        "values.b": [
+          "24",
+          1
+        ]
+      }
+    },
+    "47": {
+      "class_type": "ComfyMathExpression",
+      "title": "Fit height",
+      "inputs": {
+        "expression": "2 * int(b * min(1, 2560 * 682 / (a * 1024), 2560 * 384 / (b * 576)) / 2)",
+        "values.a": [
+          "24",
+          0
+        ],
+        "values.b": [
+          "24",
+          1
+        ]
+      }
+    },
+    "50": {
+      "class_type": "SolidMask",
+      "title": "Keep-original mask",
+      "inputs": {
+        "height": [
+          "35",
+          1
+        ],
+        "value": 1,
+        "width": [
+          "35",
+          0
+        ]
+      }
+    },
+    "51": {
+      "class_type": "FeatherMask",
+      "title": "Wide feather (inside original edge, padded sides only)",
+      "inputs": {
+        "bottom": 48,
+        "left": 48,
+        "mask": [
+          "50",
+          0
+        ],
+        "right": 48,
+        "top": 48
+      }
+    },
+    "52": {
+      "class_type": "ImageScale",
+      "title": "Generated canvas to output size",
+      "inputs": {
+        "crop": "disabled",
+        "height": [
+          "43",
+          1
+        ],
+        "image": [
+          "40",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": [
+          "42",
+          1
+        ]
+      }
+    },
+    "53": {
+      "class_type": "ImageCompositeMasked",
+      "title": "Original frames back over their rect",
+      "inputs": {
+        "destination": [
+          "52",
+          0
+        ],
+        "mask": [
+          "51",
+          0
+        ],
+        "resize_source": false,
+        "source": [
+          "23",
+          0
+        ],
+        "x": [
+          "44",
+          1
+        ],
+        "y": [
+          "45",
+          1
+        ]
+      }
+    },
+    "54": {
+      "class_type": "CreateVideo",
+      "title": "Video (source fps + audio)",
+      "inputs": {
+        "audio": [
+          "29",
+          1
+        ],
+        "fps": [
+          "22",
+          2
+        ],
+        "images": [
+          "53",
+          0
+        ]
+      }
+    },
+    "55": {
+      "class_type": "SaveVideo",
+      "title": "Save video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_VideoExpand_LTX",
+        "format": "auto",
+        "video": [
+          "54",
+          0
+        ]
+      }
+    }
+  }
+}

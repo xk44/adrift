@@ -1,0 +1,48 @@
+{
+  "id": "sdxl",
+  "name": "Stable Diffusion XL",
+  "description": "Default workflow pack for SDXL-based models. Covers the standard SDXL generation pipeline with checkpoint, VAE, and LoraLoader nodes.",
+  "version": "1.0.0",
+  "modelFamily": "sdxl",
+  "isDefault": false,
+  "modelPatterns": [
+    "sdxl",
+    "stable.*xl",
+    "sd.*xl"
+  ],
+  "baseResolution": 1024,
+  "adapterConfig": {
+    "loraLoaderClass": "LoraLoader",
+    "ipAdapterLoaderClass": "IPAdapterAdvanced",
+    "samplerClass": "KSampler",
+    "latentClass": "EmptySDXLLatentImage",
+    "textEncoderClass": "CLIPTextEncodeSDXL",
+    "supportsNegativePrompt": true,
+    "supportsCfgScale": true,
+    "defaultSampler": "euler",
+    "defaultScheduler": "normal"
+  },
+  "workflows": {
+    "t2i": "t2i.json",
+    "i2i": "i2i.json",
+    "vary_subtle": "vary_subtle.json",
+    "vary_strong": "vary_strong.json",
+    "upscale_subtle": "upscale_subtle.json",
+    "upscale_creative": "upscale_creative.json",
+    "inpaint": "inpaint.json",
+    "outpaint": "outpaint.json",
+    "remix_subtle": "remix_subtle.json",
+    "remix_strong": "remix_strong.json",
+    "t23d": "t23d.json",
+    "i23d": "i23d.json",
+    "t2a": "t2a.json",
+    "controlnet": "controlnet.json"
+  },
+  "defaultOverrides": {
+    "steps": 25,
+    "cfg": 7.0,
+    "sampler": "euler",
+    "scheduler": "normal",
+    "denoise": 1.0
+  }
+}

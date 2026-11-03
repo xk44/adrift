@@ -1,0 +1,7 @@
+# colors
+crimson
+teal
+amber
+violet
+ivory
+emerald

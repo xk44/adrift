@@ -1,0 +1,279 @@
+{
+  "name": "layers",
+  "tool": "layers",
+  "action": "layers",
+  "workflow": "packs/qwen-layered/layers.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "ImageScaleToMaxDimension",
+      "title": "Scale to max side",
+      "inputs": {
+        "image": [
+          "1",
+          0
+        ],
+        "largest_size": 640,
+        "upscale_method": "lanczos"
+      }
+    },
+    "3": {
+      "class_type": "GetImageSize",
+      "title": "Size",
+      "inputs": {
+        "image": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "UNETLoader",
+      "title": "Qwen-Image-Layered",
+      "inputs": {
+        "unet_name": "qwen_image_layered_fp8mixed.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "5": {
+      "class_type": "CLIPLoader",
+      "title": "Qwen2.5-VL 7B",
+      "inputs": {
+        "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "device": "default",
+        "type": "qwen_image"
+      }
+    },
+    "6": {
+      "class_type": "VAELoader",
+      "title": "Layered RGBA VAE",
+      "inputs": {
+        "vae_name": "qwen_image_layered_vae.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "ModelSamplingAuraFlow",
+      "title": "Shift",
+      "inputs": {
+        "model": [
+          "4",
+          0
+        ],
+        "shift": 1
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "title": "Caption (optional)",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "9": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": ""
+      }
+    },
+    "10": {
+      "class_type": "VAEEncode",
+      "title": "Encode source",
+      "inputs": {
+        "pixels": [
+          "2",
+          0
+        ],
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "ReferenceLatent",
+      "title": "Reference positive",
+      "inputs": {
+        "conditioning": [
+          "8",
+          0
+        ],
+        "latent": [
+          "10",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "ReferenceLatent",
+      "title": "Reference negative",
+      "inputs": {
+        "conditioning": [
+          "9",
+          0
+        ],
+        "latent": [
+          "10",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "EmptyQwenImageLayeredLatentImage",
+      "title": "Layered latent",
+      "inputs": {
+        "batch_size": 1,
+        "height": [
+          "3",
+          1
+        ],
+        "layers": 4,
+        "width": [
+          "3",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "KSampler",
+      "title": "Sampler",
+      "inputs": {
+        "cfg": 2.5,
+        "denoise": 1,
+        "latent_image": [
+          "13",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "12",
+          0
+        ],
+        "positive": [
+          "11",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799534,
+        "steps": 20
+      }
+    },
+    "15": {
+      "class_type": "LatentCut",
+      "title": "Composite frame",
+      "inputs": {
+        "amount": 1,
+        "dim": "t",
+        "index": 0,
+        "samples": [
+          "14",
+          0
+        ]
+      }
+    },
+    "16": {
+      "class_type": "VAEDecode",
+      "title": "Decode composite",
+      "inputs": {
+        "samples": [
+          "15",
+          0
+        ],
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "17": {
+      "class_type": "SplitImageWithAlpha",
+      "title": "Drop alpha",
+      "inputs": {
+        "image": [
+          "16",
+          0
+        ]
+      }
+    },
+    "18": {
+      "class_type": "SaveImage",
+      "title": "Save flattened preview",
+      "inputs": {
+        "filename_prefix": "CJ_Layers/preview",
+        "images": [
+          "17",
+          0
+        ]
+      }
+    },
+    "19": {
+      "class_type": "LatentCut",
+      "title": "Layer frames",
+      "inputs": {
+        "amount": 16384,
+        "dim": "t",
+        "index": 1,
+        "samples": [
+          "14",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LatentCutToBatch",
+      "title": "Layers to batch",
+      "inputs": {
+        "dim": "t",
+        "samples": [
+          "19",
+          0
+        ],
+        "slice_size": 1
+      }
+    },
+    "21": {
+      "class_type": "VAEDecode",
+      "title": "Decode layers (RGBA)",
+      "inputs": {
+        "samples": [
+          "20",
+          0
+        ],
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "SaveImage",
+      "title": "Save layers (transparent PNG)",
+      "inputs": {
+        "filename_prefix": "CJ_Layers/layer",
+        "images": [
+          "21",
+          0
+        ]
+      }
+    }
+  }
+}

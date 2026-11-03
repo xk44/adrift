@@ -1,0 +1,2833 @@
+{
+ "_meta": {
+  "source": "Slice of GET /object_info from the reference ComfyUI box (2026-10-30) for the H3 Long clip + Fix faces graphs. Model-file combos trimmed to the H3/SAM entries.",
+  "recorded_at": "2026-10-30"
+ },
+ "UNETLoader": {
+  "input": {
+   "required": {
+    "unet_name": [
+     [
+      "Minimax-h3_Singularity_ref2va_v2_pruned_int8.safetensors",
+      "Wan2_1-MiniMaxRemover_1_3B_fp16.safetensors",
+      "fasth3_omniref_8step_pruned_int8_convrot.safetensors",
+      "fasth3_omniref_v2b25-49x050_int8_convrot_hq.safetensors",
+      "fastvideo_fasth3_8step_v2_pruned_int8_convrot.safetensors",
+      "minimax_h3_fl2va_pruned_bf16.safetensors",
+      "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "minimax_h3_ref2va_pruned_pdd_acc_8step_baked_with_heads_int8_convrot.safetensors",
+      "minimax_h3_ref2va_turbo11_charswap15_merged_int8_convrot.safetensors"
+     ]
+    ],
+    "weight_dtype": [
+     [
+      "default",
+      "fp8_e4m3fn",
+      "fp8_e4m3fn_fast",
+      "fp8_e5m2"
+     ],
+     {
+      "advanced": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "unet_name",
+    "weight_dtype"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MODEL"
+  ],
+  "name": "UNETLoader",
+  "has_intermediate_output": false
+ },
+ "CLIPLoader": {
+  "input": {
+   "required": {
+    "clip_name": [
+     [
+      "qwen3vl_32b_minimax_h3_bf16.safetensors",
+      "qwen3vl_32b_minimax_h3_int8_convrot.safetensors"
+     ]
+    ],
+    "type": [
+     [
+      "stable_diffusion",
+      "stable_cascade",
+      "sd3",
+      "stable_audio",
+      "mochi",
+      "ltxv",
+      "pixart",
+      "cosmos",
+      "lumina2",
+      "wan",
+      "hidream",
+      "chroma",
+      "ace",
+      "omnigen2",
+      "qwen_image",
+      "hunyuan_image",
+      "flux2",
+      "ovis",
+      "longcat_image",
+      "cogvideox",
+      "lens",
+      "pixeldit",
+      "ideogram4",
+      "boogu",
+      "krea2",
+      "joyimage",
+      "mage",
+      "minimax",
+      "yue2",
+      "flux3",
+      "moss_image",
+      "fibo2"
+     ]
+    ]
+   },
+   "optional": {
+    "device": [
+     [
+      "default",
+      "cpu"
+     ],
+     {
+      "advanced": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "clip_name",
+    "type"
+   ],
+   "optional": [
+    "device"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "CLIP"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "CLIP"
+  ],
+  "name": "CLIPLoader",
+  "has_intermediate_output": false
+ },
+ "VAELoader": {
+  "input": {
+   "required": {
+    "vae_name": [
+     [
+      "LightVAE/lightvae-lite-h3-decoder-int8-convrot.safetensors",
+      "LightVAE/lightvae-lite-h3-decoder.safetensors",
+      "LightVAE/lightvae-lite-h3-encoder.safetensors",
+      "MiniMax-H3-X2-Detail-v1.safetensors",
+      "minimax_h3_audio_vae_fp32.safetensors",
+      "minimax_h3_video_vae_fp16.safetensors",
+      "sol_h3/sol_h3_vae.safetensors"
+     ]
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "vae_name"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "VAE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "VAE"
+  ],
+  "name": "VAELoader",
+  "has_intermediate_output": false
+ },
+ "LoadImage": {
+  "input": {
+   "required": {
+    "image": [
+     [],
+     {
+      "image_upload": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "image"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE",
+   "MASK"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "IMAGE",
+   "MASK"
+  ],
+  "name": "LoadImage",
+  "has_intermediate_output": false
+ },
+ "MiniMaxH3ReferenceToVideo": {
+  "input": {
+   "required": {
+    "clip": [
+     "CLIP",
+     {}
+    ],
+    "prompt": [
+     "STRING",
+     {
+      "multiline": true,
+      "dynamicPrompts": true
+     }
+    ],
+    "width": [
+     "INT",
+     {
+      "default": 1344,
+      "min": 32,
+      "max": 16384,
+      "step": 32
+     }
+    ],
+    "height": [
+     "INT",
+     {
+      "default": 768,
+      "min": 32,
+      "max": 16384,
+      "step": 32
+     }
+    ],
+    "length": [
+     "INT",
+     {
+      "tooltip": "Frame count at 24 fps, (124 = ~5s, trained range is ~124-362)",
+      "default": 124,
+      "min": 5,
+      "max": 3600,
+      "step": 17
+     }
+    ],
+    "ref_image_size": [
+     "COMBO",
+     {
+      "tooltip": "Reference image sizing. 'match' scales each ref (down only, keeping aspect) to the generation's pixel area; 'max' uses the reference pipeline's 2048px short edge for best identity fidelity. Reference tokens ride through every sampling step, so 'max' can be several times slower.",
+      "default": "match",
+      "multiselect": false,
+      "options": [
+       "match",
+       "max"
+      ]
+     }
+    ]
+   },
+   "optional": {
+    "vae": [
+     "VAE",
+     {
+      "tooltip": "Video VAE. Without it reference images/videos only condition the text encoder."
+     }
+    ],
+    "audio_vae": [
+     "VAE",
+     {
+      "tooltip": "Audio VAE. Without it reference audio only conditions the text encoder."
+     }
+    ],
+    "ref_images": [
+     "COMFY_AUTOGROW_V3",
+     {
+      "template": {
+       "input": {
+        "required": {
+         "ref_image": [
+          "IMAGE",
+          {
+           "tooltip": "Reference image (downscaled to 2048 short edge if larger, never upscaled)"
+          }
+         ]
+        }
+       },
+       "prefix": "ref_image_",
+       "min": 0,
+       "max": 9
+      }
+     }
+    ],
+    "ref_videos": [
+     "COMFY_AUTOGROW_V3",
+     {
+      "template": {
+       "input": {
+        "required": {
+         "ref_video": [
+          "IMAGE",
+          {
+           "tooltip": "Reference video frames at 24 fps (2-15s)"
+          }
+         ]
+        }
+       },
+       "prefix": "ref_video_",
+       "min": 0,
+       "max": 3
+      }
+     }
+    ],
+    "ref_video_audios": [
+     "COMFY_AUTOGROW_V3",
+     {
+      "template": {
+       "input": {
+        "required": {
+         "ref_video_audio": [
+          "AUDIO",
+          {
+           "tooltip": "Soundtrack of the same-numbered reference video"
+          }
+         ]
+        }
+       },
+       "prefix": "ref_video_audio_",
+       "min": 0,
+       "max": 3
+      }
+     }
+    ],
+    "ref_audios": [
+     "COMFY_AUTOGROW_V3",
+     {
+      "template": {
+       "input": {
+        "required": {
+         "ref_audio": [
+          "AUDIO",
+          {
+           "tooltip": "Standalone reference audio"
+          }
+         ]
+        }
+       },
+       "prefix": "ref_audio_",
+       "min": 0,
+       "max": 3
+      }
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "clip",
+    "prompt",
+    "width",
+    "height",
+    "length",
+    "ref_image_size"
+   ],
+   "optional": [
+    "vae",
+    "audio_vae",
+    "ref_images",
+    "ref_videos",
+    "ref_video_audios",
+    "ref_audios"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "CONDITIONING",
+   "LATENT"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "positive",
+   "LATENT"
+  ],
+  "output_tooltips": [
+   null,
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "MiniMaxH3ReferenceToVideo",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "KSamplerSelect": {
+  "input": {
+   "required": {
+    "sampler_name": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "euler",
+       "euler_cfg_pp",
+       "euler_ancestral",
+       "euler_ancestral_cfg_pp",
+       "heun",
+       "heunpp2",
+       "exp_heun_2_x0",
+       "exp_heun_2_x0_sde",
+       "dpm_2",
+       "dpm_2_ancestral",
+       "lms",
+       "dpm_fast",
+       "dpm_adaptive",
+       "dpmpp_2s_ancestral",
+       "dpmpp_2s_ancestral_cfg_pp",
+       "dpmpp_sde",
+       "dpmpp_sde_gpu",
+       "dpmpp_2m",
+       "dpmpp_2m_cfg_pp",
+       "dpmpp_2m_sde",
+       "dpmpp_2m_sde_gpu",
+       "dpmpp_2m_sde_heun",
+       "dpmpp_2m_sde_heun_gpu",
+       "dpmpp_3m_sde",
+       "dpmpp_3m_sde_gpu",
+       "ddpm",
+       "lcm",
+       "ipndm",
+       "ipndm_v",
+       "deis",
+       "cfgpp_ud10_ab",
+       "res_multistep",
+       "res_multistep_cfg_pp",
+       "res_multistep_ancestral",
+       "res_multistep_ancestral_cfg_pp",
+       "gradient_estimation",
+       "gradient_estimation_cfg_pp",
+       "er_sde",
+       "seeds_2",
+       "seeds_3",
+       "sa_solver",
+       "sa_solver_pece",
+       "ddim",
+       "uni_pc",
+       "uni_pc_bh2"
+      ]
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "sampler_name"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SAMPLER"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SAMPLER"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "KSamplerSelect",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "BasicScheduler": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "scheduler": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "simple",
+       "sgm_uniform",
+       "karras",
+       "exponential",
+       "ddim_uniform",
+       "beta",
+       "normal",
+       "linear_quadratic",
+       "kl_optimal"
+      ]
+     }
+    ],
+    "steps": [
+     "INT",
+     {
+      "default": 20,
+      "min": 1,
+      "max": 10000
+     }
+    ],
+    "denoise": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "scheduler",
+    "steps",
+    "denoise"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SIGMAS"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SIGMAS"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "BasicScheduler",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "RandomNoise": {
+  "input": {
+   "required": {
+    "noise_seed": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 18446744073709551615,
+      "control_after_generate": true
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "noise_seed"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "NOISE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "NOISE"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "RandomNoise",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "BasicGuider": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "conditioning": [
+     "CONDITIONING",
+     {}
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "conditioning"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "GUIDER"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "GUIDER"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "BasicGuider",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "SamplerCustomAdvanced": {
+  "input": {
+   "required": {
+    "noise": [
+     "NOISE",
+     {}
+    ],
+    "guider": [
+     "GUIDER",
+     {}
+    ],
+    "sampler": [
+     "SAMPLER",
+     {}
+    ],
+    "sigmas": [
+     "SIGMAS",
+     {}
+    ],
+    "latent_image": [
+     "LATENT",
+     {}
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "noise",
+    "guider",
+    "sampler",
+    "sigmas",
+    "latent_image"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT",
+   "LATENT"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "output",
+   "denoised_output"
+  ],
+  "output_tooltips": [
+   null,
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "SamplerCustomAdvanced",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "VAEDecode": {
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT",
+     {
+      "tooltip": "The latent to be decoded."
+     }
+    ],
+    "vae": [
+     "VAE",
+     {
+      "tooltip": "The VAE model used for decoding the latent."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "samples",
+    "vae"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "IMAGE"
+  ],
+  "name": "VAEDecode",
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "The decoded image."
+  ]
+ },
+ "VAEDecodeAudio": {
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT",
+     {}
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "samples",
+    "vae"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "AUDIO"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "AUDIO"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "VAEDecodeAudio",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "CreateVideo": {
+  "input": {
+   "required": {
+    "images": [
+     "IMAGE",
+     {
+      "tooltip": "The images to create a video from."
+     }
+    ],
+    "fps": [
+     "FLOAT",
+     {
+      "default": 30.0,
+      "min": 1.0,
+      "max": 120.0,
+      "step": 1.0
+     }
+    ]
+   },
+   "optional": {
+    "audio": [
+     "AUDIO",
+     {
+      "tooltip": "The audio to add to the video."
+     }
+    ],
+    "bit_depth": [
+     "COMBO",
+     {
+      "tooltip": "Auto uses 8-bit for sRGB and 10-bit for HDR. Explicit 8-bit and 10-bit choices are independent of colorspace.",
+      "default": "auto",
+      "multiselect": false,
+      "options": [
+       "auto",
+       8,
+       10
+      ]
+     }
+    ],
+    "color_space": [
+     "COMBO",
+     {
+      "tooltip": "Colorspace of the input images. HDR selects BT.2020/HLG and HDR PQ selects BT.2020/PQ.",
+      "default": "sRGB",
+      "multiselect": false,
+      "options": [
+       "sRGB",
+       "HDR",
+       "HDR PQ"
+      ]
+     }
+    ],
+    "codec": [
+     "COMBO",
+     {
+      "tooltip": "Optionally encode the video immediately. None keeps the images in tensor form; Auto uses H.264.",
+      "advanced": true,
+      "default": "none",
+      "multiselect": false,
+      "options": [
+       "none",
+       "auto",
+       "h264",
+       "av1"
+      ]
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "images",
+    "fps"
+   ],
+   "optional": [
+    "audio",
+    "bit_depth",
+    "color_space",
+    "codec"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "VIDEO"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "VIDEO"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "CreateVideo",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "SaveVideo": {
+  "input": {
+   "required": {
+    "video": [
+     "VIDEO",
+     {
+      "tooltip": "The video to save."
+     }
+    ],
+    "filename_prefix": [
+     "STRING",
+     {
+      "tooltip": "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes.",
+      "default": "video/ComfyUI",
+      "multiline": false
+     }
+    ],
+    "format": [
+     "COMFY_DYNAMICCOMBO_V3",
+     {
+      "tooltip": "The output container. Auto uses MP4 for Auto/H.264 and WebM for AV1. MP4, MKV, and WebM select a specific container.",
+      "options": [
+       {
+        "key": "auto",
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "h264",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 18.0,
+                        "min": 0.0,
+                        "max": 51.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             {
+              "key": "av1",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 24.0,
+                        "min": 0.0,
+                        "max": 63.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       },
+       {
+        "key": "mp4",
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "h264",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 18.0,
+                        "min": 0.0,
+                        "max": 51.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             {
+              "key": "av1",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 24.0,
+                        "min": 0.0,
+                        "max": 63.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       },
+       {
+        "key": "mkv",
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "h264",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 18.0,
+                        "min": 0.0,
+                        "max": 51.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             {
+              "key": "av1",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 24.0,
+                        "min": 0.0,
+                        "max": 63.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       },
+       {
+        "key": "webm",
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "av1",
+              "inputs": {
+               "required": {},
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options.",
+                  "options": [
+                   {
+                    "key": "auto",
+                    "inputs": {
+                     "required": {}
+                    }
+                   },
+                   {
+                    "key": "re-encode",
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "default": 24.0,
+                        "min": 0.0,
+                        "max": 63.0,
+                        "step": 1.0
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "optional": {
+    "codec": [
+     "COMFY_DYNAMICCOMBO_V3",
+     {
+      "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ.",
+      "hidden": true,
+      "options": [
+       {
+        "key": "auto",
+        "inputs": {
+         "required": {}
+        }
+       },
+       {
+        "key": "h264",
+        "inputs": {
+         "required": {},
+         "optional": {
+          "encoding": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "display_name": "encoding mode",
+            "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "re-encode",
+              "inputs": {
+               "required": {
+                "crf": [
+                 "FLOAT",
+                 {
+                  "tooltip": "Lower values produce higher quality and larger files.",
+                  "default": 18.0,
+                  "min": 0.0,
+                  "max": 51.0,
+                  "step": 1.0
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       },
+       {
+        "key": "av1",
+        "inputs": {
+         "required": {},
+         "optional": {
+          "encoding": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "display_name": "encoding mode",
+            "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options.",
+            "options": [
+             {
+              "key": "auto",
+              "inputs": {
+               "required": {}
+              }
+             },
+             {
+              "key": "re-encode",
+              "inputs": {
+               "required": {
+                "crf": [
+                 "FLOAT",
+                 {
+                  "tooltip": "Lower values produce higher quality and larger files.",
+                  "default": 24.0,
+                  "min": 0.0,
+                  "max": 63.0,
+                  "step": 1.0
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          ]
+         }
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "hidden": {
+    "prompt": [
+     "PROMPT"
+    ],
+    "extra_pnginfo": [
+     "EXTRA_PNGINFO"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "video",
+    "filename_prefix",
+    "format"
+   ],
+   "optional": [
+    "codec"
+   ],
+   "hidden": [
+    "prompt",
+    "extra_pnginfo"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "VIDEO"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "video"
+  ],
+  "output_tooltips": [
+   "The input video, unchanged."
+  ],
+  "output_matchtypes": null,
+  "name": "SaveVideo",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "LoraLoaderModelOnly": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL"
+    ],
+    "lora_name": [
+     [
+      "FaceSwap_H3_REF2VA.safetensors",
+      "H3-Person-Remover-V1.safetensors",
+      "MiniMax-H3-Ref2VA-Acc-8Step_comfy.safetensors",
+      "camera_motion_h3_lora_v1_3000_pruned.safetensors",
+      "h3/h3-realism-people-t2v-i2v-r2v.safetensors",
+      "h3/minimax-h3-facial-realism-closeup-cp2000.safetensors",
+      "h3/minimax_h3_open_regenerate_2k_refiner_rank_384_bf16.safetensors",
+      "h3/open_h3_regenerate_2k_lora.safetensors",
+      "h3/sharp_curve_branches.safetensors",
+      "h3/solarrenderer_4step_lora_rank64.safetensors",
+      "h3/solarrenderer_control_lora_rank64.safetensors",
+      "h3_character_swap_v1.5.safetensors",
+      "handheld_h3_100.safetensors",
+      "minimax_h3_character_swap_v1.1_ref2va_fro.safetensors",
+      "minimax_h3_fl2v_turbo_4step_v0.1_768p_sla_comfyui_bf16.safetensors",
+      "minimax_h3_fl2v_turbo_4step_v1.3_768p_comfyui_bf16.safetensors",
+      "minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+      "minimax_h3_flf2v_lora_v1.safetensors",
+      "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+      "minimax_h3_ref2v_turbo_4step_v1.0_768p_comfyui_bf16.safetensors",
+      "minimax_h3_ref2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+      "minimax_h3_ref2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors"
+     ]
+    ],
+    "strength_model": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": -100.0,
+      "max": 100.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "lora_name",
+    "strength_model"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MODEL"
+  ],
+  "name": "LoraLoaderModelOnly",
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "The modified diffusion model.",
+   "The modified CLIP model."
+  ]
+ },
+ "MiniMaxH3SigmaShift": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "shift_video": [
+     "FLOAT",
+     {
+      "default": 12.0,
+      "min": 0.01,
+      "max": 100.0,
+      "step": 0.01
+     }
+    ],
+    "shift_audio": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 0.01,
+      "max": 100.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "shift_video",
+    "shift_audio"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MODEL"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "MiniMaxH3SigmaShift",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "MiniMaxH3ContextWindows": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {
+      "tooltip": "The model to apply context windows to during sampling."
+     }
+    ],
+    "context_length": [
+     "INT",
+     {
+      "tooltip": "The length of the context window in real frames. Must be 17*n + 5.",
+      "default": 124,
+      "min": 22,
+      "max": 16384,
+      "step": 17
+     }
+    ],
+    "context_overlap": [
+     "INT",
+     {
+      "tooltip": "The overlap of the context window in real frames. Must be 17*n + 5.",
+      "default": 39,
+      "min": 5,
+      "step": 17
+     }
+    ],
+    "fuse_method": [
+     "COMBO",
+     {
+      "tooltip": "The method to use to fuse the context windows.",
+      "default": "pyramid",
+      "multiselect": false,
+      "options": [
+       "pyramid",
+       "relative",
+       "flat",
+       "overlap-linear"
+      ]
+     }
+    ],
+    "freenoise": [
+     "BOOLEAN",
+     {
+      "tooltip": "Whether to apply FreeNoise noise shuffling, improves window blending.",
+      "advanced": true,
+      "default": true
+     }
+    ],
+    "split_conds_to_windows": [
+     "BOOLEAN",
+     {
+      "tooltip": "Whether to split multiple conditionings (created by ConditionCombine) to each window based on region index.",
+      "advanced": true,
+      "default": false
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "context_length",
+    "context_overlap",
+    "fuse_method",
+    "freenoise",
+    "split_conds_to_windows"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MODEL"
+  ],
+  "output_tooltips": [
+   "The model with context windows applied during sampling."
+  ],
+  "output_matchtypes": null,
+  "name": "MiniMaxH3ContextWindows",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "MiniMaxH3TemporalWindow": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "temporal_windows": [
+     "BOOLEAN",
+     {
+      "tooltip": "Split the shot into overlapping temporal windows. Off = the whole length runs as one native H3 pass.",
+      "default": true
+     }
+    ],
+    "window_frames": [
+     "INT",
+     {
+      "tooltip": "Frames per window (17k+5). Keep it inside what works natively for you, e.g. <= 192.",
+      "default": 124,
+      "min": 22,
+      "max": 3600,
+      "step": 17
+     }
+    ],
+    "overlap_frames": [
+     "INT",
+     {
+      "tooltip": "Frames shared by neighbouring windows (5, 22, 39...). Carried into the next window as its frame-0 guide, then crossfaded.",
+      "default": 22,
+      "min": 5,
+      "max": 1000,
+      "step": 17
+     }
+    ],
+    "carry_overlap": [
+     "BOOLEAN",
+     {
+      "tooltip": "Give each window the previous window's finished overlap frames (video and audio) as its frame-0 guide.",
+      "default": true
+     }
+    ],
+    "spatial_tiles": [
+     "BOOLEAN",
+     {
+      "tooltip": "Split each window into overlapping tiles, for stage 1 or stage 2. Each tile follows its crop of the plate. Without a reference video, a full-denoise pass in tiles repeats the subject.",
+      "default": false
+     }
+    ],
+    "tile_width": [
+     "INT",
+     {
+      "default": 960,
+      "min": 256,
+      "max": 16384,
+      "step": 32
+     }
+    ],
+    "tile_height": [
+     "INT",
+     {
+      "default": 544,
+      "min": 256,
+      "max": 16384,
+      "step": 32
+     }
+    ],
+    "tile_overlap": [
+     "INT",
+     {
+      "default": 256,
+      "min": 0,
+      "max": 8192,
+      "step": 32
+     }
+    ],
+    "crop_ref_images_per_tile": [
+     "BOOLEAN",
+     {
+      "tooltip": "With tiles, crop <Picture N> to each tile too. On when the picture is a frame of this shot; off for character/style references.",
+      "default": true
+     }
+    ]
+   },
+   "optional": {
+    "clip": [
+     "CLIP",
+     {
+      "tooltip": "Route the CLIP through here into Reference to Video so each window re-encodes the prompt with only its own slice of <Video N> (timestamps from 0), like a manual batch. Strongly recommended."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "temporal_windows",
+    "window_frames",
+    "overlap_frames",
+    "carry_overlap",
+    "spatial_tiles",
+    "tile_width",
+    "tile_height",
+    "tile_overlap",
+    "crop_ref_images_per_tile"
+   ],
+   "optional": [
+    "clip"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL",
+   "CLIP"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "MODEL",
+   "CLIP"
+  ],
+  "output_tooltips": [
+   null,
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "MiniMaxH3TemporalWindow",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "CheckpointLoaderSimple": {
+  "input": {
+   "required": {
+    "ckpt_name": [
+     [
+      "sam3.1_multiplex_fp16.safetensors"
+     ],
+     {
+      "tooltip": "The name of the checkpoint (model) to load."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "ckpt_name"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MODEL",
+   "CLIP",
+   "VAE"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "MODEL",
+   "CLIP",
+   "VAE"
+  ],
+  "name": "CheckpointLoaderSimple",
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "The model used for denoising latents.",
+   "The CLIP model used for encoding text prompts.",
+   "The VAE model used for encoding and decoding images to and from latent space."
+  ]
+ },
+ "CLIPTextEncode": {
+  "input": {
+   "required": {
+    "text": [
+     "STRING",
+     {
+      "multiline": true,
+      "dynamicPrompts": true,
+      "tooltip": "The text to be encoded."
+     }
+    ],
+    "clip": [
+     "CLIP",
+     {
+      "tooltip": "The CLIP model used for encoding the text."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "text",
+    "clip"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "CONDITIONING"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "CONDITIONING"
+  ],
+  "name": "CLIPTextEncode",
+  "has_intermediate_output": false,
+  "output_tooltips": [
+   "A conditioning containing the embedded text used to guide the diffusion model."
+  ]
+ },
+ "SAM3_VideoTrack": {
+  "input": {
+   "required": {
+    "images": [
+     "IMAGE",
+     {
+      "display_name": "images",
+      "tooltip": "Video frames as batched images"
+     }
+    ],
+    "model": [
+     "MODEL",
+     {
+      "display_name": "model"
+     }
+    ],
+    "detection_threshold": [
+     "FLOAT",
+     {
+      "display_name": "detection_threshold",
+      "tooltip": "Score threshold for text-prompted detection.",
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ],
+    "max_objects": [
+     "INT",
+     {
+      "display_name": "max_objects",
+      "tooltip": "Max tracked objects. Initial masks count toward this limit. 0 uses the internal cap of 64.",
+      "default": 4,
+      "min": 0,
+      "max": 64
+     }
+    ],
+    "detect_interval": [
+     "INT",
+     {
+      "display_name": "detect_interval",
+      "tooltip": "Run detection every N frames (1=every frame). Higher values save compute.",
+      "default": 1,
+      "min": 1
+     }
+    ]
+   },
+   "optional": {
+    "initial_mask": [
+     "MASK",
+     {
+      "display_name": "initial_mask",
+      "tooltip": "Mask(s) for the first frame to track (one per object)"
+     }
+    ],
+    "conditioning": [
+     "CONDITIONING",
+     {
+      "display_name": "conditioning",
+      "tooltip": "Text conditioning for detecting new objects during tracking"
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "images",
+    "model",
+    "detection_threshold",
+    "max_objects",
+    "detect_interval"
+   ],
+   "optional": [
+    "initial_mask",
+    "conditioning"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SAM3_TRACK_DATA"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "track_data"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "SAM3_VideoTrack",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "SAM3_TrackToMask": {
+  "input": {
+   "required": {
+    "track_data": [
+     "SAM3_TRACK_DATA",
+     {
+      "display_name": "track_data"
+     }
+    ],
+    "object_indices": [
+     "STRING",
+     {
+      "display_name": "object_indices",
+      "tooltip": "Comma-separated object indices to include (e.g. '0,2,3'). Empty = all objects.",
+      "default": "",
+      "multiline": false
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "track_data",
+    "object_indices"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "masks"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "SAM3_TrackToMask",
+  "price_badge": null,
+  "has_intermediate_output": false
+ },
+ "SAMLoader": {
+  "input": {
+   "required": {
+    "model_name": [
+     [
+      "sam_vit_b_01ec64.pth"
+     ],
+     {
+      "tooltip": "The detection accuracy varies depending on the SAM model. ESAM can only be used if ComfyUI-YoloWorld-EfficientSAM is installed."
+     }
+    ],
+    "device_mode": [
+     [
+      "AUTO",
+      "Prefer GPU",
+      "CPU"
+     ],
+     {
+      "tooltip": "AUTO: Only applicable when a GPU is available. It temporarily loads the SAM_MODEL into VRAM only when the detection function is used.\nPrefer GPU: Tries to keep the SAM_MODEL on the GPU whenever possible. This can be used when there is sufficient VRAM available.\nCPU: Always loads only on the CPU."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model_name",
+    "device_mode"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "SAM_MODEL"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "SAM_MODEL"
+  ],
+  "name": "SAMLoader",
+  "has_intermediate_output": false
+ },
+ "CJMaskTemporal": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "mode": [
+     [
+      "max",
+      "mean",
+      "median",
+      "stable"
+     ],
+     {
+      "default": "max",
+      "tooltip": "max = temporal dilation (inpaint masks), mean = soft smoothing (ghosts on fast motion), median = drop single-frame pops, stable = smooth flicker only where nothing moved (mattes)"
+     }
+    ],
+    "radius": [
+     "INT",
+     {
+      "default": 2,
+      "min": 0,
+      "max": 12,
+      "tooltip": "Frames on each side."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "mode",
+    "radius"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "MASK"
+  ],
+  "name": "CJMaskTemporal",
+  "has_intermediate_output": false
+ },
+ "CJSubjectFaceSeed": {
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "images": [
+     "IMAGE",
+     {
+      "tooltip": "Frames the polish runs on; only their size is read, so the point is scaled into their pixel space."
+     }
+    ],
+    "min_area_frac": [
+     "FLOAT",
+     {
+      "default": 0.002,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.001,
+      "tooltip": "Frames whose mask covers less than this fraction of the frame are never used as the seed frame."
+     }
+    ],
+    "seed_frame": [
+     [
+      "largest_mask",
+      "first_visible"
+     ],
+     {
+      "default": "largest_mask",
+      "tooltip": "largest_mask: seed where the subject's mask is biggest (fully in shot), so the nearest face there is theirs. first_visible: first frame over min_area_frac - can land on a sliver at the frame edge next to someone else's face."
+     }
+    ],
+    "head_frac": [
+     "FLOAT",
+     {
+      "default": 0.3,
+      "min": 0.05,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "Top fraction of the mask's height treated as the head."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "mask",
+    "images",
+    "min_area_frac",
+    "seed_frame",
+    "head_frac"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "X",
+   "Y",
+   "frame_index",
+   "report"
+  ],
+  "name": "CJSubjectFaceSeed",
+  "has_intermediate_output": false
+ },
+ "H3FaceTrackCrop": {
+  "input": {
+   "required": {
+    "images": [
+     "IMAGE"
+    ],
+    "detector": [
+     [
+      "face_yolov8m.pt",
+      "hand_yolov8s.pt",
+      "bbox/face_yolov8m.pt",
+      "bbox/hand_yolov8s.pt",
+      "segm/person_yolov8m-seg.pt"
+     ]
+    ],
+    "confidence": [
+     "FLOAT",
+     {
+      "default": 0.35,
+      "min": 0.05,
+      "max": 0.95,
+      "step": 0.05
+     }
+    ],
+    "crop_factor": [
+     "FLOAT",
+     {
+      "default": 2.5,
+      "min": 1.2,
+      "max": 8.0,
+      "step": 0.1,
+      "tooltip": "Crop side as a multiple of detected face HEIGHT. 2.5 puts the face at ~40% of the crop, comfortably inside H3's good regime. Bigger = more context so the seam lands in hair/background, but less magnification. 2.0-3.0 is the useful range."
+     }
+    ],
+    "canvas_width": [
+     "INT",
+     {
+      "default": 768,
+      "min": 128,
+      "max": 1344,
+      "step": 32,
+      "tooltip": "Resolution H3 generates at. 768 is H3's native short edge and the default here; 512 is cheaper. In manual mode this is used exactly as typed, high or low. Ignored when canvas_mode is not 'manual', where the canvas comes from the crop instead and never falls below 512x512. Cost scales with area: 768 is 2.25x the latent tokens of 512."
+     }
+    ],
+    "canvas_height": [
+     "INT",
+     {
+      "default": 768,
+      "min": 128,
+      "max": 1344,
+      "step": 32
+     }
+    ],
+    "canvas_mode": [
+     [
+      "manual",
+      "auto_no_downscale",
+      "auto_capped_768"
+     ],
+     {
+      "default": "manual",
+      "tooltip": "manual: use canvas_width/height as given.\nauto_no_downscale: size the canvas from the LARGEST crop in the video so no frame is ever downscaled (magnification never drops below 1.0x). Can get expensive on videos that include close-ups.\nauto_capped_768: same, but clamped to 768 - H3's native short edge and a sane VRAM ceiling.\nBoth auto modes clamp UP to a minimum of 512x512, whatever the crop, so a small face in a low-resolution clip is still magnified. manual is not clamped - it uses canvas_width and canvas_height exactly as typed."
+     }
+    ],
+    "smooth_window": [
+     "INT",
+     {
+      "default": 21,
+      "min": 1,
+      "max": 201,
+      "step": 2,
+      "tooltip": "Frames of smoothing on the crop CENTRE. 21 at 24fps is ~0.9s. Raise if the box still shivers; lower if it lags behind fast head movement."
+     }
+    ],
+    "size_smooth_window": [
+     "INT",
+     {
+      "default": 51,
+      "min": 1,
+      "max": 201,
+      "step": 2,
+      "tooltip": "Frames of smoothing on the crop SIZE. Wants MORE than the centre: size jitter makes the crop breathe, which changes the resample factor every frame and reads as shimmer. Real zoom moves are slow, so heavy smoothing here costs nothing."
+     }
+    ],
+    "smooth_method": [
+     [
+      "gaussian",
+      "savgol",
+      "moving_average"
+     ],
+     {
+      "default": "gaussian",
+      "tooltip": "gaussian: best jitter rejection. savgol: preserves the shape of a push-in better at large windows. moving_average: the old boxcar, leaves residual jitter."
+     }
+    ],
+    "size_mode": [
+     [
+      "max_of_clip",
+      "per_frame"
+     ],
+     {
+      "default": "per_frame",
+      "tooltip": "per_frame: constant face-fraction in every crop (correct for push-ins). max_of_clip: one size for the whole video, only useful when the shot is genuinely static."
+     }
+    ]
+   },
+   "optional": {
+    "identity_reference": [
+     "IMAGE",
+     {
+      "tooltip": "A clear face image of the person to track. When supplied, the subject is chosen by FACE IDENTITY rather than by size, so a crowd scene locks onto the right person even when someone else is briefly larger or nearer.\n\nOPTIONAL on this node. identity_track works without it: the anchor is then built FROM THE CLIP, off frames where one face clearly dominates, which is usually the better anchor since a stylised reference sits in a different domain. Supply one only to name a specific person.\n\nRead only while identity_track is ON. With it off this input is ignored, and the report says so.\n\nWithout either, 'largest_face' has no notion of WHO it is following - it just takes the biggest box each frame, which switches subject whenever the framing changes.\n\nFOR MULTIPLE PEOPLE: run the pipeline once per subject, each with that person's reference here and their own refs on the H3 node, and chain them - feed run 1's stitched output in as run 2's base_images. The composites accumulate."
+     }
+    ],
+    "identity_track": [
+     "BOOLEAN",
+     {
+      "default": true,
+      "tooltip": "Hold one subject through a crowd. Continuity (nearest box to the previous position) decides most frames; the face-identity embedding is consulted only when two candidates are similarly plausible or their boxes overlap - which is both the accurate and the cheap arrangement, since the embedding model then runs on a handful of frames instead of all of them. The anchor is taken FROM THE CLIP by default (frames where one face clearly dominates), because an external stylised reference sits in a different domain - measured similarity between an illustration and a render of the same character was only 0.305, where same-domain faces score 0.5-0.7.\n\nThis switch also gates identity_reference: with it OFF a connected reference is not read at all, and the subject is chosen by select instead. The report says so when that happens."
+     }
+    ],
+    "identity_threshold": [
+     "FLOAT",
+     {
+      "default": 0.28,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01,
+      "tooltip": "Minimum score to accept a face as the reference person. Below this the frame falls back to continuity (nearest to the previous position at a similar size), which is what carries tracking through profiles and partial occlusion where embeddings become unreliable.\nThe scale depends on identity_model. 0.28 suits insightface cosine; clip_vision sits much higher (~0.80) because its similarities are compressed; ccip scores 0.5 at its own published operating point.\nSET 0 to use whichever default the chosen model recommends. The report prints the scores actually seen, so it can be tuned from evidence rather than guessed."
+     }
+    ],
+    "select": [
+     [
+      "largest_face",
+      "smallest_face",
+      "left_most",
+      "right_most",
+      "top_most",
+      "bottom_most",
+      "centre_most",
+      "closest_to_xy",
+      "detector_score"
+     ],
+     {
+      "default": "largest_face",
+      "tooltip": "How the subject is chosen. It is chosen ONCE per shot, on the first frame that holds it, and continuity follows that same face from there - it is NOT re-ranked each frame. A subject who walks from the left of frame to the right while someone else crosses the other way is still tracked correctly.\n\nlargest_face / smallest_face: biggest or smallest face by height.\nleft_most / right_most / top_most / bottom_most: by the CENTRE of the face box.\ncentre_most: nearest the centre of the frame.\nclosest_to_xy: nearest the X, Y you give, measured on frame_index.\ndetector_score: the detection the detector is most confident about.\n\nAT A HARD CUT a rank means nothing across the join - everyone is renumbered. With cut_detection ON, each shot chooses again by this rule, so a cut can land on a different person. With it OFF the video counts as one shot and continuity runs straight through a real cut onto whichever face is nearest the last position, which may be anyone.\n\nTo hold one person across cuts, wire identity_reference, or choose the face in H3 Load Video + Face Select.\n\nUsed only when no identity_reference is connected."
+     }
+    ],
+    "fallback_detector": [
+     [
+      "none",
+      "face_yolov8m.pt",
+      "hand_yolov8s.pt",
+      "bbox/face_yolov8m.pt",
+      "bbox/hand_yolov8s.pt",
+      "segm/person_yolov8m-seg.pt"
+     ],
+     {
+      "default": "none",
+      "tooltip": "Used only on frames where the FACE detector finds nothing (subject turned away). A person/body model such as segm\\person_yolov8m-seg.pt gives a real head position from the top of the body box, which beats interpolating blindly between the last and next face. Set 'none' to interpolate instead."
+     }
+    ],
+    "fallback_head_frac": [
+     "FLOAT",
+     {
+      "default": 0.5,
+      "min": 0.0,
+      "max": 1.5,
+      "step": 0.05,
+      "tooltip": "Head centre as a multiple of face height below the top of the person box. 0.5 puts it half a face-height down, which is about right for a head seen from behind."
+     }
+    ],
+    "select_index": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 63,
+      "tooltip": "Which face in that ranking to track. 0 is the first, 1 the second, and so on.\nThe subject is locked on the first frame that actually contains this index, so a video that opens on one face and only later shows a crowd still finds face 1. Frames before that lock-on are interpolated from it and faded out of the composite, the same as a detection dropout; the report counts them. Clamped, with a warning in the report, if the video never shows that many faces at once. Ignored entirely when identity_reference is connected.\nH3 Load Video + Face Select shows the faces numbered, if you need to see which number is who."
+     }
+    ],
+    "identity_model": [
+     [
+      "insightface",
+      "clip_vision",
+      "ccip"
+     ],
+     {
+      "default": "insightface",
+      "tooltip": "Which model decides that two faces are the same person.\ninsightface: ArcFace/buffalo_l. Photographed human faces. It reaches faces through its OWN detector, which does not fire on illustration - so on anime it finds no candidates at all and tracking quietly falls back to continuity.\nclip_vision: ComfyUI's CLIP vision, wired into identity_clip_vision from a CLIPVisionLoader. No extra install, works on any domain - anime, 3D, stylised - but it describes appearance rather than identity, so two characters with a similar palette can collide.\nccip: the illustration counterpart of ArcFace, purpose-built for 'same anime character?'. Best on anime. Needs 'pip install dghs-imgutils', which this pack deliberately does not install for you - it pins numpy<2 and pulls opencv-contrib-python.\nThe last two embed the boxes YOUR detector found, so pair them with an anime face model in the detector slot."
+     }
+    ],
+    "cut_detection": [
+     [
+      "none",
+      "auto (pyscenedetect)"
+     ],
+     {
+      "default": "none",
+      "tooltip": "Hard-cut detection, so the crop is not smoothed ACROSS a cut.\nnone: off. Correct for single-shot videos, which is what H3 generates.\nauto: split at the cuts and treat each shot as its own window for the smoothing, interpolation and composite fade. The canvas is still sized once for the whole video."
+     }
+    ],
+    "cut_threshold": [
+     "FLOAT",
+     {
+      "default": 3.0,
+      "min": 0.5,
+      "max": 20.0,
+      "step": 0.25,
+      "tooltip": "How far a frame has to stand out from its NEIGHBOURS to count as a cut. 3.0 is PySceneDetect's adaptive default.\nLower catches more and risks splitting a continuous shot, which costs smoothing on both sides. Higher takes only unambiguous cuts.\nOnly used when cut detection is on. The report says how many cuts were found and where, so tune it from that."
+     }
+    ],
+    "identity_clip_vision": [
+     "CLIP_VISION",
+     {
+      "tooltip": "A CLIP vision model from a CLIPVisionLoader, used only when identity_model is clip_vision. Any of the usual ComfyUI clip_vision checkpoints works; the bigger ViT-L/H models separate characters better than the small ones."
+     }
+    ],
+    "absent_shots": [
+     [
+      "off",
+      "by_identity"
+     ],
+     {
+      "default": "off",
+      "tooltip": "Find shots the subject is not in, so they are not rendered at all.\nby_identity: a shot where no sampled face matches the identity anchor above identity_threshold is treated as not containing the subject. Its frames keep their original pixels and drop out of the batch. Needs identity matching to be working - it does nothing without an anchor.\nSampled, not exhaustive, so a brief appearance can be missed. The report names every shot it drops and the score it saw."
+     }
+    ],
+    "X": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 16384,
+      "step": 1,
+      "tooltip": "Only used by select=closest_to_xy.\n\nHorizontal position in PIXELS of the source video frame, measured from the TOP-LEFT corner, increasing to the right. On a 960x544 clip, 0 is the left edge, 960 the right, 480 the middle.\n\nThe point does not have to sit on a face: the nearest face CENTRE wins, however far away it is."
+     }
+    ],
+    "Y": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 16384,
+      "step": 1,
+      "tooltip": "Only used by select=closest_to_xy.\n\nVertical position in PIXELS of the source video frame, measured from the TOP-LEFT corner, increasing DOWNWARD. On a 960x544 clip, 0 is the top edge, 544 the bottom, 272 the middle."
+     }
+    ],
+    "frame_index": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 999999,
+      "step": 1,
+      "tooltip": "Only used by select=closest_to_xy.\n\nThe frame the X, Y measurement is taken on, counting from 0 for the FIRST frame. It counts the frames this node loaded, so with skip_first_frames or select_every_nth set it counts from the first frame kept, not the first frame of the file.\n\nThe face found there is followed forwards and backwards through its shot, so pick a frame where the subject is clearly visible rather than one the detector may miss them on."
+     }
+    ],
+    "face_pick": [
+     "H3FACEPICK",
+     {
+      "tooltip": "The subject chosen upstream by H3 Load Video + Face Select.\nDecides who to follow, per shot, and carries the boxes and shot boundaries with it so this node does not detect the video again. select, select_index, cut_detection and cut_threshold are then unused, and detector and confidence are too unless a fallback_detector or a crop-based identity_model still needs them - they are then unused - the report names the detector that actually produced the boxes."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "images",
+    "detector",
+    "confidence",
+    "crop_factor",
+    "canvas_width",
+    "canvas_height",
+    "canvas_mode",
+    "smooth_window",
+    "size_smooth_window",
+    "smooth_method",
+    "size_mode"
+   ],
+   "optional": [
+    "identity_reference",
+    "identity_track",
+    "identity_threshold",
+    "select",
+    "fallback_detector",
+    "fallback_head_frac",
+    "select_index",
+    "identity_model",
+    "cut_detection",
+    "cut_threshold",
+    "identity_clip_vision",
+    "absent_shots",
+    "X",
+    "Y",
+    "frame_index",
+    "face_pick"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE",
+   "H3FACEXFORM",
+   "IMAGE",
+   "STRING",
+   "INT",
+   "INT",
+   "INT"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "crops",
+   "transform",
+   "preview",
+   "report",
+   "canvas_w",
+   "canvas_h",
+   "frame_count"
+  ],
+  "name": "H3FaceTrackCrop",
+  "has_intermediate_output": false
+ },
+ "H3InjectVideoLatent": {
+  "input": {
+   "required": {
+    "av_latent": [
+     "LATENT"
+    ],
+    "images": [
+     "IMAGE"
+    ],
+    "vae": [
+     "VAE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "av_latent",
+    "images",
+    "vae"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "av_latent",
+   "report"
+  ],
+  "name": "H3InjectVideoLatent",
+  "has_intermediate_output": false
+ },
+ "H3PerFrameDenoise": {
+  "input": {
+   "required": {
+    "model": [
+     "MODEL",
+     {
+      "tooltip": "The H3 model, on its way to the sampler. Required: making a per-frame mask behave takes two changes to the MODEL rather than to the latent. This node's video mask is kept out of H3's per-token timesteps, and the frames that mask holds back are re-noised to the step the sampler is on instead of being handed back nearly clean. Pass the returned model on to the guider."
+     }
+    ],
+    "av_latent": [
+     "LATENT"
+    ],
+    "transform": [
+     "H3FACEXFORM"
+    ],
+    "denoise_multiplier_small_face": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "tooltip": "MULTIPLIER on the denoise set on BasicScheduler, applied where the face is SMALLEST. Not a denoise value in itself: at 1.0 those frames get the full BasicScheduler denoise, at 0.8 they get 80% of it. Below 1.0 NO frame in the clip receives the FULL denoise you set, which makes the whole clip gentler."
+     }
+    ],
+    "denoise_multiplier_large_face": [
+     "FLOAT",
+     {
+      "default": 0.35,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "tooltip": "MULTIPLIER on the denoise set on BasicScheduler, applied where the face is LARGEST. Lower preserves the real detail those frames already have, since a big face needs less rebuilding than a distant one."
+     }
+    ],
+    "scale_mode": [
+     [
+      "absolute_px",
+      "relative_to_clip"
+     ],
+     {
+      "default": "absolute_px",
+      "tooltip": "absolute_px: strength is set by real face size in SOURCE pixels via face_px_small/large. Safe across a batch - a video that never has a small face gets the baseline throughout. relative_to_clip: normalise to this video's own min/max, so its smallest face always gets the full boost regardless of actual size. Use when tuning a single video to its extremes."
+     }
+    ],
+    "face_px_small": [
+     "FLOAT",
+     {
+      "default": 30.0,
+      "min": 4.0,
+      "max": 400.0,
+      "step": 1.0,
+      "tooltip": "Face height (SOURCE px) at or below which the full denoise_multiplier_small_face is applied. Genuinely tiny faces only."
+     }
+    ],
+    "face_px_large": [
+     "FLOAT",
+     {
+      "default": 120.0,
+      "min": 8.0,
+      "max": 800.0,
+      "step": 1.0,
+      "tooltip": "Face height (SOURCE px) at or above which denoise_multiplier_large_face is applied. Calibrated so a video whose smallest face is ~90px gets only a mild boost - that size was already fine at the baseline denoise - and anything past 120px gets none."
+     }
+    ],
+    "gamma": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.2,
+      "max": 4.0,
+      "step": 0.1,
+      "tooltip": "Curve on the interpolation. >1 keeps strength high until the face is genuinely large; <1 drops it off early."
+     }
+    ],
+    "smooth_frames": [
+     "INT",
+     {
+      "default": 9,
+      "min": 1,
+      "max": 61,
+      "step": 2,
+      "tooltip": "Smooth the strength curve over time. An abrupt change in denoise between neighbouring frames is visible as a texture pop, so this wants to be generous."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model",
+    "av_latent",
+    "transform",
+    "denoise_multiplier_small_face",
+    "denoise_multiplier_large_face",
+    "scale_mode",
+    "face_px_small",
+    "face_px_large",
+    "gamma",
+    "smooth_frames"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "LATENT",
+   "STRING",
+   "MODEL"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false
+  ],
+  "output_name": [
+   "av_latent",
+   "report",
+   "model"
+  ],
+  "name": "H3PerFrameDenoise",
+  "has_intermediate_output": false
+ },
+ "H3FaceMaskSAM": {
+  "input": {
+   "required": {
+    "crops": [
+     "IMAGE",
+     {
+      "tooltip": "Wire the INPUT crops here - the 'crops' output of H3 Face Track + Crop - NOT the refined/decoded result.\n\nThis matches FaceDetailer: make_sam_mask() runs on the SOURCE image and the resulting mask is what the enhanced patch is later pasted through. Generation never feeds back into the mask.\n\nMasking the generated result instead is actively wrong: if the model nudges the face inward, the mask traces the NEW, smaller silhouette and the ORIGINAL face pokes out past it - most visibly the nose on profile shots. Masking the input covers where the face actually is in the footage being replaced.\n\nIt is also cheaper: no dependency on the sampler, so SAM need not be resident alongside the video model."
+     }
+    ],
+    "sam_model": [
+     "SAM_MODEL"
+    ],
+    "transform": [
+     "H3FACEXFORM"
+    ],
+    "threshold": [
+     "FLOAT",
+     {
+      "default": 0.93,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ],
+    "dilation": [
+     "INT",
+     {
+      "default": 0,
+      "min": 0,
+      "max": 128,
+      "step": 2,
+      "tooltip": "Mirrors FaceDetailer's sam_dilation default of 0. SAM masks are accurate, so they rarely need growing."
+     }
+    ],
+    "temporal_smooth": [
+     "INT",
+     {
+      "default": 5,
+      "min": 1,
+      "max": 31,
+      "step": 2,
+      "tooltip": "Frames of averaging across the mask stack. 1 disables it and you will likely see the mask edge shimmer."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "crops",
+    "sam_model",
+    "transform",
+    "threshold",
+    "dilation",
+    "temporal_smooth"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "MASK",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "masks",
+   "report"
+  ],
+  "name": "H3FaceMaskSAM",
+  "has_intermediate_output": false
+ },
+ "H3FaceStitch": {
+  "input": {
+   "required": {
+    "base_images": [
+     "IMAGE"
+    ],
+    "refined_crops": [
+     "IMAGE"
+    ],
+    "transform": [
+     "H3FACEXFORM"
+    ],
+    "paste_region": [
+     [
+      "face_only",
+      "face_ellipse",
+      "full_crop"
+     ],
+     {
+      "default": "face_only",
+      "tooltip": "WHAT gets composited back. face_only / face_ellipse paste just the detected face box (FaceDetailer's behaviour - the wider crop exists to give the sampler context, not to be pasted). full_crop pastes the whole crop including hair, shoulders and background, which risks a visible rectangle if H3 alters them."
+     }
+    ],
+    "mask_dilation": [
+     "INT",
+     {
+      "default": 16,
+      "min": 0,
+      "max": 256,
+      "step": 2,
+      "tooltip": "Grow the face box before blurring, in canvas px. Impact Pack dilates the same way so the blur has room and the blend does not eat into the face itself."
+     }
+    ],
+    "feather": [
+     "INT",
+     {
+      "default": 6,
+      "min": 0,
+      "max": 256,
+      "step": 2,
+      "tooltip": "Gaussian blur radius on the paste mask, in SOURCE pixels. Measured against the final frame, not the canvas, so the blend is the same physical width whatever this frame's magnification happens to be.\n\nCanvas-relative feather is a trap: a 75px crop blown up to 512 makes a 40px canvas feather only ~6 source px, while a 720px crop makes it ~56. The blend ends up TIGHTEST exactly where the face is smallest and the composite needs the most help - which reads as a hard edge appearing as a shot zooms out."
+     }
+    ],
+    "colour_match": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "tooltip": "Match the refined crop's per-channel mean/std to the region it replaces. The crop and the full frame went through independent passes, so without this the face can come back subtly brighter or differently tinted and read as pasted on."
+     }
+    ],
+    "blend": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.05,
+      "tooltip": "Global opacity of the refined face. Below 1.0 mixes back toward the original - useful to dial back over-sharpening."
+     }
+    ],
+    "undetected_frames": [
+     [
+      "fade_out",
+      "skip",
+      "composite_anyway"
+     ],
+     {
+      "default": "fade_out",
+      "tooltip": "What to do on frames where no FACE was found (turned away / occluded). ALL frames are still sent through H3 either way - that is what keeps it temporally consistent - this only controls whether the result is pasted back.\nfade_out: ramp the composite to zero across the gap (smooth, no pop, recommended).\nskip: hard cut - those frames keep original pixels exactly.\ncomposite_anyway: paste regardless. Risks H3 hallucinating a face onto the back of a head."
+     }
+    ]
+   },
+   "optional": {
+    "feather_scales_with_crop": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "tooltip": "Old behaviour: treat feather as CANVAS pixels, so the blend narrows as the crop shrinks. Leave off."
+     }
+    ],
+    "masks": [
+     "MASK",
+     {
+      "tooltip": "Optional per-frame paste masks in CANVAS space, e.g. from H3 Face Mask (SAM). Overrides paste_region. This is the FaceDetailer bbox+SAM path: the mask follows the actual face so the blend falls on the jaw and hairline instead of an arbitrary rectangle. With a SAM mask use a SMALL feather (4-8); a rectangle needs much more."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "base_images",
+    "refined_crops",
+    "transform",
+    "paste_region",
+    "mask_dilation",
+    "feather",
+    "colour_match",
+    "blend",
+    "undetected_frames"
+   ],
+   "optional": [
+    "feather_scales_with_crop",
+    "masks"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "images"
+  ],
+  "name": "H3FaceStitch",
+  "has_intermediate_output": false
+ },
+ "CJMaskedFaceClamp": {
+  "input": {
+   "required": {
+    "base_images": [
+     "IMAGE"
+    ],
+    "polished_images": [
+     "IMAGE"
+    ],
+    "mask": [
+     "MASK"
+    ],
+    "dilation_px": [
+     "INT",
+     {
+      "default": 16,
+      "min": 0,
+      "max": 256
+     }
+    ],
+    "feather_px": [
+     "INT",
+     {
+      "default": 12,
+      "min": 0,
+      "max": 256
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "base_images",
+    "polished_images",
+    "mask",
+    "dilation_px",
+    "feather_px"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "IMAGE",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "images",
+   "report"
+  ],
+  "name": "CJMaskedFaceClamp",
+  "has_intermediate_output": false
+ }
+}

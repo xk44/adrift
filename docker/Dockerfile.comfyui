@@ -1,0 +1,90 @@
+# ComfyUI for Adrift: pinned ComfyUI commit + CUDA PyTorch on the official
+# Python image. Build context: the repository root.
+#
+#   docker build -f docker/Dockerfile.comfyui -t adrift-comfyui:local .
+#
+# NVIDIA: the CUDA runtime ships inside the torch wheels; the host only needs
+# the NVIDIA driver + nvidia-container-toolkit. cu130 wheels need a driver
+# that supports CUDA 13 (R580+) and cover sm_75..sm_120 (RTX 20xx..50xx).
+# Older drivers: build with --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cu128
+
+ARG PYTHON_IMAGE=python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+FROM ${PYTHON_IMAGE}
+
+# ComfyUI commit Adrift's graphs are validated against.
+ARG COMFYUI_COMMIT=e3bee7ffcb7d6547ed0bcd15221792f3b8646b17
+ARG TORCH_INDEX=https://download.pytorch.org/whl/cu130
+# Third-party node packs from docs/custom-nodes.json: "all" (default),
+# "required" (skip the optional ones), or "none" (core + Adrift nodes only).
+ARG ADRIFT_NODE_PACKS=all
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 tini \
+ && rm -rf /var/lib/apt/lists/*
+
+ADD https://github.com/Comfy-Org/ComfyUI.git#${COMFYUI_COMMIT} /opt/ComfyUI
+WORKDIR /opt/ComfyUI
+
+COPY docker/comfyui-constraints.txt /opt/constraints.txt
+RUN pip install --index-url "${TORCH_INDEX}" \
+        torch==2.11.0 torchvision==0.26.0 torchaudio==2.11.0 \
+ && pip install -r requirements.txt -c /opt/constraints.txt
+
+# Third-party node packs, cloned at the commits pinned in docs/custom-nodes.json
+# with the required patches applied; their Python deps come from a pinned list.
+# git gets its own layer here so the torch layer above stays cached.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git \
+ && rm -rf /var/lib/apt/lists/*
+COPY docs/custom-nodes.json /opt/adrift-meta/docs/custom-nodes.json
+COPY docs/patches/ /opt/adrift-meta/docs/patches/
+COPY docker/install-comfy-packs.py docker/comfyui-packs-requirements.txt /opt/adrift-meta/
+RUN case "${ADRIFT_NODE_PACKS}" in \
+      none) echo "skipping third-party node packs" ;; \
+      all|required) \
+        python /opt/adrift-meta/install-comfy-packs.py /opt/ComfyUI/custom_nodes \
+            --meta /opt/adrift-meta/docs/custom-nodes.json \
+            $( [ "${ADRIFT_NODE_PACKS}" = required ] && echo --skip-optional ) \
+        && pip install -r /opt/adrift-meta/comfyui-packs-requirements.txt -c /opt/constraints.txt ;; \
+      *) echo "ADRIFT_NODE_PACKS must be all, required or none" >&2; exit 1 ;; \
+    esac
+
+# Adrift's own nodes (Krea 2 dual control, AnyPaint, SREF helpers, ...).
+COPY comfy_nodes/ /opt/ComfyUI/custom_nodes/
+COPY docker/extra_model_paths.yaml /opt/ComfyUI/extra_model_paths.yaml
+COPY docker/comfyui-entrypoint.sh /usr/local/bin/comfyui-entrypoint
+
+# Writable state lives under /data (user, input, output, temp, caches) so the
+# container can run as any non-root uid that owns the /data volume.
+# Some packs write next to themselves on first import: VibeVoice creates
+# models/tts/VibeVoice, the Krea2 Projector Tuner seeds presets/*.json.
+RUN useradd --uid 1000 --create-home comfy \
+ && mkdir -p /opt/ComfyUI/models/tts/VibeVoice \
+ && if [ -d /opt/ComfyUI/custom_nodes/ComfyUI-Krea2-Projector-Tuner/presets ]; then \
+      chmod a+rwx /opt/ComfyUI/custom_nodes/ComfyUI-Krea2-Projector-Tuner/presets; fi \
+ && chmod -R a+rX /opt/ComfyUI \
+ && mkdir -p /data /custom_nodes /models \
+ && chown 1000:1000 /data \
+ && chmod 0755 /usr/local/bin/comfyui-entrypoint
+# USER/LOGNAME: getpass.getuser() (torch inductor cache) otherwise needs a
+# passwd entry, which an arbitrary PUID (e.g. 99 on Unraid) does not have.
+ENV HOME=/data/home \
+    USER=comfy \
+    LOGNAME=comfy \
+    HF_HOME=/data/home/.cache/huggingface \
+    TORCH_HOME=/data/home/.cache/torch \
+    TORCHINDUCTOR_CACHE_DIR=/data/home/.cache/torchinductor \
+    TRITON_CACHE_DIR=/data/home/.cache/triton
+USER 1000:1000
+VOLUME ["/data"]
+EXPOSE 8188
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+  CMD python -c "import urllib.request,sys; urllib.request.urlopen('http://127.0.0.1:8188/system_stats', timeout=4)" || exit 1
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/comfyui-entrypoint"]

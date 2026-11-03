@@ -1,0 +1,43 @@
+{
+  "name": "voiceover",
+  "tool": "voiceover",
+  "action": "voiceover",
+  "workflow": "packs/audio/voiceover.json",
+  "seed": 1234,
+  "graph": {
+    "2": {
+      "class_type": "VibeVoiceTTS",
+      "title": "VibeVoice TTS",
+      "inputs": {
+        "attention_mode": "sdpa",
+        "cfg_scale": 1.5,
+        "device": "auto",
+        "do_sample": true,
+        "dtype": "auto",
+        "force_offload": true,
+        "inference_steps": 10,
+        "max_new_tokens": 0,
+        "model_name": "VibeVoice-Realtime-0.5B",
+        "quantize_llm_4bit": false,
+        "seed": 1234,
+        "temperature": 0.95,
+        "text": "golden test subject",
+        "top_k": 0,
+        "top_p": 0.95,
+        "voice_preset": "en-Emma_woman"
+      }
+    },
+    "3": {
+      "class_type": "SaveAudioMP3",
+      "title": "Save Voiceover",
+      "inputs": {
+        "audio": [
+          "2",
+          0
+        ],
+        "filename_prefix": "audio/adrift_voiceover",
+        "quality": "V0"
+      }
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "name": "breakdown",
+  "tool": "breakdown",
+  "action": "breakdown",
+  "workflow": "packs/image-tools/breakdown.json",
+  "seed": 0,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "CheckpointLoaderSimple",
+      "title": "SAM3.1",
+      "inputs": {
+        "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "title": "Part prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          1
+        ],
+        "text": "golden test subject:4"
+      }
+    },
+    "4": {
+      "class_type": "SAM3_Detect",
+      "title": "Detect part",
+      "inputs": {
+        "conditioning": [
+          "3",
+          0
+        ],
+        "image": [
+          "1",
+          0
+        ],
+        "individual_masks": true,
+        "model": [
+          "2",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.4
+      }
+    },
+    "5": {
+      "class_type": "CJCutouts",
+      "title": "Cutouts + contact sheet",
+      "inputs": {
+        "dedupe_iou": 0.85,
+        "filename_prefix": "CJ_Breakdown/part",
+        "image": [
+          "1",
+          0
+        ],
+        "labels": "golden test subject",
+        "masks": [
+          "4",
+          0
+        ],
+        "max_cutouts": 24,
+        "min_area_frac": 0.002,
+        "pad_px": 16
+      }
+    }
+  }
+}

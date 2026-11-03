@@ -1,0 +1,257 @@
+{
+  "_meta": {
+    "title": "Krea 2 restyle from depth",
+    "description": "Depth Anything 3 depth of the source image (near = white, resized to the output latent size) -> Krea2DualControlApply (CJ node comfy_nodes/cj_krea2_dual_control; darask0 Krea-2 color-depth control adapter, loras/krea2-control.safetensors, color slot empty) -> Krea 2 Turbo t2i from noise, 8 steps cfg 1."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Krea 2 Turbo UNET"
+    }
+  },
+  "3": {
+    "class_type": "ComfyUI-Krea2T-Enhancer",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "enabled": true,
+      "strength": 0.1,
+      "debug": false
+    },
+    "_meta": {
+      "title": "Krea 2 Stylization"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen3-VL Krea 2 Encoder"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "7": {
+    "class_type": "ConditioningKrea2Rebalance",
+    "inputs": {
+      "conditioning": [
+        "6",
+        0
+      ],
+      "multiplier": 4,
+      "per_layer_weights": "1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.5,5.0,1.1,4.0,1.0",
+      "preset": "custom",
+      "renormalize": false
+    },
+    "_meta": {
+      "title": "Krea 2 Rebalance"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "9": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Latent"
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "9",
+        0
+      ],
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    },
+    "_meta": {
+      "title": "Krea 2 Sampler"
+    }
+  },
+  "11": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Qwen Image VAE"
+    }
+  },
+  "12": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "10",
+        0
+      ],
+      "vae": [
+        "11",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "13": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "12",
+        0
+      ],
+      "filename_prefix": "CJ_krea2_depth"
+    },
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "14": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Source image (structure)"
+    }
+  },
+  "15": {
+    "class_type": "LoadDA3Model",
+    "inputs": {
+      "model_name": "depth_anything_3_base.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Depth Anything 3"
+    }
+  },
+  "16": {
+    "class_type": "DA3Inference",
+    "inputs": {
+      "da3_model": [
+        "15",
+        0
+      ],
+      "image": [
+        "14",
+        0
+      ],
+      "resolution": 504,
+      "resize_method": "upper_bound_resize",
+      "mode": "mono"
+    },
+    "_meta": {
+      "title": "DA3 depth"
+    }
+  },
+  "17": {
+    "class_type": "DA3Render",
+    "inputs": {
+      "da3_geometry": [
+        "16",
+        0
+      ],
+      "output": "depth",
+      "output.normalization": "v2_style",
+      "output.apply_sky_clip": false
+    },
+    "_meta": {
+      "title": "Depth map (near = white)"
+    }
+  },
+  "18": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "17",
+        0
+      ],
+      "upscale_method": "bilinear",
+      "width": 1024,
+      "height": 1024,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Depth at output size"
+    }
+  },
+  "20": {
+    "class_type": "Krea2DualControlApply",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "vae": [
+        "11",
+        0
+      ],
+      "adapter_name": "krea2-control.safetensors",
+      "strength": 1.0,
+      "color_end": 1.0,
+      "depth_end": 1.0,
+      "depth_image": [
+        "18",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Krea 2 color+depth control (depth only)"
+    }
+  }
+}

@@ -1,0 +1,1167 @@
+{
+  "name": "zooms",
+  "tool": "zooms",
+  "action": "zooms",
+  "workflow": "packs/qwen-edit-2509/multi_shot.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "ImageScaleToTotalPixels",
+      "title": "Scale to 1MP (multiple of 16)",
+      "inputs": {
+        "image": [
+          "1",
+          0
+        ],
+        "megapixels": 1,
+        "resolution_steps": 16,
+        "upscale_method": "lanczos"
+      }
+    },
+    "3": {
+      "class_type": "UNETLoader",
+      "title": "Qwen-Image-Edit-2509",
+      "inputs": {
+        "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "4": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "Lightning 4-step LoRA",
+      "inputs": {
+        "lora_name": "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "model": [
+          "3",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "5": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "Multiple-Angles LoRA",
+      "inputs": {
+        "lora_name": "qwen-image-edit-2511-multiple-angles-lora.safetensors",
+        "model": [
+          "4",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "6": {
+      "class_type": "ModelSamplingAuraFlow",
+      "title": "Model Sampling (shift 3)",
+      "inputs": {
+        "model": [
+          "5",
+          0
+        ],
+        "shift": 3
+      }
+    },
+    "7": {
+      "class_type": "CFGNorm",
+      "title": "CFG Norm",
+      "inputs": {
+        "model": [
+          "6",
+          0
+        ],
+        "strength": 1
+      }
+    },
+    "8": {
+      "class_type": "CLIPLoader",
+      "title": "Qwen2.5-VL Text Encoder",
+      "inputs": {
+        "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "device": "default",
+        "type": "qwen_image"
+      }
+    },
+    "9": {
+      "class_type": "VAELoader",
+      "title": "Qwen Image VAE",
+      "inputs": {
+        "vae_name": "qwen_image_vae.safetensors"
+      }
+    },
+    "11": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": ""
+      }
+    },
+    "12": {
+      "class_type": "VAEEncode",
+      "title": "Encode Source",
+      "inputs": {
+        "pixels": [
+          "2",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "17": {
+      "class_type": "ReferenceLatent",
+      "title": "Reference latent (negative)",
+      "inputs": {
+        "conditioning": [
+          "11",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "SaveImage",
+      "title": "Save contact sheet",
+      "inputs": {
+        "filename_prefix": "CJ_Zooms/sheet",
+        "images": [
+          "47",
+          0
+        ]
+      }
+    },
+    "21": {
+      "class_type": "SaveImage",
+      "title": "Save views",
+      "inputs": {
+        "filename_prefix": "CJ_Zooms/view",
+        "images": [
+          "37",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-2",
+      "inputs": {
+        "image1": [
+          "103",
+          0
+        ],
+        "image2": [
+          "113",
+          0
+        ]
+      }
+    },
+    "31": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-3",
+      "inputs": {
+        "image1": [
+          "30",
+          0
+        ],
+        "image2": [
+          "123",
+          0
+        ]
+      }
+    },
+    "32": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-4",
+      "inputs": {
+        "image1": [
+          "31",
+          0
+        ],
+        "image2": [
+          "133",
+          0
+        ]
+      }
+    },
+    "33": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-5",
+      "inputs": {
+        "image1": [
+          "32",
+          0
+        ],
+        "image2": [
+          "143",
+          0
+        ]
+      }
+    },
+    "34": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-6",
+      "inputs": {
+        "image1": [
+          "33",
+          0
+        ],
+        "image2": [
+          "153",
+          0
+        ]
+      }
+    },
+    "35": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-7",
+      "inputs": {
+        "image1": [
+          "34",
+          0
+        ],
+        "image2": [
+          "163",
+          0
+        ]
+      }
+    },
+    "36": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-8",
+      "inputs": {
+        "image1": [
+          "35",
+          0
+        ],
+        "image2": [
+          "173",
+          0
+        ]
+      }
+    },
+    "37": {
+      "class_type": "ImageBatch",
+      "title": "Batch views 1-9",
+      "inputs": {
+        "image1": [
+          "36",
+          0
+        ],
+        "image2": [
+          "183",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 1 (1-2)",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "104",
+          0
+        ],
+        "image2": [
+          "114",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "41": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 1",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "40",
+          0
+        ],
+        "image2": [
+          "124",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "42": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 2 (1-2)",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "134",
+          0
+        ],
+        "image2": [
+          "144",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "43": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 2",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "42",
+          0
+        ],
+        "image2": [
+          "154",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "44": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 3 (1-2)",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "164",
+          0
+        ],
+        "image2": [
+          "174",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "45": {
+      "class_type": "ImageStitch",
+      "title": "Sheet row 3",
+      "inputs": {
+        "direction": "right",
+        "image1": [
+          "44",
+          0
+        ],
+        "image2": [
+          "184",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "46": {
+      "class_type": "ImageStitch",
+      "title": "Sheet rows 1-2",
+      "inputs": {
+        "direction": "down",
+        "image1": [
+          "41",
+          0
+        ],
+        "image2": [
+          "43",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "47": {
+      "class_type": "ImageStitch",
+      "title": "Contact sheet",
+      "inputs": {
+        "direction": "down",
+        "image1": [
+          "46",
+          0
+        ],
+        "image2": [
+          "45",
+          0
+        ],
+        "match_image_size": true,
+        "spacing_color": "black",
+        "spacing_width": 8
+      }
+    },
+    "100": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Extreme wide",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot wide shot. Extreme wide shot: zoom far out, the subject is a tiny figure in the center of a vast view of the whole location."
+      }
+    },
+    "101": {
+      "class_type": "ReferenceLatent",
+      "title": "View 1 reference latent",
+      "inputs": {
+        "conditioning": [
+          "100",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "102": {
+      "class_type": "KSampler",
+      "title": "View 1 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "101",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799534,
+        "steps": 4
+      }
+    },
+    "103": {
+      "class_type": "VAEDecode",
+      "title": "View 1 decode",
+      "inputs": {
+        "samples": [
+          "102",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "104": {
+      "class_type": "ImageScaleBy",
+      "title": "View 1 sheet cell",
+      "inputs": {
+        "image": [
+          "103",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "110": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Very wide",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot wide shot. Very wide shot: zoom out, the subject is small in the center of the frame with lots of the surrounding location visible."
+      }
+    },
+    "111": {
+      "class_type": "ReferenceLatent",
+      "title": "View 2 reference latent",
+      "inputs": {
+        "conditioning": [
+          "110",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "112": {
+      "class_type": "KSampler",
+      "title": "View 2 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "111",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799535,
+        "steps": 4
+      }
+    },
+    "113": {
+      "class_type": "VAEDecode",
+      "title": "View 2 decode",
+      "inputs": {
+        "samples": [
+          "112",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "114": {
+      "class_type": "ImageScaleBy",
+      "title": "View 2 sheet cell",
+      "inputs": {
+        "image": [
+          "113",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "120": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Wide",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot wide shot. Wide shot: the subject is seen full length in the center of the frame with the surrounding scene around them."
+      }
+    },
+    "121": {
+      "class_type": "ReferenceLatent",
+      "title": "View 3 reference latent",
+      "inputs": {
+        "conditioning": [
+          "120",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "122": {
+      "class_type": "KSampler",
+      "title": "View 3 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "121",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799536,
+        "steps": 4
+      }
+    },
+    "123": {
+      "class_type": "VAEDecode",
+      "title": "View 3 decode",
+      "inputs": {
+        "samples": [
+          "122",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "124": {
+      "class_type": "ImageScaleBy",
+      "title": "View 3 sheet cell",
+      "inputs": {
+        "image": [
+          "123",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "130": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Medium wide",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot medium shot. Medium wide shot: move the camera closer; the whole head and upper body are visible, the frame cuts off at the knees, the feet are not visible."
+      }
+    },
+    "131": {
+      "class_type": "ReferenceLatent",
+      "title": "View 4 reference latent",
+      "inputs": {
+        "conditioning": [
+          "130",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "132": {
+      "class_type": "KSampler",
+      "title": "View 4 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "131",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799537,
+        "steps": 4
+      }
+    },
+    "133": {
+      "class_type": "VAEDecode",
+      "title": "View 4 decode",
+      "inputs": {
+        "samples": [
+          "132",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "134": {
+      "class_type": "ImageScaleBy",
+      "title": "View 4 sheet cell",
+      "inputs": {
+        "image": [
+          "133",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "140": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Medium",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot close-up. Medium shot: step back from the close-up so the subject is seen from the top of the head down to the waist; the top of the head is near the top edge."
+      }
+    },
+    "141": {
+      "class_type": "ReferenceLatent",
+      "title": "View 5 reference latent",
+      "inputs": {
+        "conditioning": [
+          "140",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "142": {
+      "class_type": "KSampler",
+      "title": "View 5 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "141",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799538,
+        "steps": 4
+      }
+    },
+    "143": {
+      "class_type": "VAEDecode",
+      "title": "View 5 decode",
+      "inputs": {
+        "samples": [
+          "142",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "144": {
+      "class_type": "ImageScaleBy",
+      "title": "View 5 sheet cell",
+      "inputs": {
+        "image": [
+          "143",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "150": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Medium close-up",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot close-up. Medium close-up: the head, shoulders and chest of the subject fill the frame, centered."
+      }
+    },
+    "151": {
+      "class_type": "ReferenceLatent",
+      "title": "View 6 reference latent",
+      "inputs": {
+        "conditioning": [
+          "150",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "152": {
+      "class_type": "KSampler",
+      "title": "View 6 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "151",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799539,
+        "steps": 4
+      }
+    },
+    "153": {
+      "class_type": "VAEDecode",
+      "title": "View 6 decode",
+      "inputs": {
+        "samples": [
+          "152",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "154": {
+      "class_type": "ImageScaleBy",
+      "title": "View 6 sheet cell",
+      "inputs": {
+        "image": [
+          "153",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "160": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Close-up",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot close-up. Close-up: golden test subject fills most of the frame, centered."
+      }
+    },
+    "161": {
+      "class_type": "ReferenceLatent",
+      "title": "View 7 reference latent",
+      "inputs": {
+        "conditioning": [
+          "160",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "162": {
+      "class_type": "KSampler",
+      "title": "View 7 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "161",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799540,
+        "steps": 4
+      }
+    },
+    "163": {
+      "class_type": "VAEDecode",
+      "title": "View 7 decode",
+      "inputs": {
+        "samples": [
+          "162",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "164": {
+      "class_type": "ImageScaleBy",
+      "title": "View 7 sheet cell",
+      "inputs": {
+        "image": [
+          "163",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "170": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Extreme close-up",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot close-up. Extreme close-up: zoom in further on golden test subject until it fills the frame edge to edge."
+      }
+    },
+    "171": {
+      "class_type": "ReferenceLatent",
+      "title": "View 8 reference latent",
+      "inputs": {
+        "conditioning": [
+          "170",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "172": {
+      "class_type": "KSampler",
+      "title": "View 8 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "171",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799541,
+        "steps": 4
+      }
+    },
+    "173": {
+      "class_type": "VAEDecode",
+      "title": "View 8 decode",
+      "inputs": {
+        "samples": [
+          "172",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "174": {
+      "class_type": "ImageScaleBy",
+      "title": "View 8 sheet cell",
+      "inputs": {
+        "image": [
+          "173",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    },
+    "180": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "title": "Macro",
+      "inputs": {
+        "clip": [
+          "8",
+          0
+        ],
+        "image1": [
+          "2",
+          0
+        ],
+        "prompt": "<sks> front view eye-level shot close-up. Macro shot: zoom all the way in on the finest detail of golden test subject, filling the whole frame with texture."
+      }
+    },
+    "181": {
+      "class_type": "ReferenceLatent",
+      "title": "View 9 reference latent",
+      "inputs": {
+        "conditioning": [
+          "180",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ]
+      }
+    },
+    "182": {
+      "class_type": "KSampler",
+      "title": "View 9 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "12",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "17",
+          0
+        ],
+        "positive": [
+          "181",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799542,
+        "steps": 4
+      }
+    },
+    "183": {
+      "class_type": "VAEDecode",
+      "title": "View 9 decode",
+      "inputs": {
+        "samples": [
+          "182",
+          0
+        ],
+        "vae": [
+          "9",
+          0
+        ]
+      }
+    },
+    "184": {
+      "class_type": "ImageScaleBy",
+      "title": "View 9 sheet cell",
+      "inputs": {
+        "image": [
+          "183",
+          0
+        ],
+        "scale_by": 0.5,
+        "upscale_method": "area"
+      }
+    }
+  }
+}

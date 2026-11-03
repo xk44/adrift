@@ -1,0 +1,1312 @@
+{
+  "version": 1,
+  "bases": {
+    "qwen21": {
+      "label": "Qwen-Image 2.1",
+      "pack": "qwen-image-21",
+      "graph": "qwen21",
+      "license": {
+        "name": "Qwen Research License",
+        "commercial": false,
+        "note": "Non-commercial (Qwen Research License)."
+      }
+    },
+    "qwen2511": {
+      "label": "Qwen-Image-Edit 2511",
+      "pack": "qwen-image-edit",
+      "graph": "qwen2511",
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "Apache-2.0 base model (Qwen-Image-Edit-2511); check each LoRA's own license."
+      }
+    },
+    "krea2": {
+      "label": "Krea 2",
+      "pack": "krea2-edit",
+      "license": {
+        "name": "Krea 2 Community License",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: commercial use only while you and your affiliates have under US$1M total annual revenue (trailing 12 months), with content filtering; above that, Krea's enterprise license (Krea 2 Community License §2.3, §4.2).",
+        "source": "https://huggingface.co/krea/Krea-2-Turbo/blob/main/LICENSE.pdf"
+      }
+    },
+    "flux3": {
+      "label": "FLUX.3 Klein",
+      "pack": "flux3",
+      "graph": "flux3",
+      "license": {
+        "name": "FLUX Kommunity License v1.0",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: commercial use of outputs only for Qualifying Users (under US$5M gross annual revenue, affiliates included), with content filters or output review; otherwise non-commercial unless licensed from Black Forest Labs (FLUX Kommunity License v1.0).",
+        "source": "https://huggingface.co/black-forest-labs/flux-3-image-klein/blob/main/LICENSE.md"
+      }
+    },
+    "moss": {
+      "label": "MOSS-Image",
+      "pack": "moss-image",
+      "graph": "moss",
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "MOSS-Image weights, Qwen3.5-9B encoder and darask0 color/depth control LoRA are Apache-2.0."
+      }
+    }
+  },
+  "speedLoras": {
+    "qwen21": {
+      "file": "edit_tools/qwen-image-2.1-lightning-4step.safetensors",
+      "strength": 1.0,
+      "steps": 4,
+      "cfg": 1,
+      "label": "Lightning"
+    },
+    "qwen2511": {
+      "file": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength": 1.0,
+      "steps": 4,
+      "cfg": 2,
+      "label": "Lightning"
+    },
+    "moss": { "file": "moss_image_sft_8step_dmd.safetensors", "strength": 0.4, "steps": 14, "cfg": 3, "label": "DMD" },
+    "krea2": {
+      "file": "krea2_turbo_4step_rank_64_lora_comfyui.safetensors",
+      "strength": 1.0,
+      "steps": 4,
+      "cfg": 1,
+      "label": "4-step distill"
+    }
+  },
+  "extraLoras": {
+    "keepFraming": {
+      "label": "Keep framing",
+      "description": "Stacks the Consistency LoRA so the edit keeps the original framing and does not drift.",
+      "lora": {
+        "file": "edit_tools/qwen-image-2.1-consistency.safetensors",
+        "strength": 1.0
+      },
+      "bases": {
+        "flux3": {
+          "description": "Stacks the FLUX.3 Consistency LoRA to keep the edit on the original frame. Early release: helps weather/light and restyle drift, can hurt hair-color and pose edits.",
+          "lora": {
+            "file": "edit_tools/flux-3-image-klein-consistency.safetensors",
+            "strength": 1.0
+          }
+        }
+      }
+    }
+  },
+  "outpaintPresets": [
+    {
+      "id": "all_25",
+      "label": "All sides +25%",
+      "sides": { "left": 0.25, "right": 0.25, "top": 0.25, "bottom": 0.25 }
+    },
+    {
+      "id": "all_50",
+      "label": "All sides +50%",
+      "sides": { "left": 0.5, "right": 0.5, "top": 0.5, "bottom": 0.5 }
+    },
+    {
+      "id": "widen_50",
+      "label": "Widen +50%",
+      "sides": { "left": 0.25, "right": 0.25, "top": 0, "bottom": 0 }
+    },
+    {
+      "id": "tall_50",
+      "label": "Taller +50%",
+      "sides": { "left": 0, "right": 0, "top": 0.25, "bottom": 0.25 }
+    },
+    { "id": "left_50", "label": "Left +50%", "sides": { "left": 0.5, "right": 0, "top": 0, "bottom": 0 } },
+    { "id": "right_50", "label": "Right +50%", "sides": { "left": 0, "right": 0.5, "top": 0, "bottom": 0 } },
+    { "id": "top_50", "label": "Top +50%", "sides": { "left": 0, "right": 0, "top": 0.5, "bottom": 0 } },
+    { "id": "bottom_50", "label": "Bottom +50%", "sides": { "left": 0, "right": 0, "top": 0, "bottom": 0.5 } },
+    { "id": "aspect_16_9", "label": "16:9", "aspect": "16:9", "anchor": "center" },
+    { "id": "aspect_9_16", "label": "9:16", "aspect": "9:16", "anchor": "center" },
+    { "id": "aspect_4_3", "label": "4:3", "aspect": "4:3", "anchor": "center" },
+    { "id": "aspect_3_4", "label": "3:4", "aspect": "3:4", "anchor": "center" },
+    { "id": "aspect_1_1", "label": "1:1", "aspect": "1:1", "anchor": "center" }
+  ],
+  "tools": [
+    {
+      "id": "qwen21-outpaint",
+      "label": "Outpaint",
+      "category": "Expand",
+      "base": "qwen21",
+      "description": "Extend the picture beyond its borders with a seamless continuation of the scene",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/qwen-image-2.1-outpaint-v2.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "outpaint",
+      "outpaint": { "default": "all_25", "fill": "#808080", "maxSide": 1.0 },
+      "promptMode": "optional",
+      "promptTemplate": "Outpaint the image: replace the solid gray areas with a seamless continuation of the scene, keeping the existing picture unchanged. {prompt}",
+      "promptHint": "Optional: describe what the new area should show. Blank = extend the scene seamlessly.",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/ausboss/Qwen-Image-2.1-Outpaint-LoRA"
+    },
+    {
+      "id": "qwen21-restore",
+      "label": "Restore",
+      "category": "Restore",
+      "base": "qwen21",
+      "description": "Restore a damaged photo: removes scratches, noise and blur with a soft upscale",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/qwen-image-2.1-restore.safetensors", "strength": 1.0 }],
+      "extras": { "keepFraming": { "default": false } },
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "Restore the photo: remove blur, noise and compression artifacts and recover sharp, natural detail, keeping the same composition, people and colors. {prompt}",
+      "promptHint": "Optional extra guidance, e.g. \"colorize\".",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/ausboss/Qwen-Image-2.1-Restore-LoRA"
+    },
+    {
+      "id": "qwen21-camera",
+      "label": "Camera angle",
+      "category": "Camera",
+      "base": "qwen21",
+      "description": "Re-render the scene from a new camera angle; anything the source hides is imagined",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/qwen-image-2.1-qma-camera-angles.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 30, "cfg": 3 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "<qma> {azimuth} {elevation} {distance} {prompt}",
+      "promptHint": "Optional extra edit instruction appended after the camera prompt.",
+      "options": [
+        {
+          "id": "azimuth",
+          "label": "Orbit",
+          "type": "enum",
+          "default": "front-right",
+          "values": [
+            { "id": "front", "label": "Front", "text": "front view" },
+            { "id": "front-right", "label": "Front right", "text": "front-right quarter view" },
+            { "id": "right", "label": "Right", "text": "right side view" },
+            { "id": "back-right", "label": "Back right", "text": "back-right quarter view" },
+            { "id": "back", "label": "Back", "text": "back view" },
+            { "id": "back-left", "label": "Back left", "text": "back-left quarter view" },
+            { "id": "left", "label": "Left", "text": "left side view" },
+            { "id": "front-left", "label": "Front left", "text": "front-left quarter view" }
+          ]
+        },
+        {
+          "id": "elevation",
+          "label": "Height",
+          "type": "enum",
+          "default": "eye-level",
+          "values": [
+            { "id": "low-angle", "label": "Low angle", "text": "low-angle shot" },
+            { "id": "eye-level", "label": "Eye level", "text": "eye-level shot" },
+            { "id": "elevated", "label": "Elevated", "text": "elevated shot" },
+            { "id": "high-angle", "label": "High angle", "text": "high-angle shot" }
+          ]
+        },
+        {
+          "id": "distance",
+          "label": "Distance",
+          "type": "enum",
+          "default": "medium",
+          "values": [
+            { "id": "close-up", "label": "Close-up", "text": "close-up" },
+            { "id": "medium", "label": "Medium", "text": "medium shot" },
+            { "id": "wide", "label": "Wide", "text": "wide shot" }
+          ]
+        }
+      ],
+      "sourceUrl": "https://huggingface.co/gribbliest/qwen-image-2.1-qma-camera-angles"
+    },
+    {
+      "id": "qwen21-outfit-swap",
+      "label": "Outfit swap",
+      "category": "Outfit",
+      "base": "qwen21",
+      "description": "Put the outfit from the second image onto the person in the first",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/qwen-image-2.1-outfit-swap.safetensors", "strength": 1.0 }],
+      "extras": { "keepFraming": { "default": false } },
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 2,
+      "refLabels": ["Person", "Outfit"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "Replace the outfit of the person in image 1 with the outfit shown in image 2, keeping the person, pose and background unchanged. {prompt}",
+      "promptHint": "Optional extra guidance, e.g. \"keep the original shoes\".",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/ausboss/Qwen-Image-2.1-Outfit-Swap-Consistency-LoRA"
+    },
+    {
+      "id": "qwen21-unblur-background",
+      "label": "Unblur background",
+      "category": "Restore",
+      "base": "qwen21",
+      "description": "Remove background blur (bokeh) so the whole frame is sharp",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/unblur-background-qwen-image-2.1-edit-lora.safetensors", "strength": 1.0 }],
+      "extras": { "keepFraming": { "default": true } },
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "remove blur, sharp background",
+      "promptHint": "No prompt needed.",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/houseofboern/unblur-background-qwen-image-2.1-edit-lora"
+    },
+    {
+      "id": "krea2-general-edit",
+      "label": "General edit",
+      "category": "Edit",
+      "base": "krea2",
+      "description": "Recolor, replace, restyle or remove anything with a plain instruction",
+      "pack": "krea2-edit",
+      "packAction": "edit_instruct",
+      "graphFamily": "krea2edit",
+      "loras": [{ "file": "edit_tools/krea2_general_edit_v2_r64.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 10, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "What to change, e.g. \"make the car matte black\".",
+      "options": [],
+      "requiresNodes": "comfyui-krea2edit >= 2.0.0",
+      "license": {
+        "name": "Krea 2 Identity Edit V2 License (LoRA); Krea 2 Community License (base)",
+        "commercial": false,
+        "note": "The V2 edit LoRA is free for personal and non-commercial use only; commercial use needs a license from its author. The Krea 2 base adds its US$1M revenue cap.",
+        "source": "https://huggingface.co/conradlocke/krea2-identity-edit/blob/main/LICENSE_V2.md"
+      },
+      "sourceUrl": "https://huggingface.co/conradlocke/krea2-identity-edit"
+    },
+    {
+      "id": "krea2-inpaint",
+      "label": "Inpaint",
+      "category": "Inpaint",
+      "base": "krea2",
+      "description": "Repaint a masked area from your prompt; the rest of the picture is kept",
+      "pack": "krea2-edit",
+      "packAction": "edit_ostris",
+      "graphFamily": "ostris",
+      "loras": [{ "file": "edit_tools/krea2_inpaint_edit_v2_17500.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 20, "cfg": 3 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": true,
+      "maskHint": "Paint the area to repaint.",
+      "prep": "maskfill",
+      "kvCache": true,
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Describe what should appear in the masked region.",
+      "options": [],
+      "requiresNodes": "ComfyUI-Krea2-Ostris-Edit",
+      "license": {
+        "name": "Krea 2 Community License (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: Krea 2 Community License, commercial use only under US$1M total annual revenue (affiliates included), with content filtering.",
+        "source": "https://huggingface.co/Cierpliwy/krea2-inpaint-edit"
+      },
+      "sourceUrl": "https://huggingface.co/Cierpliwy/krea2-inpaint-edit"
+    },
+    {
+      "id": "flux3-outpaint",
+      "label": "Outpaint",
+      "category": "Expand",
+      "base": "flux3",
+      "description": "Extend the picture beyond its borders on FLUX.3 Klein",
+      "pack": "flux3",
+      "packAction": "edit_flux3_fast",
+      "loras": [{ "file": "edit_tools/flux-3-image-klein-outpaint.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 16, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "outpaint",
+      "outpaint": { "default": "all_25", "fill": "#808080", "maxSide": 1.0 },
+      "promptMode": "optional",
+      "promptTemplate": "Outpaint the image: replace the solid gray areas with a seamless continuation of the scene, keeping the existing picture unchanged. {prompt}",
+      "promptHint": "Optional: describe what the new area should show. Blank = extend the scene seamlessly.",
+      "options": [],
+      "license": {
+        "name": "FLUX Kommunity License v1.0 (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: FLUX Kommunity License v1.0, commercial use of outputs only under US$5M gross annual revenue (affiliates included), with content filters.",
+        "source": "https://huggingface.co/ausboss/FLUX-3-Image-Klein-Outpaint-LoRA"
+      },
+      "sourceUrl": "https://huggingface.co/ausboss/FLUX-3-Image-Klein-Outpaint-LoRA"
+    },
+    {
+      "id": "krea2-outpaint",
+      "label": "Outpaint (fast)",
+      "category": "Expand",
+      "base": "krea2",
+      "description": "Extend the picture beyond its borders in 8 fast steps; original pixels are kept",
+      "pack": "krea2",
+      "packAction": "outpaint_bbox",
+      "graphFamily": "krea2outpaint",
+      "loras": [{ "file": "krea2_outpaint_rank32.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "outpaint",
+      "outpaint": { "default": "all_25", "fill": "#808080", "maxSide": 1.0 },
+      "promptMode": "optional",
+      "promptTemplate": "Seamless natural extension of the scene. {prompt}",
+      "promptHint": "Optional: describe the whole finished picture (e.g. \"a sunlit beach at dusk, wide shot\"). Blank = extend the scene seamlessly.",
+      "options": [],
+      "requiresNodes": "comfyui-krea2-outpaint",
+      "license": {
+        "name": "Krea 2 Community License (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: Krea 2 Community License, commercial use only under US$1M total annual revenue (affiliates included), with content filtering.",
+        "source": "https://huggingface.co/yijunwang2/krea2-outpaint"
+      },
+      "sourceUrl": "https://huggingface.co/yijunwang2/krea2-outpaint"
+    },
+    {
+      "id": "krea2-anypaint",
+      "label": "Inpaint + Expand",
+      "category": "Inpaint",
+      "base": "krea2",
+      "description": "Repaint any painted areas, and optionally grow the canvas in the same pass",
+      "pack": "krea2",
+      "packAction": "anypaint",
+      "graphFamily": "krea2anypaint",
+      "loras": [{ "file": "krea2_anypaint_rank32.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": true,
+      "maskHint": "Paint everything that should change. Unpainted areas are kept.",
+      "prep": "anypaint",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Describe the whole finished picture, not just the painted part (e.g. \"a sunlit kitchen with a ceramic bowl of lemons on the island, morning light\").",
+      "options": [
+        {
+          "id": "expand",
+          "label": "Grow canvas",
+          "type": "enum",
+          "default": "none",
+          "values": [
+            { "id": "none", "label": "Same canvas", "text": "" },
+            { "id": "all_25", "label": "All sides +25%", "text": "" },
+            { "id": "widen_50", "label": "Widen +50%", "text": "" },
+            { "id": "tall_50", "label": "Taller +50%", "text": "" },
+            { "id": "left_50", "label": "Left +50%", "text": "" },
+            { "id": "right_50", "label": "Right +50%", "text": "" },
+            { "id": "top_50", "label": "Top +50%", "text": "" },
+            { "id": "bottom_50", "label": "Bottom +50%", "text": "" },
+            { "id": "aspect_16_9", "label": "16:9", "text": "" },
+            { "id": "aspect_9_16", "label": "9:16", "text": "" },
+            { "id": "aspect_1_1", "label": "1:1", "text": "" }
+          ]
+        }
+      ],
+      "requiresNodes": "comfyui-krea2-anypaint",
+      "license": {
+        "name": "Krea 2 Community License (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: Krea 2 Community License, commercial use only under US$1M total annual revenue (affiliates included), with content filtering.",
+        "source": "https://huggingface.co/yijunwang2/krea2-anypaint"
+      },
+      "sourceUrl": "https://huggingface.co/yijunwang2/krea2-anypaint"
+    },
+    {
+      "id": "qwen21-head-swap",
+      "label": "Head swap",
+      "category": "Swap",
+      "base": "qwen21",
+      "description": "Put the head from the second image on the first; pose, light and expression kept",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/bfs_head_v1.1_qwen_2.1.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 2,
+      "refLabels": ["Target", "Face"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "head_swap: start with <image1> as the base image, keeping its lighting, environment, and background. remove the head from <image1> completely and replace it with the head from <image2>, strictly preserving the hair, eye color, nose structure from <image2>. copy the direction of the eye, head rotation, micro expressions from <image1>, high quality, sharp details, 4k {prompt}",
+      "promptHint": "Optional extra guidance appended to the head-swap prompt. Image order matters: Target first, Face second.",
+      "options": [],
+      "license": {
+        "name": "MIT (LoRA); Qwen Research License (base)",
+        "commercial": false,
+        "note": "The BFS head LoRA is MIT, but it runs on Qwen-Image 2.1, whose Qwen Research License is non-commercial. Do not use on public figures or people who have not consented."
+      },
+      "sourceUrl": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+    },
+    {
+      "id": "qwen21-body-swap",
+      "label": "Body swap",
+      "category": "Swap",
+      "base": "qwen21",
+      "description": "Swap the person in the scene for the one in the second image; full-body refs work best",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/bfs_body_swap_v1.0_qwen_2.1.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 2,
+      "refLabels": ["Scene", "Person"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "body_swap: start with <image1> as the base image, keeping its lighting, environment, and background. replace the body from <image1> with the body from <image2>, strictly preserving the clothing, body shape and proportions from <image2>. copy the pose, direction of the eye, head rotation, micro expressions from <image1> {prompt}",
+      "promptHint": "Optional extra guidance. Scene first, Person second (full body, plain background works best).",
+      "options": [],
+      "license": {
+        "name": "Qwen Research License",
+        "commercial": false,
+        "note": "Non-commercial (Qwen Research License). Do not use on public figures or people who have not consented."
+      },
+      "sourceUrl": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+    },
+    {
+      "id": "krea2-head-swap",
+      "label": "Head swap (Krea 2)",
+      "category": "Swap",
+      "base": "krea2",
+      "graphFamily": "krea2edit",
+      "description": "Fast head swap: hair and face from the reference, pose and light from the base",
+      "pack": "krea2-edit",
+      "packAction": "swap_head",
+      "loras": [{ "file": "bfs_head_swap_v1.1_krea2.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 2,
+      "refLabels": ["Base image", "Reference head"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "head_swap: replace the head with the reference head.",
+      "promptHint": "No prompt needed. Base image first, reference head second.",
+      "options": [
+        {
+          "id": "likeness",
+          "label": "Likeness",
+          "type": "enum",
+          "default": "classic",
+          "values": [
+            { "id": "classic", "label": "Classic", "text": "" },
+            { "id": "strong", "label": "Strong", "text": "" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "MIT (LoRA); Krea 2 Community License (base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: the BFS head LoRA is MIT, and the Krea 2 base allows commercial use only under US$1M total annual revenue (affiliates included). Do not use on public figures or people who have not consented.",
+        "source": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+      },
+      "sourceUrl": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+    },
+    {
+      "id": "krea2-body-swap",
+      "label": "Body swap (Krea 2)",
+      "category": "Swap",
+      "base": "krea2",
+      "graphFamily": "krea2edit",
+      "description": "Experimental: swap in the person from the second image; add \"BG: …\" for a new background",
+      "pack": "krea2-edit",
+      "packAction": "swap_body",
+      "loras": [{ "file": "bfs_body_swap_v1_krea2.safetensors", "strength": 0.5 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 10, "cfg": 1 },
+      "refCount": 2,
+      "refLabels": ["Base image", "Reference person"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "body_swap: replace the person with the reference person. {prompt}",
+      "promptHint": "Optional. To change the background too: BG: a rainy neon street at night.",
+      "options": [
+        {
+          "id": "likeness",
+          "label": "Likeness",
+          "type": "enum",
+          "default": "classic",
+          "values": [
+            { "id": "classic", "label": "Classic", "text": "" },
+            { "id": "strong", "label": "Strong", "text": "" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "MIT (LoRA); Krea 2 Community License (base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: the BFS body LoRA is MIT, and the Krea 2 base allows commercial use only under US$1M total annual revenue (affiliates included). Do not use on public figures or people who have not consented.",
+        "source": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+      },
+      "sourceUrl": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap"
+    },
+    {
+      "id": "qwen21-next-scene",
+      "label": "Next scene",
+      "category": "Story",
+      "base": "qwen21",
+      "description": "Describe a camera move or reveal and get the next frame of the same world",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/next_scene_step2500.safetensors", "strength": 0.7 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 28, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Current frame"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "Next Scene: {prompt}",
+      "promptHint": "Lead with the camera move, then the subject/lighting, e.g. \"The camera pulls back to a wide aerial view, soft morning light.\"",
+      "options": [],
+      "license": {
+        "name": "Apache-2.0 (LoRA); Qwen Research License (base)",
+        "commercial": false,
+        "note": "The LoRA is Apache-2.0, but it runs on Qwen-Image 2.1, whose Qwen Research License is non-commercial."
+      },
+      "sourceUrl": "https://huggingface.co/akhaliq/Qwen-Image-2.1-Next-Scene-LoRA"
+    },
+    {
+      "id": "qwen21-remove-bg",
+      "label": "Remove background (RGBA)",
+      "category": "Remove",
+      "base": "qwen21",
+      "description": "Cut the subject out as a full-size transparent PNG for overlays and stickers",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "encoderResolution": 0,
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "Remove the background, and output a PNG image",
+      "promptHint": "No prompt needed.",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1"
+    },
+    {
+      "id": "qwen21-remove-box",
+      "label": "Object Remover (box)",
+      "category": "Remove",
+      "base": "qwen21",
+      "description": "Paint over an object to erase it and rebuild the background behind it",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/Qwen-Image-2.1-Object-Remover-Bbox-turbo-4000.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": true },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": true,
+      "maskHint": "Paint over the object to remove. A red box is drawn around each painted area.",
+      "prep": "redbox",
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "Remove the red highlighted object from the scene",
+      "promptHint": "No prompt needed.",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/prithivMLmods/Qwen-Image-2.1-Object-Remover-Bbox-turbo"
+    },
+    {
+      "id": "qwen21-doodle",
+      "label": "Doodle in",
+      "category": "Inpaint",
+      "base": "qwen21",
+      "description": "Sketch an outline and name it; the object appears, lit to match the scene",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/doodle_in_lora_qwen21.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 40, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": true,
+      "maskHint": "Draw a thin outline of the new object (about 1% of the image's short side). Painted pixels become the magenta scribble.",
+      "prep": "scribble",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "<doodle> Turn the magenta scribble into {prompt}.",
+      "promptHint": "Name the object, e.g. \"a brown leather armchair\".",
+      "options": [],
+      "sourceUrl": "https://huggingface.co/ML-Intern-lab/Qwen-Image-2.1-doodle-in-LoRA"
+    },
+    {
+      "id": "qwen21-anything2real",
+      "label": "Anything to real",
+      "category": "Restyle",
+      "base": "qwen21",
+      "description": "Turn an anime, illustration or other stylized character into a realistic photo",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/Qwen2.1_Anything2RealCharacters.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "Turn this into a realistic photo of the character, real person, photographic skin and lighting. {prompt}",
+      "promptHint": "Optional extra guidance, e.g. \"studio portrait\".",
+      "options": [],
+      "license": {
+        "name": "Apache-2.0 (LoRA); Qwen Research License (base)",
+        "commercial": false,
+        "note": "The LoRA is Apache-2.0, but it runs on Qwen-Image 2.1, whose Qwen Research License is non-commercial."
+      },
+      "sourceUrl": "https://huggingface.co/WarmBloodAban/Qwen-Image-2.1-LoRAs"
+    },
+    {
+      "id": "qwen21-pano360",
+      "label": "360° panorama",
+      "category": "Expand",
+      "base": "qwen21",
+      "description": "Turn one view into a seamless 360° panorama (2:1) for VR viewers and skyboxes",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/pano360_qwen21_edit_v1.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["View"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "encoderResolution": 1088,
+      "fixedLatent": { "width": 1536, "height": 768 },
+      "promptMode": "required",
+      "promptTemplate": "Transform this set of images into an equirectangular 360 panorama. Scene: {prompt}",
+      "promptHint": "One sentence: place, lighting and mood, e.g. \"a misty pine forest clearing at dawn, soft golden light\".",
+      "options": [
+        {
+          "id": "size",
+          "label": "Size",
+          "type": "enum",
+          "default": "1536",
+          "values": [
+            { "id": "1536", "label": "1536×768", "text": "", "latent": { "width": 1536, "height": 768 } },
+            { "id": "2048", "label": "2048×1024", "text": "", "latent": { "width": 2048, "height": 1024 } }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Unstated (LoRA); Qwen Research License (base)",
+        "commercial": false,
+        "note": "The LoRA card states no license, and the Qwen-Image 2.1 base is non-commercial. Stacking speed LoRAs weakens the projection, so Turbo is off."
+      },
+      "sourceUrl": "https://huggingface.co/Gogodr/qwen-image-2.1-edit-pano360-lora"
+    },
+    {
+      "id": "qwen21-character-sheet",
+      "label": "Character sheet",
+      "category": "Camera",
+      "base": "qwen21",
+      "description": "Turn a person photo into a 3x2 angle or pose sheet; a standing photo works best",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/character-sheet-qwen-image-2.1-edit-lora-e9.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Person"],
+      "needsMask": false,
+      "prep": "letterbox",
+      "letterbox": { "width": 1344, "height": 768 },
+      "outpaint": null,
+      "encoderResolution": 0,
+      "promptMode": "none",
+      "promptTemplate": "{sheet}",
+      "promptHint": "",
+      "options": [
+        {
+          "id": "sheet",
+          "label": "Sheet",
+          "type": "enum",
+          "default": "angle-neck",
+          "values": [
+            { "id": "angle-neck", "label": "Angles (outfit)", "text": "turn this photo into a character reference sheet: a 3x2 grid on a plain grey background with a close-up portrait of her face, then her full outfit from the front, back, side, three-quarter front and three-quarter back, cropped at the neck" },
+            { "id": "pose-neck", "label": "Poses (outfit)", "text": "turn this photo into a character pose sheet: a 3x2 grid on a plain grey background with a close-up portrait of her face, then her posing standing side-on with her back arched, sitting on a grey cube, with one foot up on the cube, looking back over her shoulder, and sitting on the floor leaning back, cropped at the neck" },
+            { "id": "angle-full", "label": "Angles (full body)", "text": "turn this photo into a character reference sheet: a 3x2 grid on a plain grey background with a close-up portrait of her face, then her full body head to toe from the front, back, side, three-quarter front and three-quarter back" },
+            { "id": "pose-full", "label": "Poses (full body)", "text": "turn this photo into a character pose sheet: a 3x2 grid on a plain grey background with a close-up portrait of her face, then her full body head to toe posing standing side-on with her back arched, sitting on a grey cube, with one foot up on the cube, looking back over her shoulder, and sitting on the floor leaning back" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Qwen Research License",
+        "commercial": false,
+        "note": "Non-commercial. Only use photos of people who have consented."
+      },
+      "sourceUrl": "https://huggingface.co/houseofboern/character-sheet-qwen-image-2.1-edit-lora"
+    },
+    {
+      "id": "qwen21-realism",
+      "label": "Phone-photo realism",
+      "category": "Enhance",
+      "base": "qwen21",
+      "description": "Nudge a render toward a real phone photo: tone, color and grain",
+      "pack": "qwen-image-21",
+      "packAction": "edit_qwen21",
+      "loras": [{ "file": "edit_tools/realism-qwen-image-2.1-edit-lora-e8.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 25, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "encoderResolution": 768,
+      "promptMode": "none",
+      "promptTemplate": "convert this into a real phone photo",
+      "promptHint": "",
+      "options": [],
+      "license": {
+        "name": "Qwen Research License",
+        "commercial": false,
+        "note": "Non-commercial."
+      },
+      "sourceUrl": "https://huggingface.co/houseofboern/realism-qwen-image-2.1-edit-lora"
+    },
+    {
+      "id": "qwen2511-remove",
+      "label": "Object Remover (text)",
+      "category": "Remove",
+      "base": "qwen2511",
+      "description": "Name what to remove; the background and the rest of the picture are kept",
+      "pack": "qwen-image-edit",
+      "packAction": "edit_qwen",
+      "loras": [{ "file": "edit_tools/Qwen-Image-Edit-2511-Object-Remover.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 30, "cfg": 4 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "Remove {prompt} from the image while preserving the background and remaining elements maintaining realism and original details.",
+      "promptHint": "What to remove, e.g. \"the necklace and goggles\".",
+      "options": [],
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "LoRA and Qwen-Image-Edit-2511 base are both Apache-2.0.",
+        "source": "https://huggingface.co/prithivMLmods/Qwen-Image-Edit-2511-Object-Remover"
+      },
+      "sourceUrl": "https://huggingface.co/prithivMLmods/Qwen-Image-Edit-2511-Object-Remover"
+    },
+    {
+      "id": "qwen2511-unblur-upscale",
+      "label": "Unblur",
+      "category": "Restore",
+      "base": "qwen2511",
+      "description": "Reduce blur and restore fine detail; experimental, tuned for blurred faces",
+      "pack": "qwen-image-edit",
+      "packAction": "edit_qwen",
+      "loras": [{ "file": "edit_tools/Qwen-Image-Edit-Unblur-Upscale_20.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 30, "cfg": 4 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "unblur and upscale",
+      "promptHint": "No prompt needed.",
+      "options": [],
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "LoRA and Qwen-Image-Edit-2511 base are both Apache-2.0.",
+        "source": "https://huggingface.co/prithivMLmods/Qwen-Image-Edit-2511-Unblur-Upscale"
+      },
+      "sourceUrl": "https://huggingface.co/prithivMLmods/Qwen-Image-Edit-2511-Unblur-Upscale"
+    },
+    {
+      "id": "qwen2511-camera",
+      "label": "Camera angle (Qwen Edit 2511)",
+      "category": "Camera",
+      "base": "qwen2511",
+      "description": "Re-render the subject from 8 orbits, 4 heights and 3 distances; hidden parts imagined",
+      "pack": "qwen-image-edit",
+      "packAction": "edit_qwen",
+      "loras": [{ "file": "qwen-image-edit-2511-multiple-angles-lora.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": true, "default": true },
+      "defaults": { "steps": 40, "cfg": 3 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "cameraAngle": true,
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "<sks> {azimuth} {elevation} {distance} {prompt}",
+      "promptHint": "Optional extra edit instruction appended after the camera prompt.",
+      "options": [
+        {
+          "id": "azimuth",
+          "label": "Orbit",
+          "type": "enum",
+          "default": "front-right",
+          "values": [
+            { "id": "front", "label": "Front (0°)", "text": "front view", "camera": { "horizontal_angle": 0 } },
+            { "id": "front-right", "label": "Front right (45°)", "text": "front-right quarter view", "camera": { "horizontal_angle": 45 } },
+            { "id": "right", "label": "Right (90°)", "text": "right side view", "camera": { "horizontal_angle": 90 } },
+            { "id": "back-right", "label": "Back right (135°)", "text": "back-right quarter view", "camera": { "horizontal_angle": 135 } },
+            { "id": "back", "label": "Back (180°)", "text": "back view", "camera": { "horizontal_angle": 180 } },
+            { "id": "back-left", "label": "Back left (225°)", "text": "back-left quarter view", "camera": { "horizontal_angle": 225 } },
+            { "id": "left", "label": "Left (270°)", "text": "left side view", "camera": { "horizontal_angle": 270 } },
+            { "id": "front-left", "label": "Front left (315°)", "text": "front-left quarter view", "camera": { "horizontal_angle": 315 } }
+          ]
+        },
+        {
+          "id": "elevation",
+          "label": "Height",
+          "type": "enum",
+          "default": "eye-level",
+          "values": [
+            { "id": "low-angle", "label": "Low angle (-30°)", "text": "low-angle shot", "camera": { "vertical_angle": -30 } },
+            { "id": "eye-level", "label": "Eye level (0°)", "text": "eye-level shot", "camera": { "vertical_angle": 0 } },
+            { "id": "elevated", "label": "Elevated (30°)", "text": "elevated shot", "camera": { "vertical_angle": 30 } },
+            { "id": "high-angle", "label": "High angle (60°)", "text": "high-angle shot", "camera": { "vertical_angle": 60 } }
+          ]
+        },
+        {
+          "id": "distance",
+          "label": "Distance",
+          "type": "enum",
+          "default": "medium",
+          "values": [
+            { "id": "close-up", "label": "Close-up", "text": "close-up", "camera": { "zoom": 10 } },
+            { "id": "medium", "label": "Medium", "text": "medium shot", "camera": { "zoom": 5 } },
+            { "id": "wide", "label": "Wide", "text": "wide shot", "camera": { "zoom": 0 } }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "LoRA and Qwen-Image-Edit-2511 base are both Apache-2.0.",
+        "source": "https://huggingface.co/fal/Qwen-Image-Edit-2511-Multiple-Angles-LoRA"
+      },
+      "sourceUrl": "https://huggingface.co/fal/Qwen-Image-Edit-2511-Multiple-Angles-LoRA"
+    },
+    {
+      "id": "flux3-restore",
+      "label": "Restore",
+      "category": "Restore",
+      "base": "flux3",
+      "description": "Restore a small or worn photo: removes blur, noise and compression artifacts",
+      "pack": "flux3",
+      "packAction": "edit_flux3_fast",
+      "loras": [{ "file": "edit_tools/flux-3-image-klein-restore.safetensors", "strength": 1.0 }],
+      "extras": { "keepFraming": { "default": false } },
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "Restore the photo: remove blur, noise and compression artifacts and recover sharp, natural detail, keeping the same composition, people and colors. {prompt}",
+      "promptHint": "Optional extra guidance appended after the restore prompt.",
+      "options": [],
+      "license": {
+        "name": "FLUX Kommunity License v1.0 (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: FLUX Kommunity License v1.0, commercial use of outputs only under US$5M gross annual revenue (affiliates included), with content filters.",
+        "source": "https://huggingface.co/ausboss/FLUX-3-Image-Klein-Restore-LoRA"
+      },
+      "sourceUrl": "https://huggingface.co/ausboss/FLUX-3-Image-Klein-Restore-LoRA"
+    },
+    {
+      "id": "flux3-camera",
+      "label": "Camera angle",
+      "category": "Camera",
+      "base": "flux3",
+      "description": "Re-render the subject from a new angle or as a close-up; slower, 50-step pass",
+      "pack": "flux3",
+      "packAction": "edit_flux3",
+      "loras": [{ "file": "edit_tools/flux3_klein_angles_comfy.safetensors", "strength": 1.0 }],
+      "extras": {},
+      "speed": { "supported": false, "default": false },
+      "defaults": { "steps": 50, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "none",
+      "promptTemplate": "<mva> {azimuth} view, {elevation} shot{distance}",
+      "promptHint": "Pick the camera position below.",
+      "options": [
+        {
+          "id": "azimuth",
+          "label": "Orbit",
+          "type": "enum",
+          "default": "front-right",
+          "values": [
+            { "id": "front", "label": "Front", "text": "front" },
+            { "id": "front-right", "label": "Front right", "text": "front-right quarter" },
+            { "id": "right", "label": "Right", "text": "right side" },
+            { "id": "back-right", "label": "Back right", "text": "back-right quarter" },
+            { "id": "back", "label": "Back", "text": "back" },
+            { "id": "back-left", "label": "Back left", "text": "back-left quarter" },
+            { "id": "left", "label": "Left", "text": "left side" },
+            { "id": "front-left", "label": "Front left", "text": "front-left quarter" }
+          ]
+        },
+        {
+          "id": "elevation",
+          "label": "Height",
+          "type": "enum",
+          "default": "eye-level",
+          "values": [
+            { "id": "low-angle", "label": "Low angle", "text": "low-angle" },
+            { "id": "eye-level", "label": "Eye level", "text": "eye-level" },
+            { "id": "elevated", "label": "Elevated", "text": "elevated" },
+            { "id": "high-angle", "label": "High angle", "text": "high-angle" },
+            { "id": "top-down", "label": "Top down", "text": "top-down" }
+          ]
+        },
+        {
+          "id": "distance",
+          "label": "Distance",
+          "type": "enum",
+          "default": "none",
+          "values": [
+            { "id": "none", "label": "Normal", "text": "" },
+            { "id": "close-up", "label": "Close-up", "text": " close-up" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "FLUX Kommunity License v1.0 (LoRA and base)",
+        "commercial": null,
+        "badge": "cap",
+        "note": "Revenue cap: FLUX Kommunity License v1.0, commercial use of outputs only under US$5M gross annual revenue (affiliates included), with content filters.",
+        "source": "https://huggingface.co/akhaliq/flux-3-image-klein-angles-lora"
+      },
+      "sourceUrl": "https://huggingface.co/akhaliq/flux-3-image-klein-angles-lora"
+    },
+    {
+      "id": "moss-restyle-depth",
+      "label": "Restyle from depth",
+      "category": "Restyle",
+      "base": "moss",
+      "description": "Keep the layout and 3D shape; repaint style, materials and light from your prompt",
+      "pack": "moss-image",
+      "packAction": "restyle_depth",
+      "loras": [
+        { "file": "moss-control.safetensors", "strength": 1.0 },
+        { "file": "moss_image_sft_banding_fix_L37-41_bf16.safetensors", "strength": 1.0 }
+      ],
+      "extras": {},
+      "speed": { "supported": true, "default": true },
+      "defaults": { "steps": 50, "cfg": 3 },
+      "refCount": 1,
+      "refLabels": ["Structure image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Describe the new look: style, materials, lighting, era. The depth layout comes from the image.",
+      "options": [
+        {
+          "id": "structure",
+          "label": "Structure",
+          "type": "enum",
+          "default": "strict",
+          "values": [
+            { "id": "strict", "label": "Strict", "text": "" },
+            { "id": "loose", "label": "Loose", "text": "" }
+          ]
+        },
+        {
+          "id": "depth",
+          "label": "Depth model",
+          "type": "enum",
+          "default": "base",
+          "values": [
+            { "id": "base", "label": "DA3 Base (fast)", "text": "" },
+            { "id": "large", "label": "DA3 Mono Large", "text": "" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Apache-2.0",
+        "commercial": true,
+        "note": "The color/depth control LoRA and MOSS-Image weights are both Apache-2.0.",
+        "source": "https://huggingface.co/darask0/MOSS-Image-color-depth-control"
+      },
+      "sourceUrl": "https://huggingface.co/darask0/MOSS-Image-color-depth-control"
+    },
+    {
+      "id": "krea2-restyle-depth",
+      "label": "Krea 2 restyle from depth",
+      "category": "Restyle",
+      "base": "krea2",
+      "graphFamily": "krea2control",
+      "description": "Keep the pose and layout; generate a whole new picture from your prompt",
+      "pack": "krea2",
+      "packAction": "control_depth",
+      "loras": [],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Structure image"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Describe the whole new picture: subject, outfit, setting, style, lighting. Pose and layout come from the image.",
+      "options": [
+        {
+          "id": "structure",
+          "label": "Structure",
+          "type": "enum",
+          "default": "strict",
+          "values": [
+            { "id": "strict", "label": "Strict", "text": "" },
+            { "id": "loose", "label": "Loose (early only)", "text": "" }
+          ]
+        },
+        {
+          "id": "depth",
+          "label": "Depth model",
+          "type": "enum",
+          "default": "base",
+          "values": [
+            { "id": "base", "label": "DA3 Base (fast)", "text": "" },
+            { "id": "large", "label": "DA3 Mono Large", "text": "" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Unstated (LoRA); Krea 2 Community License (base)",
+        "commercial": null,
+        "badge": "check",
+        "note": "Check license: the color/depth control LoRA's model page is no longer public, so its own terms cannot be read. The Krea 2 base caps commercial use at US$1M annual revenue.",
+        "source": "https://huggingface.co/darask0/Krea-2-color-depth-control"
+      },
+      "sourceUrl": "https://huggingface.co/darask0/Krea-2-color-depth-control"
+    },
+    {
+      "id": "krea2-layout-regions",
+      "label": "Krea 2 layout from region map",
+      "category": "Compose",
+      "base": "krea2",
+      "graphFamily": "krea2control",
+      "description": "Paint flat color blocks where things go; your prompt says what each one becomes",
+      "pack": "krea2",
+      "packAction": "control_regions",
+      "loras": [],
+      "extras": {},
+      "speed": { "supported": true, "default": false },
+      "defaults": { "steps": 8, "cfg": 1 },
+      "refCount": 1,
+      "refLabels": ["Region map (flat colors)"],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Describe the scene and what fills each painted region, e.g. a woman on the left, a red car on the right, city street at dusk.",
+      "options": [
+        {
+          "id": "layout",
+          "label": "Layout",
+          "type": "enum",
+          "default": "strict",
+          "values": [
+            { "id": "strict", "label": "Strict", "text": "" },
+            { "id": "loose", "label": "Loose (early only)", "text": "" }
+          ]
+        }
+      ],
+      "license": {
+        "name": "Unstated (LoRA); Krea 2 Community License (base)",
+        "commercial": null,
+        "badge": "check",
+        "note": "Check license: the color/depth control LoRA's model page is no longer public, so its own terms cannot be read. The Krea 2 base caps commercial use at US$1M annual revenue.",
+        "source": "https://huggingface.co/darask0/Krea-2-color-depth-control"
+      },
+      "sourceUrl": "https://huggingface.co/darask0/Krea-2-color-depth-control"
+    },
+    {
+      "id": "moss-charref",
+      "label": "Character reference",
+      "category": "Story",
+      "base": "moss",
+      "description": "Draw an anime character from a reference in a new scene and pose",
+      "pack": "moss-image",
+      "packAction": "moss_charref",
+      "graphFamily": "mossostris",
+      "loras": [
+        {
+          "file": "moss_image_charref_v2.safetensors",
+          "strength": 1.0
+        }
+      ],
+      "extras": {},
+      "speed": {
+        "supported": false,
+        "default": false
+      },
+      "defaults": {
+        "steps": 50,
+        "cfg": 3
+      },
+      "refCount": 1,
+      "refLabels": [
+        "Character"
+      ],
+      "needsMask": false,
+      "prep": "none",
+      "kvCache": true,
+      "outpaint": null,
+      "promptMode": "required",
+      "promptTemplate": "Same character and art style as Picture 1. {prompt}",
+      "promptHint": "Danbooru-style tags: scene, pose, framing, expression, then the character's own look (e.g. 1girl, solo, sitting, cafe, upper body, light smile, fox ears, white hair, grey eyes, white dress).",
+      "options": [],
+      "requiresNodes": "ComfyUI-MOSS-Image-Ostris-Edit",
+      "license": {
+        "name": "Apache-2.0 (LoRA and MOSS-Image Base)",
+        "commercial": true,
+        "note": "LoRA and MOSS-Image Base weights are both Apache-2.0."
+      },
+      "sourceUrl": "https://huggingface.co/7err4/MOSS-Image-CharRef"
+    },
+    {
+      "id": "moss-colorize",
+      "label": "Colorize",
+      "category": "Restore",
+      "description": "Color a black-and-white manga page or line art, keeping the line work",
+      "base": "moss",
+      "pack": "moss-image",
+      "packAction": "moss_colorize",
+      "graphFamily": "mossi2i",
+      "loras": [
+        {
+          "file": "moss_image_base_colorize_v2.safetensors",
+          "strength": 1.0
+        }
+      ],
+      "extras": {},
+      "speed": {
+        "supported": false,
+        "default": false
+      },
+      "defaults": {
+        "steps": 30,
+        "cfg": 3
+      },
+      "refCount": 1,
+      "refLabels": [
+        "Page"
+      ],
+      "needsMask": false,
+      "prep": "none",
+      "outpaint": null,
+      "promptMode": "optional",
+      "promptTemplate": "{prompt}",
+      "promptHint": "Optional color tags, sparse is fine: blonde hair, blue eyes, red jacket, white shirt. Leave empty to let the model choose.",
+      "options": [],
+      "requiresNodes": "moss-image + moss-image-toolkit (OpenMOSS loader, sorryhyun MOSS Toolkit)",
+      "license": {
+        "name": "Apache-2.0 (LoRA and MOSS-Image Base)",
+        "commercial": true,
+        "note": "LoRA and MOSS-Image Base weights are both Apache-2.0."
+      },
+      "sourceUrl": "https://huggingface.co/sorryhyun/moss-image-colorize"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "ImagePadForOutpaint",
+    "inputs": {
+      "bottom": 0,
+      "feathering": 96,
+      "image": [
+        "1",
+        0
+      ],
+      "left": 0,
+      "right": 0,
+      "top": 0
+    }
+  },
+  "3": {
+    "class_type": "VAEEncodeForInpaint",
+    "inputs": {
+      "grow_mask_by": 24,
+      "mask": [
+        "2",
+        1
+      ],
+      "pixels": [
+        "2",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "cfg": 7,
+      "denoise": 1,
+      "latent_image": [
+        "3",
+        0
+      ],
+      "model": [
+        "4",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "seed": 0,
+      "steps": 20
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        1
+      ],
+      "text": "beautiful landscape, mountains, sunset, highly detailed, masterpiece"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        1
+      ],
+      "text": "ugly, blurry, low quality, distorted"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "Adrift_inpaint",
+      "images": [
+        "8",
+        0
+      ]
+    }
+  }
+}

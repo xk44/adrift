@@ -1,0 +1,215 @@
+{
+  "name": "wan_motion",
+  "tool": "wan_motion",
+  "action": "wan_motion",
+  "workflow": "packs/wan22/wan_motion.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "CLIPLoader",
+      "title": "Text encoder",
+      "inputs": {
+        "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "device": "default",
+        "type": "wan"
+      }
+    },
+    "2": {
+      "class_type": "VAELoader",
+      "title": "VAE",
+      "inputs": {
+        "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+      }
+    },
+    "3": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "4": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive prompt",
+      "inputs": {
+        "clip": [
+          "1",
+          0
+        ],
+        "text": "The video shows golden test subject. The camera performs an 0rb4it 360 degree orbit, circling all the way around golden test subject and showing the surroundings, before returning to the front view. Throughout the 0rb4it 360 degree orbit, golden test subject stays in place."
+      }
+    },
+    "5": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative prompt",
+      "inputs": {
+        "clip": [
+          "1",
+          0
+        ],
+        "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+      }
+    },
+    "6": {
+      "class_type": "WanImageToVideo",
+      "title": "Image to video",
+      "inputs": {
+        "batch_size": 1,
+        "clip_vision_output": [
+          "22",
+          0
+        ],
+        "height": 720,
+        "length": 81,
+        "negative": [
+          "5",
+          0
+        ],
+        "positive": [
+          "4",
+          0
+        ],
+        "start_image": [
+          "3",
+          0
+        ],
+        "vae": [
+          "2",
+          0
+        ],
+        "width": 1280
+      }
+    },
+    "10": {
+      "class_type": "UNETLoader",
+      "title": "Wan2.1 I2V 480p",
+      "inputs": {
+        "unet_name": "wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "11": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "Wan2.1 lightx2v distill",
+      "inputs": {
+        "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "model": [
+          "10",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "12": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "Wan2.1 motion LoRA",
+      "inputs": {
+        "lora_name": "wan_motion/360_Orbit.safetensors",
+        "model": [
+          "11",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "20": {
+      "class_type": "ModelSamplingSD3",
+      "title": "Wan2.1 shift",
+      "inputs": {
+        "model": [
+          "12",
+          0
+        ],
+        "shift": 5
+      }
+    },
+    "21": {
+      "class_type": "CLIPVisionLoader",
+      "title": "CLIP vision",
+      "inputs": {
+        "clip_name": "clip_vision_h.safetensors"
+      }
+    },
+    "22": {
+      "class_type": "CLIPVisionEncode",
+      "title": "CLIP vision encode",
+      "inputs": {
+        "clip_vision": [
+          "21",
+          0
+        ],
+        "crop": "none",
+        "image": [
+          "3",
+          0
+        ]
+      }
+    },
+    "24": {
+      "class_type": "KSampler",
+      "title": "Wan2.1 sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "6",
+          2
+        ],
+        "model": [
+          "20",
+          0
+        ],
+        "negative": [
+          "6",
+          1
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799534,
+        "steps": 4
+      }
+    },
+    "60": {
+      "class_type": "VAEDecode",
+      "title": "Decode",
+      "inputs": {
+        "samples": [
+          "24",
+          0
+        ],
+        "vae": [
+          "2",
+          0
+        ]
+      }
+    },
+    "61": {
+      "class_type": "CreateVideo",
+      "title": "Create video",
+      "inputs": {
+        "fps": 16,
+        "images": [
+          "60",
+          0
+        ]
+      }
+    },
+    "62": {
+      "class_type": "SaveVideo",
+      "title": "Save video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_wan_motion",
+        "format": "auto",
+        "video": [
+          "61",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "name": "ltx25_transition",
+  "tool": "ltx25_transition",
+  "action": "ltx25_transition",
+  "workflow": "packs/ltx25/flf2v.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "LTX-2.5 22B Distilled",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "Gemma 4 12B Text Encoder",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "device": "default",
+        "type": "ltxv"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "LTX-2.5 Video VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "LTX-2.5 Audio VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden test subject One continuous shot that moves naturally from the opening frame to the closing frame. Smooth, physically plausible motion; consistent lighting, style and identity. No cuts, fades or added text."
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "pc game, console game, video game, cartoon, childish, ugly"
+      }
+    },
+    "7": {
+      "class_type": "LTXVConditioning",
+      "title": "LTXV Frame Rate Conditioning",
+      "inputs": {
+        "frame_rate": 24,
+        "negative": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "LoadImage",
+      "title": "First Frame",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "9": {
+      "class_type": "LoadImage",
+      "title": "Last Frame",
+      "inputs": {
+        "image": "golden_ref2.png [input]"
+      }
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize First Frame",
+      "inputs": {
+        "input": [
+          "8",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.crop": "center",
+        "resize_type.height": 736,
+        "resize_type.width": 1280,
+        "scale_method": "nearest-exact"
+      }
+    },
+    "11": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize Last Frame",
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.crop": "center",
+        "resize_type.height": 736,
+        "resize_type.width": 1280,
+        "scale_method": "nearest-exact"
+      }
+    },
+    "12": {
+      "class_type": "LTXVPreprocess",
+      "title": "Preprocess First Frame",
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "13": {
+      "class_type": "LTXVPreprocess",
+      "title": "Preprocess Last Frame",
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "14": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "title": "Video Latent",
+      "inputs": {
+        "batch_size": 1,
+        "height": 736,
+        "length": 121,
+        "width": 1280
+      }
+    },
+    "15": {
+      "class_type": "LTXVAddGuide",
+      "title": "Guide: First Frame",
+      "inputs": {
+        "frame_idx": 0,
+        "image": [
+          "12",
+          0
+        ],
+        "latent": [
+          "14",
+          0
+        ],
+        "negative": [
+          "7",
+          1
+        ],
+        "positive": [
+          "7",
+          0
+        ],
+        "strength": 0.7,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "16": {
+      "class_type": "LTXVAddGuide",
+      "title": "Guide: Last Frame",
+      "inputs": {
+        "frame_idx": -1,
+        "image": [
+          "13",
+          0
+        ],
+        "latent": [
+          "15",
+          2
+        ],
+        "negative": [
+          "15",
+          1
+        ],
+        "positive": [
+          "15",
+          0
+        ],
+        "strength": 0.7,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "17": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "title": "Audio Latent",
+      "inputs": {
+        "audio_vae": [
+          "4",
+          0
+        ],
+        "batch_size": 1,
+        "frame_rate": 24,
+        "frames_number": 121
+      }
+    },
+    "18": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "AV Latent",
+      "inputs": {
+        "audio_latent": [
+          "17",
+          0
+        ],
+        "video_latent": [
+          "16",
+          2
+        ]
+      }
+    },
+    "19": {
+      "class_type": "RandomNoise",
+      "title": "Noise",
+      "inputs": {
+        "noise_seed": 314799534
+      }
+    },
+    "20": {
+      "class_type": "SamplerEulerAncestral",
+      "title": "Euler Ancestral (eta 0)",
+      "inputs": {
+        "eta": 0,
+        "s_noise": 1
+      }
+    },
+    "21": {
+      "class_type": "ManualSigmas",
+      "title": "Distilled Sigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      }
+    },
+    "22": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Guider (distilled, cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "16",
+          1
+        ],
+        "positive": [
+          "16",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "23": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "22",
+          0
+        ],
+        "latent_image": [
+          "18",
+          0
+        ],
+        "noise": [
+          "19",
+          0
+        ],
+        "sampler": [
+          "20",
+          0
+        ],
+        "sigmas": [
+          "21",
+          0
+        ]
+      }
+    },
+    "24": {
+      "class_type": "LTXVCropGuides",
+      "title": "Crop Guide Frames",
+      "inputs": {
+        "latent": [
+          "25",
+          0
+        ],
+        "negative": [
+          "16",
+          1
+        ],
+        "positive": [
+          "16",
+          0
+        ]
+      }
+    },
+    "25": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Split Video / Audio",
+      "inputs": {
+        "av_latent": [
+          "23",
+          1
+        ]
+      }
+    },
+    "26": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode Video (tiled)",
+      "inputs": {
+        "overlap": 64,
+        "samples": [
+          "24",
+          2
+        ],
+        "temporal_overlap": 16,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "27": {
+      "class_type": "LTXVAudioVAEDecode",
+      "title": "Decode Audio",
+      "inputs": {
+        "audio_vae": [
+          "4",
+          0
+        ],
+        "samples": [
+          "25",
+          1
+        ]
+      }
+    },
+    "28": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video + Audio",
+      "inputs": {
+        "audio": [
+          "27",
+          0
+        ],
+        "bit_depth": 8,
+        "fps": 24,
+        "images": [
+          "26",
+          0
+        ]
+      }
+    },
+    "29": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "filename_prefix": "video/Adrift_ltx25_flf2v",
+        "format": "auto",
+        "format.codec": "auto",
+        "video": [
+          "28",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+# Build context = . Keep secrets, local state and host deps out.
+**/node_modules
+.next
+.next-*
+data
+.env
+.env.*
+!.env.example
+docker/.env
+docker/adrift.env
+docker/models
+docker/comfy-data
+docker/adrift-data
+docker/custom_nodes
+*.sqlite
+*.db
+**/__pycache__
+.git

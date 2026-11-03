@@ -1,0 +1,21 @@
+{
+  "_meta": {
+    "title": "Video Color Palette (one-fit LUT regrade)",
+    "description": "Regrade a clip to a palette (hex colours / preset) or to a reference still, flicker-free. No models: a single CJVideoPalette node (comfy_nodes/cj_h3_tools/cj_video_palette.py, numpy + ffmpeg) samples frames across the clip, fits ONE OKLab colour transform (mean + covariance transfer, soft nearest-swatch pull for palettes), bakes it with strength / keep-luminance / skin protection into a 33^3 LUT, applies that LUT to every frame and muxes the source audio (H.264 + AAC MP4). The LUT is also written as a .cube next to the MP4. The builder (src/lib/oj/videoPalette.ts) fills video / reference / palette / strength."
+  },
+  "1": {
+    "class_type": "CJVideoPalette",
+    "inputs": {
+      "video": "",
+      "reference": "",
+      "palette": "",
+      "strength": 0.8,
+      "preserve_luminance": false,
+      "skin_protect": 0,
+      "filename_prefix": "video/adrift_palette",
+      "crf": 18,
+      "sample_frames": 24
+    },
+    "_meta": { "title": "Video Color Palette" }
+  }
+}

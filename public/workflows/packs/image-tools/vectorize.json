@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "title": "Vectorize (SVG)",
+    "description": "cj_image_tools CJVectorize: traces the source image into a stacked-layer SVG (vtracer when installed and engine=vtracer, otherwise the built-in OpenCV tracer: k-means palette, per-colour contours with holes as evenodd paths, cubic smoothing). Saves CJ_Vector/vector_NNNNN_.svg plus a preview PNG rasterized back from the SVG; the preview is the job image, the SVG is listed as a downloadable file output. CPU only, no models."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Source image"
+    }
+  },
+  "2": {
+    "class_type": "CJVectorize",
+    "inputs": {
+      "image": ["1", 0],
+      "preset": "logo",
+      "colors": 0,
+      "detail": 1.0,
+      "engine": "opencv",
+      "max_side": 1600,
+      "filename_prefix": "CJ_Vector/vector"
+    },
+    "_meta": {
+      "title": "Vectorize"
+    }
+  }
+}

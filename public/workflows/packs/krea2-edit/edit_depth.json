@@ -1,0 +1,264 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_raw_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Krea 2 Raw UNET"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "krea2_identity_edit_v1.safetensors",
+      "strength_model": 1
+    },
+    "_meta": {
+      "title": "Krea 2 Identity-Edit LoRA"
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2"
+    },
+    "_meta": {
+      "title": "Qwen3-VL Krea 2 Encoder"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Qwen Image VAE"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Reference Image"
+    }
+  },
+  "6": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode Source Latent"
+    }
+  },
+  "10": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Target Latent (noise)"
+    }
+  },
+  "20": {
+    "class_type": "Krea2ControlLoRALoader",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "lora_name": "krea2_control/krea2_depth_control_lora.safetensors",
+      "strength": 1.0
+    },
+    "_meta": {
+      "title": "Krea 2 Depth-Control LoRA"
+    }
+  },
+  "21": {
+    "class_type": "Krea2ControlImageEncode",
+    "inputs": {
+      "control_image": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "latent": [
+        "10",
+        0
+      ],
+      "resize": "match_latent_size",
+      "upscale_method": "lanczos",
+      "crop": "center",
+      "channel_mode": "rgb",
+      "normalize": "none",
+      "invert": false,
+      "batch_mode": "independent_images"
+    },
+    "_meta": {
+      "title": "Encode Control (structure from source)"
+    }
+  },
+  "22": {
+    "class_type": "Krea2ControlApply",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "control_latent": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Apply Depth-Control (lock shapes/positions)"
+    }
+  },
+  "7": {
+    "class_type": "Krea2EditModelPatch",
+    "inputs": {
+      "model": [
+        "22",
+        0
+      ],
+      "source_latent": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Krea 2 Edit \u2014 In-Context Source Patch"
+    }
+  },
+  "8": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "prompt": "",
+      "image": [
+        "5",
+        0
+      ],
+      "grounding_px": 768
+    },
+    "_meta": {
+      "title": "Positive \u2014 Grounded Instruction"
+    }
+  },
+  "9": {
+    "class_type": "Krea2EditGroundedEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "prompt": "",
+      "image": [
+        "5",
+        0
+      ],
+      "grounding_px": 768
+    },
+    "_meta": {
+      "title": "Negative \u2014 Grounded (empty, same image)"
+    }
+  },
+  "11": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "positive": [
+        "8",
+        0
+      ],
+      "negative": [
+        "9",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ],
+      "seed": 42,
+      "steps": 40,
+      "cfg": 3,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    },
+    "_meta": {
+      "title": "Krea 2 Structure-Locked Edit Sampler"
+    }
+  },
+  "12": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "11",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "13": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "12",
+        0
+      ],
+      "filename_prefix": "CJ_Krea2EditCtrl"
+    },
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "30": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "krea2_identity_edit_v1.safetensors",
+      "strength_model": 0
+    },
+    "_meta": {
+      "title": "Stack LoRA (--lora, off by default)"
+    }
+  }
+}

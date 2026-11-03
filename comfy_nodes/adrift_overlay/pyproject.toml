@@ -1,0 +1,25 @@
+# Comfy Registry / ComfyUI-Manager metadata for the Adrift overlay pack
+# (the in-ComfyUI bridge in web/; no nodes, no Python dependencies).
+# Spec: https://docs.comfy.org/registry/specifications
+
+[project]
+name = "adrift-overlay"
+description = "Adrift studio overlay for ComfyUI: a corner button or Ctrl+Shift+J shows the Adrift UI over the node graph, full window or as a docked panel."
+version = "0.1.0"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = []
+classifiers = [
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Repository = "https://github.com/xk44/adrift"
+Documentation = "https://github.com/xk44/adrift/blob/main/docs/custom-nodes.md"
+"Bug Tracker" = "https://github.com/xk44/adrift/issues"
+
+[tool.comfy]
+PublisherId = "xk44"
+DisplayName = "Adrift Overlay"
+Icon = "https://raw.githubusercontent.com/xk44/adrift/main/public/icon-192.png"
+includes = []

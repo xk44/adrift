@@ -1,0 +1,211 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "krea2_turbo_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "2": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "lora_name": "krea2_identity_edit_v1_2.safetensors",
+   "strength_model": 1.0
+  }
+ },
+ "3": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_4b_bf16.safetensors",
+   "type": "krea2",
+   "device": "default"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "qwen_image_vae.safetensors"
+  }
+ },
+ "5": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "input.png",
+   "upload": "image"
+  },
+  "_meta": {
+   "title": "Reference A (scene/source)"
+  }
+ },
+ "6": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "5",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "7": {
+  "class_type": "Krea2EditModelPatch",
+  "inputs": {
+   "model": [
+    "2",
+    0
+   ],
+   "source_latent": [
+    "6",
+    0
+   ],
+   "fit_mode": "fit",
+   "ref_boost": 1.0,
+   "ref_boost_a": 1.0,
+   "vae": [
+    "4",
+    0
+   ],
+   "source_image": [
+    "5",
+    0
+   ],
+   "source_latent_b": [
+    "15",
+    0
+   ],
+   "source_image_b": [
+    "14",
+    0
+   ]
+  }
+ },
+ "8": {
+  "class_type": "Krea2EditGroundedEncode",
+  "inputs": {
+   "clip": [
+    "3",
+    0
+   ],
+   "prompt": "",
+   "image": [
+    "5",
+    0
+   ],
+   "grounding_px": 768,
+   "image_b": [
+    "14",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Positive (instruction)"
+  }
+ },
+ "9": {
+  "class_type": "Krea2EditGroundedEncode",
+  "inputs": {
+   "clip": [
+    "3",
+    0
+   ],
+   "prompt": "",
+   "image": [
+    "5",
+    0
+   ],
+   "grounding_px": 768
+  },
+  "_meta": {
+   "title": "Negative"
+  }
+ },
+ "10": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "11": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "7",
+    0
+   ],
+   "positive": [
+    "8",
+    0
+   ],
+   "negative": [
+    "9",
+    0
+   ],
+   "latent_image": [
+    "10",
+    0
+   ],
+   "seed": 0,
+   "steps": 10,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1.0
+  }
+ },
+ "12": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "11",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "12",
+    0
+   ],
+   "filename_prefix": "CJ_Krea2_edit"
+  }
+ },
+ "14": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "input_b.png",
+   "upload": "image"
+  },
+  "_meta": {
+   "title": "Reference B (subject)"
+  }
+ },
+ "15": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "14",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "_comment": "krea2 edit v1.2 DUAL-ref (insert/tryon/swap). A=scene(img1), B=subject(img2). Engine injects prompt(8), grounding_px(8,9), ref_boost/ref_boost_a(7), both refs(5,14), seed(11), steps/cfg per mode."
+}

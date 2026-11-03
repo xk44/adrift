@@ -1,0 +1,497 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Theme colors (neutral scales, --bg-*, --text-*, --border-*, accent,
+     focus ring, scrollbar) come from src/lib/theme/themes.ts, injected by
+     the root layout as <style id="adrift-theme">. Only theme-independent
+     tokens live here. */
+  --success: #22c55e;
+  --warning: #eab308;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Spacing */
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 64px;
+  --header-height: 64px;
+  --settings-width: 320px;
+
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(
+    --font-sans,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif
+  );
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* No grey flash on tap (mobile); press states come from active:scale. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar — thin translucent thumb that works on any surface */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Focus styles — keyboard only; the outline follows border-radius */
+:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--accent-primary));
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* A bare `outline-none` / `focus:outline-none` (class specificity beats the
+   :focus-visible rule above) would leave keyboard users with no focus cue.
+   Put the ring back unless the element draws its own focus-visible style.
+   Text fields with a border get a focus-coloured border instead of a ring so
+   inline inputs (prompt bar, palette, search) keep their flat look. */
+.outline-none:focus-visible:not([class*="focus-visible:"]):not([class*="focus:ring"]):not(input):not(textarea):not(select),
+.focus\:outline-none:focus-visible:not([class*="focus-visible:"]):not([class*="focus:ring"]):not(input):not(textarea):not(select) {
+  outline: 2px solid var(--focus-ring, var(--accent-primary));
+  outline-offset: 2px;
+}
+:where(input, textarea, select).outline-none:focus-visible:not([class*="focus:border"]):not([class*="focus-visible:"]),
+:where(input, textarea, select).focus\:outline-none:focus-visible:not([class*="focus:border"]):not([class*="focus-visible:"]) {
+  border-color: var(--focus-ring, var(--accent-primary));
+}
+
+/* Create prompt bar (promptBarLayout.ts): the row is a size container so
+   its children can respond to the column width. The Styles | Character |
+   Images | Settings pills are icon-only; their names are hover labels. */
+.cj-prompt-row {
+  container: cj-prompt-row / inline-size;
+}
+
+/* Skip links (SkipLinks.tsx): off-screen until keyboard-focused */
+.cj-skip-link {
+  position: fixed;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 200;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  font-size: 0.875rem;
+  transform: translateY(-200%);
+}
+.cj-skip-link:focus {
+  transform: none;
+}
+/* Programmatic focus targets (page heading, #pageScroll) don't need a ring */
+h1[tabindex="-1"]:focus,
+#pageScroll:focus {
+  outline: none;
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* Utility classes */
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Animation keyframes are defined in tailwind.config.ts (theme.extend.keyframes).
+ * Tailwind generates the matching .animate-fade-in, .animate-slide-up,
+ * .animate-scale-in, and .animate-pulse-soft utility classes automatically.
+ * Do NOT duplicate them here. */
+
+/* Component styles */
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 active:scale-[0.96];
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)];
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--accent-primary)] text-white hover:bg-[var(--accent-hover)] focus-visible:ring-[var(--accent-primary)];
+  }
+
+  .btn-secondary {
+    @apply bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] border border-[var(--border-primary)];
+    @apply focus-visible:ring-[var(--border-accent)];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)];
+  }
+
+  .btn-icon {
+    @apply p-2 rounded-lg;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-primary)];
+    @apply text-[var(--text-primary)] placeholder:text-[var(--text-muted)];
+    @apply focus:outline-none focus:border-[var(--accent-primary)] focus:ring-1 focus:ring-[var(--accent-primary)];
+    @apply transition-colors duration-150;
+  }
+
+  .input-lg {
+    @apply py-3 text-lg;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl;
+  }
+
+  .card-hover {
+    @apply hover:border-[var(--border-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-150;
+  }
+
+  /* Badges/Chips */
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium;
+    @apply bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border-primary)];
+  }
+
+  .chip-accent {
+    background-color: rgb(var(--c-splash) / 0.15);
+    color: var(--accent-secondary);
+    border-color: rgb(var(--c-splash) / 0.3);
+  }
+
+  /* Navigation — reference layout (measured): full-bright 16px/400
+     rounded-full rows; active = splash-red text only, no background tint.
+     No bars, no rings. Hover is a soft tint; press gives a small scale. */
+  .nav-item {
+    @apply relative flex items-center gap-2 px-3 rounded-full text-[var(--text-primary)];
+    @apply hover:bg-[var(--bg-hover)] active:scale-[0.98] transition-[color,background-color,transform] duration-150;
+    -webkit-user-select: none;
+    user-select: none;
+    /* 32px rows: 6 + 20 (line-height) + 6 */
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+
+  .nav-item-active {
+    color: var(--accent-primary);
+    background: transparent;
+  }
+
+  .nav-item-active:hover {
+    background: var(--bg-hover);
+  }
+
+  /* Image grid */
+  .image-grid {
+    @apply grid gap-0.5;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+
+  .image-grid-2x2 {
+    @apply grid grid-cols-2 gap-px rounded-sm overflow-hidden;
+  }
+
+  /* Tooltips */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs rounded-md shadow-lg;
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-primary)];
+  }
+
+  /* Dropdown menus */
+  .dropdown {
+    @apply absolute z-50 min-w-[180px] p-1 rounded-xl shadow-xl;
+    @apply bg-[var(--bg-secondary)] border border-[var(--border-primary)];
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[var(--text-secondary)];
+    @apply hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply h-1 rounded-full overflow-hidden bg-[var(--bg-tertiary)];
+  }
+
+  .progress-bar-fill {
+    @apply h-full rounded-full bg-[var(--accent-primary)] transition-[width] duration-300;
+  }
+
+  /* Slider */
+  .slider {
+    @apply w-full h-2 rounded-full appearance-none cursor-pointer;
+    @apply bg-[var(--bg-tertiary)];
+  }
+
+  .slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 rounded-full bg-[var(--accent-primary)] cursor-pointer;
+    @apply hover:bg-[var(--accent-secondary)] transition-colors;
+  }
+
+  /* Modal/Overlay */
+  .overlay {
+    @apply fixed inset-0 z-40 bg-black/80 backdrop-blur-sm;
+  }
+
+  .modal {
+    @apply fixed z-50 bg-[var(--bg-secondary)] rounded-2xl shadow-2xl border border-[var(--border-primary)];
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply animate-pulse bg-[var(--bg-tertiary)] rounded;
+  }
+
+  /* Status indicators */
+  .status-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  .status-dot-success {
+    @apply bg-[var(--success)];
+  }
+
+  .status-dot-warning {
+    @apply bg-[var(--warning)];
+  }
+
+  .status-dot-error {
+    @apply bg-[var(--error)];
+  }
+
+  .status-dot-info {
+    @apply bg-[var(--info)];
+  }
+}
+
+/* Lightbox specific styles */
+.lightbox-backdrop {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+.lightbox-image {
+  max-height: calc(100vh - 200px);
+  max-width: calc(100vw - 100px);
+  object-fit: contain;
+}
+
+/* Action button group */
+.action-group {
+  @apply flex items-center gap-1 p-1 rounded-lg backdrop-blur-sm border border-[var(--border-primary)];
+  background-color: rgba(20, 20, 20, 0.9);
+}
+
+.action-btn {
+  @apply px-3 py-1.5 rounded-md text-sm font-medium text-[var(--text-secondary)];
+  @apply hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors;
+}
+
+.action-btn-active {
+  @apply bg-[var(--accent-primary)] text-white;
+}
+
+/* Settings panel */
+.settings-section {
+  @apply py-4 border-b border-[var(--border-primary)] last:border-b-0;
+}
+
+.settings-label {
+  @apply text-sm font-medium text-[var(--text-secondary)] mb-2;
+}
+
+/* Prompt bar */
+.prompt-bar {
+  @apply flex items-center gap-3 p-3 rounded-xl;
+  @apply bg-[var(--bg-secondary)] border border-[var(--border-primary)];
+  @apply focus-within:border-[var(--accent-primary)] focus-within:ring-1 focus-within:ring-[var(--accent-primary)];
+  @apply transition-[border-color,box-shadow] duration-150;
+}
+
+.prompt-input {
+  @apply flex-1 bg-transparent border-none outline-none text-[var(--text-primary)];
+  @apply placeholder:text-[var(--text-muted)];
+}
+
+/* Empty state */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-16 text-center;
+}
+
+.empty-state-icon {
+  @apply w-16 h-16 mb-4 text-[var(--text-muted)];
+}
+
+.empty-state-title {
+  @apply text-lg font-medium text-[var(--text-secondary)] mb-2;
+}
+
+.empty-state-description {
+  @apply text-sm text-[var(--text-tertiary)] max-w-sm;
+}
+
+/* Scrollbar utility variants */
+.microScrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.microScrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.microScrollbar {
+  scrollbar-width: thin;
+}
+.microScrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 0;
+  border-radius: 2px;
+}
+
+.noScrollbar::-webkit-scrollbar {
+  display: none;
+}
+.noScrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#pageScroll {
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+}
+
+/* ── Liquid Glass chrome — inert unless data-glass="on" ────────────────────
+   Default off = zero visual change (contract tests unaffected). color-mix and
+   backdrop-filter degrade gracefully: unsupported UAs drop the declarations and
+   the element keeps its own .card/.btn background. */
+[data-glass="on"] .glass-surface {
+  background-color: color-mix(in srgb, var(--bg-secondary) 68%, transparent);
+  border-color: color-mix(in srgb, var(--border-primary) 80%, transparent);
+  box-shadow: inset 0 1px 0 0
+    color-mix(in srgb, var(--text-primary) 12%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+}
+[data-theme="light"][data-glass="on"] .glass-surface {
+  background-color: color-mix(in srgb, var(--bg-secondary) 55%, transparent);
+  box-shadow: inset 0 1px 0 0 color-mix(in srgb, #ffffff 70%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .glass-surface {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+}
+/* Fallbacks: no backdrop-filter, or user asked for reduced transparency → solid. */
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  [data-glass="on"] .glass-surface,
+  [data-theme="light"][data-glass="on"] .glass-surface {
+    background-color: var(--bg-secondary);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  [data-glass="on"] .glass-surface,
+  [data-theme="light"][data-glass="on"] .glass-surface {
+    background-color: var(--bg-secondary);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Reduced motion: stop decorative animation, transitions and smooth scroll
+   app-wide. Loading spinners keep turning so progress stays visible. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-spin),
+  *:not(.animate-spin)::before,
+  *:not(.animate-spin)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Touch: shared icon buttons get a 40px hit area on coarse pointers. */
+@media (pointer: coarse) {
+  .btn-icon {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}

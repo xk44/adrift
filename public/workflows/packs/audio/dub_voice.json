@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "title": "Dub video: cloned voice (VibeVoice-1.5B)",
+    "description": "Step 3 of the Dub video tool. LoadAudio pulls the original speaker from the source clip's audio track. TrimAudioDuration keeps up to 20 s of that track as the voice reference. VibeVoiceTTS (wildminder/ComfyUI-VibeVoice, VibeVoice-1.5B, MIT) reads the translated script as speaker [1], cloning the reference voice. SaveAudioMP3 writes the result to audio/adrift_dub. Builder: src/lib/oj/dubVideo.ts."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Original Speaker (clip audio)" }
+  },
+  "2": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["1", 0], "start_index": 0.0, "duration": 20.0 },
+    "_meta": { "title": "Voice Reference" }
+  },
+  "3": {
+    "class_type": "VibeVoiceTTS",
+    "inputs": {
+      "model_name": "VibeVoice-1.5B",
+      "text": "",
+      "quantize_llm_4bit": false,
+      "attention_mode": "sdpa",
+      "cfg_scale": 1.3,
+      "inference_steps": 10,
+      "seed": 1,
+      "do_sample": true,
+      "temperature": 0.95,
+      "top_p": 0.95,
+      "top_k": 0,
+      "max_new_tokens": 0,
+      "force_offload": true,
+      "device": "auto",
+      "dtype": "auto",
+      "voice_preset": "None",
+      "speaker_1_voice": ["2", 0]
+    },
+    "_meta": { "title": "VibeVoice Clone" }
+  },
+  "4": {
+    "class_type": "SaveAudioMP3",
+    "inputs": {
+      "audio": ["3", 0],
+      "filename_prefix": "audio/adrift_dub",
+      "quality": "V0"
+    },
+    "_meta": { "title": "Save Dubbed Speech" }
+  }
+}

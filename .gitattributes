@@ -1,0 +1,5 @@
+# Shell scripts must keep LF (a CRLF checkout breaks bash in Git Bash/WSL);
+# Windows batch files keep CRLF.
+*.sh text eol=lf
+adrift text eol=lf
+*.cmd text eol=crlf

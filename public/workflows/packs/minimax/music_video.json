@@ -1,0 +1,197 @@
+{
+  "_meta": {
+    "title": "Music video segment (MiniMax H3 Ref2VA + Turbo)",
+    "description": "One beat-cut segment of a music video. MiniMax H3 Ref2VA int8 + the ref2v Turbo 4-step LoRA (res_multistep, 4 steps, BasicGuider), Comfy Kitchen attention. The segment's slice of the song (or of its vocal stem for lip-sync) is encoded with the audio VAE and frozen (noise mask 0) into the audio half of the AV latent, so the picture is generated to the music. From the second segment on, the previous segment's last frame is anchored at frame 0 (MiniMaxH3AddGuide) and dropped from the output, so segments join without a jump. The builder (src/lib/oj/musicVideo.ts) sets refs, prompt, lengths, slices and file names; the kept frames go out with the song slice, and the last kept frame goes to a sidecar PNG for the next segment."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Load MiniMax H3 Ref2VA (int8)" }
+  },
+  "20": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": { "title": "Ref2V Turbo 4-step LoRA" }
+  },
+  "21": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": { "model": ["20", 0], "shift_video": 12.0, "shift_audio": 3.0 },
+    "_meta": { "title": "Sigma Shift" }
+  },
+  "22": {
+    "class_type": "ModelAttentionBackend",
+    "inputs": { "model": ["21", 0], "attention": "comfy kitchen attention" },
+    "_meta": { "title": "Attention Backend" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": { "title": "Load Qwen3-VL 32B Encoder" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "minimax_h3_video_vae_fp16.safetensors" },
+    "_meta": { "title": "Video VAE" }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "minimax_h3_audio_vae_fp32.safetensors" },
+    "_meta": { "title": "Audio VAE" }
+  },
+  "15": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Reference 1" }
+  },
+  "5": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": ["2", 0],
+      "vae": ["3", 0],
+      "audio_vae": ["4", 0],
+      "prompt": "",
+      "width": 864,
+      "height": 480,
+      "length": 124,
+      "ref_image_size": "match",
+      "ref_images.ref_image_0": ["15", 0]
+    },
+    "_meta": { "title": "H3 Reference Conditioning + AV Latent" }
+  },
+  "30": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Song" }
+  },
+  "31": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["30", 0], "start_index": 0, "duration": 5.375 },
+    "_meta": { "title": "Guide Audio Slice" }
+  },
+  "32": {
+    "class_type": "VAEEncodeAudio",
+    "inputs": { "audio": ["31", 0], "vae": ["4", 0] },
+    "_meta": { "title": "Encode Guide Audio" }
+  },
+  "33": {
+    "class_type": "SolidMask",
+    "inputs": { "value": 0.0, "width": 864, "height": 480 },
+    "_meta": { "title": "Freeze Mask" }
+  },
+  "34": {
+    "class_type": "SetLatentNoiseMask",
+    "inputs": { "samples": ["32", 0], "mask": ["33", 0] },
+    "_meta": { "title": "Freeze Guide Audio" }
+  },
+  "35": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": { "video_latent": ["5", 1], "audio_latent": ["34", 0] },
+    "_meta": { "title": "AV Latent With Song" }
+  },
+  "40": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Previous Last Frame" }
+  },
+  "41": {
+    "class_type": "MiniMaxH3AddGuide",
+    "inputs": {
+      "positive": ["5", 0],
+      "latent": ["35", 0],
+      "frame_idx": 0,
+      "vae": ["3", 0],
+      "image": ["40", 0]
+    },
+    "_meta": { "title": "Continue From Previous Frame" }
+  },
+  "6": {
+    "class_type": "KSamplerSelect",
+    "inputs": { "sampler_name": "res_multistep" },
+    "_meta": { "title": "Sampler" }
+  },
+  "7": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": ["22", 0],
+      "scheduler": "simple",
+      "steps": 4,
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Scheduler" }
+  },
+  "8": {
+    "class_type": "RandomNoise",
+    "inputs": { "noise_seed": 42 },
+    "_meta": { "title": "Noise" }
+  },
+  "9": {
+    "class_type": "BasicGuider",
+    "inputs": { "model": ["22", 0], "conditioning": ["41", 0] },
+    "_meta": { "title": "Guider" }
+  },
+  "10": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["8", 0],
+      "guider": ["9", 0],
+      "sampler": ["6", 0],
+      "sigmas": ["7", 0],
+      "latent_image": ["35", 0]
+    },
+    "_meta": { "title": "Sample" }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["10", 0], "vae": ["3", 0] },
+    "_meta": { "title": "Decode Video" }
+  },
+  "12": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["11", 0], "batch_index": 1, "length": 120 },
+    "_meta": { "title": "Kept Frames" }
+  },
+  "36": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["30", 0], "start_index": 0, "duration": 5.0 },
+    "_meta": { "title": "Segment Song Slice" }
+  },
+  "13": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["12", 0], "audio": ["36", 0], "fps": 24 },
+    "_meta": { "title": "Segment With Song" }
+  },
+  "14": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["13", 0],
+      "filename_prefix": "video/adrift_mtv/CJ_MTV_seg",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Segment" }
+  },
+  "42": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["12", 0], "batch_index": 119, "length": 1 },
+    "_meta": { "title": "Last Kept Frame" }
+  },
+  "43": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["42", 0],
+      "filename_prefix": "video/adrift_ctx/CJ_MTV/seg_last"
+    },
+    "_meta": { "title": "Next Segment Anchor", "adrift_sidecar": true }
+  }
+}

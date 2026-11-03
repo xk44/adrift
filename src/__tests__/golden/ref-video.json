@@ -1,0 +1,243 @@
+{
+  "name": "ref_video",
+  "tool": "ref_video",
+  "action": "ref_video",
+  "workflow": "packs/minimax/r2v.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "Load MiniMax H3 Ref2VA (pruned bf16)",
+      "inputs": {
+        "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "Load Qwen3-VL 32B Encoder",
+      "inputs": {
+        "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "device": "default",
+        "type": "minimax"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "MiniMaxH3ReferenceToVideo",
+      "title": "H3 Reference Conditioning + AV Latent",
+      "inputs": {
+        "audio_vae": [
+          "4",
+          0
+        ],
+        "clip": [
+          "2",
+          0
+        ],
+        "height": 768,
+        "length": 73,
+        "prompt": "subject_definitions:\n<Subject 1> is the character from <Picture 1>.\n<Subject 2> is the character from <Picture 2>.\n<Subject 3> is the character from <Picture 3>.\n\nsummary:\n[reference generation + audio generation] A new 3.0-second shot at 24 fps starring <Subject 1>, <Subject 2> and <Subject 3>. Golden test subject.\n\nretention_analysis:\n<Subject 1> (all shots): fully_preserved - face or features, hair, body proportions, colours, materials and complete outfit stay consistent with <Picture 1> in every frame.\n<Subject 2> (all shots): fully_preserved - face or features, hair, body proportions, colours, materials and complete outfit stay consistent with <Picture 2> in every frame.\n<Subject 3> (all shots): fully_preserved - face or features, hair, body proportions, colours, materials and complete outfit stay consistent with <Picture 3> in every frame.\n\ndetailed_description:\nPaper lanterns, food stalls and passers-by, shallow depth of field. The camera tracks alongside at walking pace, slightly ahead, keeping every main character in view. The backgrounds of the pictures do not enter the scene. Exactly 3 main characters (<Subject 1>, <Subject 2> and <Subject 3>), each appearing exactly once: no twins, look-alikes or extra copies. Every character keeps the form, size, material and outfit from its picture. No text, captions, logos or watermarks.\n\nsound:\nLively market ambience: crowd murmur, vendors calling, footsteps on stone, a distant street musician. Light, natural laughter.",
+        "ref_image_size": "match",
+        "ref_images.ref_image_0": [
+          "15",
+          0
+        ],
+        "ref_images.ref_image_1": [
+          "16",
+          0
+        ],
+        "ref_images.ref_image_2": [
+          "17",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "width": 1344
+      }
+    },
+    "6": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "7": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "19",
+          0
+        ],
+        "scheduler": "simple",
+        "steps": 8
+      }
+    },
+    "8": {
+      "class_type": "RandomNoise",
+      "title": "Noise",
+      "inputs": {
+        "noise_seed": 1234
+      }
+    },
+    "9": {
+      "class_type": "BasicGuider",
+      "title": "Guider",
+      "inputs": {
+        "conditioning": [
+          "5",
+          0
+        ],
+        "model": [
+          "19",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "9",
+          0
+        ],
+        "latent_image": [
+          "5",
+          1
+        ],
+        "noise": [
+          "8",
+          0
+        ],
+        "sampler": [
+          "6",
+          0
+        ],
+        "sigmas": [
+          "7",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "VAEDecode",
+      "title": "Decode Video",
+      "inputs": {
+        "samples": [
+          "10",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "VAEDecodeAudio",
+      "title": "Decode Audio",
+      "inputs": {
+        "samples": [
+          "10",
+          0
+        ],
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "CreateVideo",
+      "title": "Mux AV",
+      "inputs": {
+        "audio": [
+          "12",
+          0
+        ],
+        "fps": 24,
+        "images": [
+          "11",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_H3_RefVideo",
+        "format": "auto",
+        "video": [
+          "13",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "LoadImage",
+      "title": "Reference Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "16": {
+      "class_type": "LoadImage",
+      "title": "Reference 2",
+      "inputs": {
+        "image": "golden_ref2.png [input]"
+      }
+    },
+    "17": {
+      "class_type": "LoadImage",
+      "title": "Reference 3",
+      "inputs": {
+        "image": "golden_ref3.png [input]"
+      }
+    },
+    "18": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "MiniMax H3 Turbo 8-step (lightx2v)",
+      "inputs": {
+        "lora_name": "minimax_h3_ref2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "19": {
+      "class_type": "MiniMaxH3SigmaShift",
+      "title": "MiniMax H3 Sigma Shift (Turbo)",
+      "inputs": {
+        "model": [
+          "18",
+          0
+        ],
+        "shift_audio": 3,
+        "shift_video": 6
+      }
+    }
+  }
+}

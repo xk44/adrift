@@ -1,0 +1,735 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "LTX-2.5 22B distilled"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "ltx25/ltx-2.3-22b-ic-lora-outpaint.safetensors",
+      "strength_model": 1
+    },
+    "_meta": {
+      "title": "IC-LoRA Outpaint (oumoumad, LTX-2.3 22B)"
+    }
+  },
+  "3": {
+    "class_type": "GetICLoRAParameters",
+    "inputs": {
+      "iclora_model": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "IC-LoRA parameters"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+    },
+    "_meta": {
+      "title": "Video VAE"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+    },
+    "_meta": {
+      "title": "Audio VAE"
+    }
+  },
+  "6": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+      "type": "ltxv",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Gemma 4 text encoder"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "6",
+        0
+      ],
+      "text": "the same scene, wider shot, more of the surrounding environment, consistent lighting"
+    },
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "6",
+        0
+      ],
+      "text": "black bars, letterbox, border, frame, text, watermark, blurry, distorted, jitter, worst quality"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "9": {
+    "class_type": "LTXVConditioning",
+    "inputs": {
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "frame_rate": [
+        "22",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Frame rate (source fps)"
+    }
+  },
+  "10": {
+    "class_type": "EmptyLTXVLatentVideo",
+    "inputs": {
+      "width": 1024,
+      "height": 576,
+      "length": [
+        "26",
+        1
+      ],
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Canvas latent (/32, 8n+1 frames)"
+    }
+  },
+  "11": {
+    "class_type": "LTXVAddGuide",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "9",
+        1
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "latent": [
+        "10",
+        0
+      ],
+      "image": [
+        "32",
+        0
+      ],
+      "frame_idx": 0,
+      "strength": 1,
+      "iclora_parameters": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "IC-LoRA guide (source on black canvas)"
+    }
+  },
+  "12": {
+    "class_type": "LTXVEmptyLatentAudio",
+    "inputs": {
+      "frames_number": [
+        "26",
+        1
+      ],
+      "frame_rate": [
+        "22",
+        2
+      ],
+      "batch_size": 1,
+      "audio_vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Audio latent"
+    }
+  },
+  "13": {
+    "class_type": "LTXVConcatAVLatent",
+    "inputs": {
+      "video_latent": [
+        "11",
+        2
+      ],
+      "audio_latent": [
+        "12",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "AV latent"
+    }
+  },
+  "14": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 4242
+    },
+    "_meta": {
+      "title": "Seed"
+    }
+  },
+  "15": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler_ancestral"
+    },
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "16": {
+    "class_type": "ManualSigmas",
+    "inputs": {
+      "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+    },
+    "_meta": {
+      "title": "Distilled sigmas"
+    }
+  },
+  "17": {
+    "class_type": "LTXVDualCFGGuider",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "video_cfg": 1,
+      "audio_cfg": 1
+    },
+    "_meta": {
+      "title": "Guider (cfg 1)"
+    }
+  },
+  "18": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "14",
+        0
+      ],
+      "guider": [
+        "17",
+        0
+      ],
+      "sampler": [
+        "15",
+        0
+      ],
+      "sigmas": [
+        "16",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample"
+    }
+  },
+  "19": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "18",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Split AV"
+    }
+  },
+  "20": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "21": {
+    "class_type": "VideoTemporalCrop",
+    "inputs": {
+      "video": [
+        "20",
+        0
+      ],
+      "start_frame": 0,
+      "length": 121
+    },
+    "_meta": {
+      "title": "First 121 frames (native fps)"
+    }
+  },
+  "22": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source frames / fps"
+    }
+  },
+  "23": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "27",
+        0
+      ],
+      "upscale_method": "area",
+      "width": [
+        "46",
+        1
+      ],
+      "height": [
+        "47",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Fit source (even size, expanded frame ≤ 2560 px)"
+    }
+  },
+  "24": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source frame count"
+    }
+  },
+  "25": {
+    "class_type": "LTXVCropGuides",
+    "inputs": {
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent": [
+        "19",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Drop guide frames"
+    }
+  },
+  "26": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "8 * ((a - 1) // 8) + 1",
+      "values.a": [
+        "24",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Frames: largest 8n+1"
+    }
+  },
+  "27": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "26",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Trim frames to 8n+1"
+    }
+  },
+  "28": {
+    "class_type": "VideoTemporalCrop",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ],
+      "start_frame": 0,
+      "length": [
+        "26",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Audio window (8n+1 frames)"
+    }
+  },
+  "29": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "28",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source audio (trimmed)"
+    }
+  },
+  "30": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "23",
+        0
+      ],
+      "upscale_method": "area",
+      "width": 682,
+      "height": 384,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Source into canvas rect"
+    }
+  },
+  "31": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 1024,
+      "height": 576,
+      "batch_size": [
+        "26",
+        1
+      ],
+      "color": 0
+    },
+    "_meta": {
+      "title": "Black canvas (= area to generate)"
+    }
+  },
+  "32": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "31",
+        0
+      ],
+      "source": [
+        "30",
+        0
+      ],
+      "x": 171,
+      "y": 96,
+      "resize_source": false
+    },
+    "_meta": {
+      "title": "Source on black canvas"
+    }
+  },
+  "35": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "23",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Original size"
+    }
+  },
+  "40": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "samples": [
+        "25",
+        2
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "tile_size": 512,
+      "overlap": 64,
+      "temporal_size": 64,
+      "temporal_overlap": 16
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "42": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * ((a * 1024 + 682) // 1364)",
+      "values.a": [
+        "35",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Output width"
+    }
+  },
+  "43": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * ((a * 576 + 384) // 768)",
+      "values.a": [
+        "35",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Output height"
+    }
+  },
+  "44": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "(342 * b + 1024) // 2048",
+      "values.a": [
+        "35",
+        0
+      ],
+      "values.b": [
+        "42",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Paste-back x"
+    }
+  },
+  "45": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "(192 * b + 576) // 1152",
+      "values.a": [
+        "35",
+        1
+      ],
+      "values.b": [
+        "43",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Paste-back y"
+    }
+  },
+  "46": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * int(a * min(1, 2560 * 682 / (a * 1024), 2560 * 384 / (b * 576)) / 2)",
+      "values.a": [
+        "24",
+        0
+      ],
+      "values.b": [
+        "24",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Fit width"
+    }
+  },
+  "47": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * int(b * min(1, 2560 * 682 / (a * 1024), 2560 * 384 / (b * 576)) / 2)",
+      "values.a": [
+        "24",
+        0
+      ],
+      "values.b": [
+        "24",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Fit height"
+    }
+  },
+  "50": {
+    "class_type": "SolidMask",
+    "inputs": {
+      "value": 1,
+      "width": [
+        "35",
+        0
+      ],
+      "height": [
+        "35",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Keep-original mask"
+    }
+  },
+  "51": {
+    "class_type": "FeatherMask",
+    "inputs": {
+      "mask": [
+        "50",
+        0
+      ],
+      "left": 48,
+      "top": 48,
+      "right": 48,
+      "bottom": 48
+    },
+    "_meta": {
+      "title": "Wide feather (inside original edge, padded sides only)"
+    }
+  },
+  "52": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "40",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": [
+        "42",
+        1
+      ],
+      "height": [
+        "43",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Generated canvas to output size"
+    }
+  },
+  "53": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "52",
+        0
+      ],
+      "source": [
+        "23",
+        0
+      ],
+      "x": [
+        "44",
+        1
+      ],
+      "y": [
+        "45",
+        1
+      ],
+      "resize_source": false,
+      "mask": [
+        "51",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Original frames back over their rect"
+    }
+  },
+  "54": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "53",
+        0
+      ],
+      "fps": [
+        "22",
+        2
+      ],
+      "audio": [
+        "29",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Video (source fps + audio)"
+    }
+  },
+  "55": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "54",
+        0
+      ],
+      "filename_prefix": "video/CJ_VideoExpand_LTX",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  },
+  "_meta": {
+    "title": "Expand / zoom out video (LTX-2.5 + IC-LoRA Outpaint)",
+    "description": "Core ComfyUI nodes only. Video outpainting with the distilled LTX-2.5 22B model and oumoumad's LTX-2.3 22B IC-LoRA Outpaint (LTX-2 Community License), wired like vfx_clean_plate: LoraLoaderModelOnly -> GetICLoRAParameters -> LTXVAddGuide(guide clip, frame_idx 0, strength 1) on an empty latent of the canvas size, 8 ManualSigmas, euler_ancestral, LTXVDualCFGGuider cfg 1, LTXVCropGuides before decode. Guide = the source frames scaled into the centre (or one side) of a PURE BLACK canvas (EmptyImage color 0 + ImageCompositeMasked): black is the LoRA's 'generate here' sentinel (grey does not work). Frames: the first 121 at native fps (VideoTemporalCrop), trimmed to the largest 8n+1 (ComfyMathExpression + ImageFromBatch; no resampling, speed unchanged); a second VideoTemporalCrop of that length carries the matching audio. Canvas long edge 1024 (builder option 1280), multiples of 32. Conditioning and audio-latent frame rate = the source fps. After decode the generation is upscaled to the expanded output size and the ORIGINAL frames are composited back over their rect with a wide FeatherMask ramp (48 px, padded sides only). Source fps and audio go to CreateVideo. The builder (src/lib/oj/videoExpand.ts) sets canvas, rect, feather and the size expressions; everything that depends on the real decoded frame size is computed in-graph from GetImageSize (ComfyMathExpression): node 23 fits the source (even size, expanded frame <= 2560 px; identity for normal clips), nodes 42/43 give the output size and 44/45 the paste-back offsets, so a run with a wrong recorded width/height still pastes back in place. Dark footage: the model card suggests a gamma 2.0 / 0.5 round trip; no core node does gamma, so it is not offered."
+  }
+}

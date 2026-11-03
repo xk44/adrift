@@ -1,0 +1,205 @@
+{
+  "name": "enhance_faces",
+  "tool": "enhance_faces",
+  "action": "adetailer_auto",
+  "workflow": "packs/krea2/adetailer.json",
+  "seed": 157399766,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "golden_src.png [input]",
+        "upload": "image"
+      }
+    },
+    "3": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "krea2_turbo_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "4": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_4b_bf16.safetensors",
+        "device": "default",
+        "type": "krea2"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_vae.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive Prompt",
+      "inputs": {
+        "clip": [
+          "4",
+          0
+        ],
+        "text": ""
+      }
+    },
+    "7": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+        "conditioning": [
+          "6",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "UltralyticsDetectorProvider",
+      "title": "Face detector",
+      "inputs": {
+        "model_name": "bbox/face_yolov8m.pt"
+      }
+    },
+    "11": {
+      "class_type": "FaceDetailer",
+      "title": "Face pass",
+      "inputs": {
+        "bbox_crop_factor": 3,
+        "bbox_detector": [
+          "10",
+          0
+        ],
+        "bbox_dilation": 12,
+        "bbox_threshold": 0.5,
+        "cfg": 1,
+        "clip": [
+          "4",
+          0
+        ],
+        "cycle": 1,
+        "denoise": 0.38,
+        "drop_size": 10,
+        "feather": 8,
+        "force_inpaint": true,
+        "guide_size": 768,
+        "guide_size_for": true,
+        "image": [
+          "1",
+          0
+        ],
+        "inpaint_model": false,
+        "max_size": 1328,
+        "model": [
+          "3",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "noise_mask": true,
+        "noise_mask_feather": 20,
+        "positive": [
+          "6",
+          0
+        ],
+        "sam_bbox_expansion": 0,
+        "sam_detection_hint": "center-1",
+        "sam_dilation": 0,
+        "sam_mask_hint_threshold": 0.7,
+        "sam_mask_hint_use_negative": "False",
+        "sam_threshold": 0.93,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 157399766,
+        "steps": 8,
+        "tiled_decode": false,
+        "tiled_encode": false,
+        "vae": [
+          "5",
+          0
+        ],
+        "wildcard": ""
+      }
+    },
+    "20": {
+      "class_type": "UltralyticsDetectorProvider",
+      "title": "Hand detector",
+      "inputs": {
+        "model_name": "bbox/hand_yolov8s.pt"
+      }
+    },
+    "21": {
+      "class_type": "FaceDetailer",
+      "title": "Hand pass",
+      "inputs": {
+        "bbox_crop_factor": 3,
+        "bbox_detector": [
+          "20",
+          0
+        ],
+        "bbox_dilation": 12,
+        "bbox_threshold": 0.5,
+        "cfg": 1,
+        "clip": [
+          "4",
+          0
+        ],
+        "cycle": 1,
+        "denoise": 0.45,
+        "drop_size": 10,
+        "feather": 8,
+        "force_inpaint": true,
+        "guide_size": 768,
+        "guide_size_for": true,
+        "image": [
+          "11",
+          0
+        ],
+        "inpaint_model": false,
+        "max_size": 1328,
+        "model": [
+          "3",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "noise_mask": true,
+        "noise_mask_feather": 20,
+        "positive": [
+          "6",
+          0
+        ],
+        "sam_bbox_expansion": 0,
+        "sam_detection_hint": "center-1",
+        "sam_dilation": 0,
+        "sam_mask_hint_threshold": 0.7,
+        "sam_mask_hint_use_negative": "False",
+        "sam_threshold": 0.93,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 0,
+        "steps": 8,
+        "tiled_decode": false,
+        "tiled_encode": false,
+        "vae": [
+          "5",
+          0
+        ],
+        "wildcard": ""
+      }
+    },
+    "30": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "krea2_adetailer",
+        "images": [
+          "21",
+          0
+        ]
+      }
+    }
+  }
+}

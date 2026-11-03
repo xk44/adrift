@@ -1,0 +1,211 @@
+{
+  "name": "edit_fibo",
+  "tool": "edit_fibo",
+  "action": "edit_fibo",
+  "workflow": "packs/fibo2/edit.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "fibo2_edit_turbo_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_4b_bf16.safetensors",
+        "device": "default",
+        "type": "fibo2"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "flux2-vae.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]",
+        "upload": "image"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeFibo2",
+      "title": "Edit Instruction",
+      "inputs": {
+        "batch_size": 1,
+        "clip": [
+          "2",
+          0
+        ],
+        "height": 0,
+        "images.image_1": [
+          "4",
+          0
+        ],
+        "negative_prompt": "",
+        "prompt": "golden test subject",
+        "vae": [
+          "3",
+          0
+        ],
+        "width": 0
+      }
+    },
+    "6": {
+      "class_type": "KSampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "5",
+          2
+        ],
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "5",
+          1
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799534,
+        "steps": 4
+      }
+    },
+    "7": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "6",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "CheckpointLoaderSimple",
+      "title": "SAM3 (paste-back masks)",
+      "inputs": {
+        "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+      }
+    },
+    "9": {
+      "class_type": "CLIPTextEncode",
+      "title": "Area to change",
+      "inputs": {
+        "clip": [
+          "8",
+          1
+        ],
+        "text": "golden second text"
+      }
+    },
+    "10": {
+      "class_type": "SAM3_Detect",
+      "title": "Region (original)",
+      "inputs": {
+        "conditioning": [
+          "9",
+          0
+        ],
+        "image": [
+          "4",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "8",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "12": {
+      "class_type": "CLIPTextEncode",
+      "title": "Protect text",
+      "inputs": {
+        "clip": [
+          "8",
+          1
+        ],
+        "text": "face"
+      }
+    },
+    "13": {
+      "class_type": "SAM3_Detect",
+      "title": "Protect faces",
+      "inputs": {
+        "conditioning": [
+          "12",
+          0
+        ],
+        "image": [
+          "4",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "8",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "14": {
+      "class_type": "CJImagePasteBack",
+      "title": "Paste edit back (full res)",
+      "inputs": {
+        "color_match": true,
+        "diff_thresh": 22,
+        "edited": [
+          "7",
+          0
+        ],
+        "feather_px": 6,
+        "fit": "crop",
+        "grow_px": 12,
+        "min_blob": 0.001,
+        "original": [
+          "4",
+          0
+        ],
+        "protect": [
+          "13",
+          0
+        ],
+        "reach": 0.18,
+        "region": [
+          "10",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "cj_fibo2_edit",
+        "images": [
+          "14",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "title": "Voiceover (VibeVoice Realtime-0.5B stock voices / 1.5B clone)",
+    "description": "Text-to-speech: wildminder/ComfyUI-VibeVoice (VibeVoiceTTS). Default = stock voice: VibeVoice-Realtime-0.5B (models/tts/VibeVoice/VibeVoice-Realtime-0.5B, MIT) reading with a cached voice prompt (voice_preset = models/tts/VibeVoice/voices/<id>.pt from microsoft/VibeVoice demo/voices/streaming_model, MIT). Clone engine: the builder switches to VibeVoice-1.5B and wires LoadAudio (node 1) into speaker_1_voice; for stock voices it deletes the unconnected LoadAudio. Builder: src/lib/oj/voiceSound.ts. Output MP3 via SaveAudioMP3."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Voice Sample (clone engine only)" }
+  },
+  "2": {
+    "class_type": "VibeVoiceTTS",
+    "inputs": {
+      "model_name": "VibeVoice-Realtime-0.5B",
+      "text": "",
+      "quantize_llm_4bit": false,
+      "attention_mode": "sdpa",
+      "cfg_scale": 1.5,
+      "inference_steps": 10,
+      "seed": 1,
+      "do_sample": true,
+      "temperature": 0.95,
+      "top_p": 0.95,
+      "top_k": 0,
+      "max_new_tokens": 0,
+      "force_offload": true,
+      "device": "auto",
+      "dtype": "auto",
+      "voice_preset": "en-Emma_woman"
+    },
+    "_meta": { "title": "VibeVoice TTS" }
+  },
+  "3": {
+    "class_type": "SaveAudioMP3",
+    "inputs": {
+      "audio": ["2", 0],
+      "filename_prefix": "audio/adrift_voiceover",
+      "quality": "V0"
+    },
+    "_meta": { "title": "Save Voiceover" }
+  }
+}

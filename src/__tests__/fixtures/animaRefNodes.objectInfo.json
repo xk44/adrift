@@ -1,0 +1,306 @@
+{
+  "_meta": {
+    "source": "AnimaRefAdapter: recorded from the pc's live /object_info/AnimaRefAdapter (ElectronGirl/ComfyUI-Anima-Ref-Adapter @ fb587d27c1e1e56b0a78e917040ae7c77798c2c2), lora_name combo trimmed to the anima_ref_* files. AnimaRefAdapterLoader/AnimaRefLatent/AnimaRefGuider (legacy pilot graph): hand-transcribed from INPUT_TYPES @ af9a438d1658bf0030ce5e7ae738837e191c0e7f; ModelComputeDtype from ComfyUI comfy_extras/nodes_model_advanced.py.",
+    "transcribed_at": "2026-10-29"
+  },
+  "AnimaRefAdapter": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "the reference. For two characters, stitch two images side by side and say in the prompt who is on the left and who is on the right"
+          }
+        ],
+        "lora_name": [
+          [
+            "anima_ref_adapter_pilot_r32.safetensors",
+            "anima_ref_adapter_v2_r64.safetensors"
+          ],
+          {
+            "default": "anima_ref_adapter_v2_r64.safetensors",
+            "tooltip": "the adapter; the released files download from huggingface.co/ElectronGirl/anima-ref-adapter into models/loras on first use"
+          }
+        ],
+        "ref_guidance": [
+          "FLOAT",
+          {
+            "default": 4.5,
+            "min": 0.0,
+            "max": 20.0,
+            "step": 0.1,
+            "tooltip": "1 = reference in both CFG branches (no extra model call); higher pushes toward the reference at one extra model call per step"
+          }
+        ],
+        "correction": [
+          [
+            "apg",
+            "rescale",
+            "none"
+          ],
+          {
+            "tooltip": "keeps colors in check at high cfg and ref_guidance"
+          }
+        ]
+      },
+      "optional": {
+        "strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 2.0,
+            "step": 0.05
+          }
+        ],
+        "ref_end": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01,
+            "tooltip": "last step with ref_guidance, as a fraction of the denoising; the reference stays in after it. ~0.6 saves time with nearly the same image"
+          }
+        ],
+        "ref_megapixels": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.25,
+            "max": 2.0,
+            "step": 0.05,
+            "tooltip": "the reference is resized to this area, keeping its aspect ratio"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model",
+        "vae",
+        "image",
+        "lora_name",
+        "ref_guidance",
+        "correction"
+      ],
+      "optional": [
+        "strength",
+        "ref_end",
+        "ref_megapixels"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "name": "AnimaRefAdapter",
+    "display_name": "Anima Ref Adapter",
+    "description": "",
+    "python_module": "custom_nodes.ComfyUI-Anima-Ref-Adapter",
+    "category": "Anima Ref Adapter",
+    "output_node": false,
+    "has_intermediate_output": false,
+    "search_aliases": []
+  },
+  "AnimaRefAdapterLoader": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "lora_name": [
+          [
+            "anima_ref_adapter_pilot_r32.safetensors"
+          ]
+        ],
+        "strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 2.0,
+            "step": 0.05
+          }
+        ],
+        "ref_offset_h": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 4.0,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "AnimaRefLatent": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 896,
+            "min": 256,
+            "max": 2048,
+            "step": 16
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 1152,
+            "min": 256,
+            "max": 2048,
+            "step": 16
+          }
+        ],
+        "fill": [
+          "INT",
+          {
+            "default": 255,
+            "min": 0,
+            "max": 255
+          }
+        ]
+      }
+    },
+    "output": [
+      "LATENT",
+      "LATENT",
+      "IMAGE"
+    ],
+    "output_name": [
+      "ref_latent",
+      "empty_latent",
+      "ref_image"
+    ],
+    "output_is_list": [
+      false,
+      false,
+      false
+    ],
+    "output_node": false
+  },
+  "AnimaRefGuider": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "positive": [
+          "CONDITIONING"
+        ],
+        "negative": [
+          "CONDITIONING"
+        ],
+        "ref_latent": [
+          "LATENT"
+        ],
+        "cfg": [
+          "FLOAT",
+          {
+            "default": 4.5,
+            "min": 0.0,
+            "max": 20.0,
+            "step": 0.1
+          }
+        ],
+        "ref_guidance": [
+          "FLOAT",
+          {
+            "default": 4.5,
+            "min": 0.0,
+            "max": 20.0,
+            "step": 0.1
+          }
+        ],
+        "correction": [
+          [
+            "apg",
+            "rescale",
+            "none"
+          ]
+        ],
+        "rescale_phi": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    "output": [
+      "GUIDER"
+    ],
+    "output_name": [
+      "GUIDER"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "ModelComputeDtype": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL"
+        ],
+        "dtype": [
+          [
+            "default",
+            "fp32",
+            "fp16",
+            "bf16"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  }
+}

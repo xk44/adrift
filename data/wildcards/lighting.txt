@@ -1,0 +1,7 @@
+# lighting options
+soft golden hour light
+harsh midday sun
+neon-lit night
+overcast diffuse light
+rim lighting
+candlelight

@@ -1,0 +1,139 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "krea2_anypaint_rank32.safetensors",
+      "strength_model": 1.0
+    }
+  },
+  "3": {
+    "class_type": "Krea2AnyPaintModelPatch",
+    "inputs": {
+      "model": ["2", 0]
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "6": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Source"
+    }
+  },
+  "7": {
+    "class_type": "LoadImageMask",
+    "inputs": {
+      "image": "mask.png",
+      "channel": "red",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Mask (white = generate, source-sized)"
+    }
+  },
+  "8": {
+    "class_type": "Krea2AnyPaintPrepare",
+    "inputs": {
+      "source": ["6", 0],
+      "mask": ["7", 0],
+      "canvas_width": 1024,
+      "canvas_height": 1024,
+      "bbox_x0": 0,
+      "bbox_y0": 0,
+      "bbox_x1": 1024,
+      "bbox_y1": 1024,
+      "seam_px": 32,
+      "reference_max_edge": 384
+    },
+    "_meta": {
+      "title": "AnyPaint prepare (canvas + source bbox)"
+    }
+  },
+  "9": {
+    "class_type": "TextEncodeKrea2AnyPaint",
+    "inputs": {
+      "clip": ["4", 0],
+      "vae": ["5", 0],
+      "condition": ["8", 0],
+      "prompt": "a complete, coherent photograph"
+    },
+    "_meta": {
+      "title": "Positive (full-canvas reference)"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeKrea2OstrisEdit",
+    "inputs": {
+      "clip": ["4", 0],
+      "prompt": ""
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "11": {
+    "class_type": "Krea2AnyPaintKnownLatent",
+    "inputs": {
+      "vae": ["5", 0],
+      "known": ["8", 1],
+      "keep_mask": ["8", 2]
+    },
+    "_meta": {
+      "title": "Known latent + token keep mask"
+    }
+  },
+  "12": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["3", 0],
+      "positive": ["9", 0],
+      "negative": ["10", 0],
+      "latent_image": ["11", 0],
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["12", 0],
+      "vae": ["5", 0]
+    }
+  },
+  "14": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["13", 0],
+      "filename_prefix": "CJ_Krea2_anypaint"
+    }
+  },
+  "_comment": "krea2 AnyPaint (arbitrary-mask inpaint/outpaint). krea2_anypaint_rank32 LoRA + comfyui-krea2-anypaint nodes (CJ comfy_nodes/): prepare = reference contract (median fill, 384-edge VL+latent condition at full-canvas RoPE, 32 px seam), kv-cached reference K/V, known tokens re-noised per step via the latent noise_mask (native KSampler inpaint == pipeline for euler). Raw decode, no composite. CJ engine injects source (6), mask (7), canvas+bbox (8), prompt (9), seed (12) per request."
+}

@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "title": "Overlay composite (RGBA stickers / animated layers over a clip)",
+    "description": "Pure compositing, no models: core nodes and VideoHelperSuite only. VHS_LoadVideo reads the source clip at 24 fps, sized to fit 1280 px (both sides a multiple of 8) and capped to the composited span. The builder (src/lib/oj/overlayComposite.ts) adds one chain per overlay: LoadImage (PNG/WebP) or VHS_LoadVideoFFmpeg (WebM/MOV with alpha, looped) -> JoinImageWithAlpha (RGBA) -> ImageScale -> ImageCrop when the overlay runs off the frame -> SplitImageWithAlpha + InvertMask (true alpha) -> SolidMask/MaskComposite multiply for opacity -> VHS_SplitImages for the start/end window -> ImageCompositeMasked (normal) or ImageCrop + ImageBlend (multiply/screen/overlay/soft_light/difference) then ImageCompositeMasked -> ImageBatch to rejoin the untouched frames. Layers stack in order. VHS_VideoCombine writes h264 mp4 with the source audio (silent clips are fine)."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 24.0,
+      "custom_width": 1280,
+      "custom_height": 720,
+      "frame_load_cap": 240,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Source Clip Frames" }
+  },
+  "2": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["1", 0],
+      "audio": ["1", 2],
+      "frame_rate": 24.0,
+      "loop_count": 0,
+      "filename_prefix": "video/adrift_overlay",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": true
+    },
+    "_meta": { "title": "Save Composite" }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "CJVideoPalette": {
+    "input": {
+      "required": {
+        "video": ["STRING", { "default": "" }],
+        "reference": ["STRING", { "default": "" }],
+        "palette": ["STRING", { "default": "" }],
+        "strength": ["FLOAT", { "default": 0.8, "min": 0.0, "max": 1.0, "step": 0.01 }],
+        "preserve_luminance": ["BOOLEAN", { "default": false }],
+        "skin_protect": ["FLOAT", { "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01 }],
+        "filename_prefix": ["STRING", { "default": "video/adrift_palette" }]
+      },
+      "optional": {
+        "crf": ["INT", { "default": 18, "min": 0, "max": 51 }],
+        "sample_frames": ["INT", { "default": 24, "min": 4, "max": 120 }]
+      }
+    },
+    "input_order": {
+      "required": ["video", "reference", "palette", "strength", "preserve_luminance", "skin_protect", "filename_prefix"],
+      "optional": ["crf", "sample_frames"]
+    },
+    "output": ["STRING", "STRING"],
+    "output_name": ["path", "cube_path"],
+    "output_is_list": [false, false],
+    "output_node": true,
+    "name": "CJVideoPalette",
+    "display_name": "Video Color Palette (one-fit LUT regrade, .cube export)",
+    "category": "image/video"
+  }
+}

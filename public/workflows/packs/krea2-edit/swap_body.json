@@ -1,0 +1,245 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "krea2_turbo_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "2": {
+  "class_type": "LoraLoaderModelOnly",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "lora_name": "bfs_body_swap_v1_krea2.safetensors",
+   "strength_model": 0.5
+  }
+ },
+ "3": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_4b_bf16.safetensors",
+   "type": "krea2",
+   "device": "default"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "qwen_image_vae.safetensors"
+  }
+ },
+ "5": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "input.png",
+   "upload": "image"
+  },
+  "_meta": {
+   "title": "Image 1 (base / pose)"
+  }
+ },
+ "6": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "16",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "7": {
+  "class_type": "Krea2EditModelPatch",
+  "inputs": {
+   "model": [
+    "2",
+    0
+   ],
+   "source_latent": [
+    "6",
+    0
+   ],
+   "fit_mode": "fit",
+   "ref_boost": 1.0,
+   "ref_boost_a": 1.0,
+   "vae": [
+    "4",
+    0
+   ],
+   "source_image": [
+    "16",
+    0
+   ],
+   "source_latent_b": [
+    "15",
+    0
+   ],
+   "source_image_b": [
+    "17",
+    0
+   ]
+  }
+ },
+ "8": {
+  "class_type": "Krea2EditGroundedEncode",
+  "inputs": {
+   "clip": [
+    "3",
+    0
+   ],
+   "prompt": "body_swap: replace the person with the reference person.",
+   "image": [
+    "16",
+    0
+   ],
+   "grounding_px": 0,
+   "image_b": [
+    "17",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Positive (instruction)"
+  }
+ },
+ "9": {
+  "class_type": "Krea2EditGroundedEncode",
+  "inputs": {
+   "clip": [
+    "3",
+    0
+   ],
+   "prompt": "",
+   "image": [
+    "16",
+    0
+   ],
+   "grounding_px": 0,
+   "image_b": [
+    "17",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Negative"
+  }
+ },
+ "10": {
+  "class_type": "EmptySD3LatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "11": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "7",
+    0
+   ],
+   "positive": [
+    "8",
+    0
+   ],
+   "negative": [
+    "9",
+    0
+   ],
+   "latent_image": [
+    "10",
+    0
+   ],
+   "seed": 0,
+   "steps": 10,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1.0
+  }
+ },
+ "12": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "11",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "13": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "12",
+    0
+   ],
+   "filename_prefix": "CJ_Krea2_body_swap"
+  }
+ },
+ "14": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "input_b.png",
+   "upload": "image"
+  },
+  "_meta": {
+   "title": "Image 2 (reference person)"
+  }
+ },
+ "15": {
+  "class_type": "VAEEncode",
+  "inputs": {
+   "pixels": [
+    "17",
+    0
+   ],
+   "vae": [
+    "4",
+    0
+   ]
+  }
+ },
+ "16": {
+  "class_type": "ImageScaleToTotalPixels",
+  "inputs": {
+   "image": [
+    "5",
+    0
+   ],
+   "upscale_method": "lanczos",
+   "megapixels": 1.0,
+   "resolution_steps": 1
+  },
+  "_meta": {
+   "title": "Base to 1MP"
+  }
+ },
+ "17": {
+  "class_type": "ImageScaleToTotalPixels",
+  "inputs": {
+   "image": [
+    "14",
+    0
+   ],
+   "upscale_method": "lanczos",
+   "megapixels": 1.0,
+   "resolution_steps": 1
+  },
+  "_meta": {
+   "title": "Reference to 1MP"
+  }
+ },
+ "_comment": "BFS body swap v1 (experimental) for Krea 2. Mirrors the author's Simple Workflow: img1=base/pose, img2=reference person, native grounding (0), 10 steps cfg 1; LoRA 0.5 per the model card. Pre-resize is core ImageScaleToTotalPixels 1MP. Engine injects LoRA, prompt(8), refs(5,14), seed/steps/cfg(11), ref_boost(7), latent(10)."
+}

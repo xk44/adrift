@@ -1,0 +1,27 @@
+Patch for https://github.com/OpenMOSS/MOSS-Image (pinned commit 52b87fca23ac).
+This diff modifies that project's files and is distributed under its
+license (Apache-2.0), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/loaders.py b/loaders.py
+index 1bf7239..818cca7 100644
+--- a/loaders.py
++++ b/loaders.py
+@@ -100,6 +100,17 @@ def load_model_state(
+         state = stripped
+         if operations is None:
+             state, metadata = utils.convert_old_quants(state, "", metadata=metadata)
++    # local patch: ComfyUI-native MOSS checkpoints fuse
++    # layers.N.proj.qkv ([q;k;v] on the out dim, see comfy/ldm/moss_image/model.py);
++    # this module wants split q/k/v. Without this the attention weights stay unloaded
++    # (log: "unet missing ...proj.q.weight") and every sample is pure noise.
++    fused = [k for k in state if k.endswith(".proj.qkv.weight")]
++    if fused:
++        state = dict(state)
++        for key in fused:
++            base = key[: -len("qkv.weight")]
++            for name, part in zip(("q", "k", "v"), state.pop(key).chunk(3, dim=0)):
++                state[f"{base}{name}.weight"] = part
+     config = model_config(state)
+     config.quant_config = utils.detect_layer_quantization(state, "")
+     if operations is not None:

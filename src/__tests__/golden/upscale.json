@@ -1,0 +1,44 @@
+{
+  "name": "upscale",
+  "tool": "upscale",
+  "action": "upscale_subtle",
+  "workflow": "upscale_subtle.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "UpscaleModelLoader",
+      "inputs": {
+        "model_name": "RealESRGAN_x4plus.pth"
+      }
+    },
+    "3": {
+      "class_type": "ImageUpscaleWithModel",
+      "inputs": {
+        "image": [
+          "1",
+          0
+        ],
+        "upscale_model": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "Adrift_upscale",
+        "images": [
+          "3",
+          0
+        ]
+      }
+    }
+  }
+}

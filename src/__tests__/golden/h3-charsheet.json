@@ -1,0 +1,213 @@
+{
+  "name": "h3_charsheet",
+  "tool": "h3_charsheet",
+  "action": "h3_charsheet",
+  "workflow": "packs/minimax/charsheet.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "Load MiniMax H3 Ref2VA",
+      "inputs": {
+        "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "Load Qwen3-VL 32B Encoder",
+      "inputs": {
+        "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "device": "default",
+        "type": "minimax"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "MiniMaxH3ReferenceToVideo",
+      "title": "H3 Character Sheet Conditioning (5 frames)",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "height": 768,
+        "length": 5,
+        "prompt": "subject_definitions:\n<Subject 1> is the character in <Picture 1>, named golden second text.\n<Picture 2> shows the same <Subject 1>: the outfit: garments, colours, materials and accessories.\n<Picture 3> shows the same <Subject 1>: the outfit: garments, colours, materials and accessories.\n\nsummary:\n[reference generation] A single static character reference sheet of golden second text (<Subject 1>): exactly 6 panels in 2 rows on a plain light-grey studio background, every panel showing the same character from a different view. This is a still image: no motion, no camera movement, no animation between frames.\nGolden test subject.\n\nretention_analysis:\n<Subject 1> (every panel): fully_preserved - face, hair, skin tone, body proportions and outfit match <Picture 1> exactly.\n<Picture 2>: fully_preserved - the outfit: garments, colours, materials and accessories are taken from <Picture 2>.\n<Picture 3>: fully_preserved - the outfit: garments, colours, materials and accessories are taken from <Picture 3>.\nGarments: keep every garment, layer and colour; do not add, remove or swap clothing between panels.\nGloves and footwear: keep them exactly as shown, on both hands and both feet, in every panel.\n\ndetailed_description:\nTop row, 3 panels from left to right: (1) head and shoulders, facing the viewer straight on, both eyes and ears visible, neutral expression; (2) head and shoulders turned three-quarters toward screen right, nose points to screen RIGHT, the far eye partly hidden; (3) strict side profile, nose points to screen RIGHT, only one eye visible, the back of the head toward screen left.\nSecond row, 3 panels from left to right: (1) full body from head to toe, facing the viewer, relaxed A-pose with arms slightly away from the body, feet visible; (2) full body from head to toe in strict side view, nose points to screen RIGHT, arms relaxed, feet visible; (3) full body from head to toe seen from behind, face not visible, arms relaxed, feet visible.\nPanels are evenly spaced and the same scale within a row; the character is centred in each panel and never cropped.\nStrict view directions: left and right mean screen left and screen right.\nNeutral flat lighting, identical in every panel. No text, labels, captions, numbers, arrows, logos or watermarks.\n\noverall_soundscape:\nSilence.",
+        "ref_image_size": "match",
+        "ref_images.ref_image_0": [
+          "15",
+          0
+        ],
+        "ref_images.ref_image_1": [
+          "16",
+          0
+        ],
+        "ref_images.ref_image_2": [
+          "17",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "width": 1344
+      }
+    },
+    "6": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "7": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "19",
+          0
+        ],
+        "scheduler": "simple",
+        "steps": 8
+      }
+    },
+    "8": {
+      "class_type": "RandomNoise",
+      "title": "Noise",
+      "inputs": {
+        "noise_seed": 1234
+      }
+    },
+    "9": {
+      "class_type": "BasicGuider",
+      "title": "Guider",
+      "inputs": {
+        "conditioning": [
+          "5",
+          0
+        ],
+        "model": [
+          "19",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "9",
+          0
+        ],
+        "latent_image": [
+          "5",
+          1
+        ],
+        "noise": [
+          "8",
+          0
+        ],
+        "sampler": [
+          "6",
+          0
+        ],
+        "sigmas": [
+          "7",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "VAEDecode",
+      "title": "Decode Frames",
+      "inputs": {
+        "samples": [
+          "10",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "ImageFromBatch",
+      "title": "Frame 0 = the sheet",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "11",
+          0
+        ],
+        "length": 1
+      }
+    },
+    "13": {
+      "class_type": "SaveImage",
+      "title": "Save Sheet",
+      "inputs": {
+        "filename_prefix": "CJ_H3_CharSheet",
+        "images": [
+          "12",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "LoadImage",
+      "title": "Reference 1 (character)",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "16": {
+      "class_type": "LoadImage",
+      "title": "Reference 2",
+      "inputs": {
+        "image": "golden_ref2.png [input]"
+      }
+    },
+    "17": {
+      "class_type": "LoadImage",
+      "title": "Reference 3",
+      "inputs": {
+        "image": "golden_ref3.png [input]"
+      }
+    },
+    "18": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "MiniMax H3 Turbo 8-step (lightx2v)",
+      "inputs": {
+        "lora_name": "minimax_h3_ref2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "19": {
+      "class_type": "MiniMaxH3SigmaShift",
+      "title": "MiniMax H3 Sigma Shift (Turbo)",
+      "inputs": {
+        "model": [
+          "18",
+          0
+        ],
+        "shift_audio": 3,
+        "shift_video": 6
+      }
+    }
+  }
+}

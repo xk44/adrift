@@ -1,0 +1,218 @@
+{
+  "name": "body_3d_video",
+  "tool": "body_3d_video",
+  "action": "body_3d",
+  "workflow": "packs/sam3d-body/body_3d.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "Video Slice",
+      "title": "First Seconds",
+      "inputs": {
+        "duration": 10,
+        "start_time": 0,
+        "strict_duration": false,
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "2",
+          0
+        ]
+      }
+    },
+    "5": {
+      "class_type": "UNETLoader",
+      "title": "RT-DETR v4",
+      "inputs": {
+        "unet_name": "rt_detr_v4-x-hgnet_fp16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "6": {
+      "class_type": "RTDETR_detect",
+      "title": "Find People",
+      "inputs": {
+        "class_name": "person",
+        "image": [
+          "3",
+          0
+        ],
+        "max_detections": 100,
+        "model": [
+          "5",
+          0
+        ],
+        "threshold": 0.5
+      }
+    },
+    "7": {
+      "class_type": "SAM3DBody_Loader",
+      "title": "SAM 3D Body",
+      "inputs": {
+        "model_file": "sam_3d_body_dinov3_bf16.safetensors"
+      }
+    },
+    "8": {
+      "class_type": "SAM3DBody_Predict",
+      "title": "Fit Body Pose",
+      "inputs": {
+        "batch_size": 64,
+        "bboxes": [
+          "6",
+          0
+        ],
+        "fov": 0,
+        "image": [
+          "3",
+          0
+        ],
+        "run_hand_refinement": true,
+        "sam3d_body_model": [
+          "7",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SAM3DBody_FaceExpression",
+      "title": "Face Expression",
+      "inputs": {
+        "blendshape_smooth_window": 7,
+        "brow_strength": 2,
+        "eye_strength": 2,
+        "image": [
+          "3",
+          0
+        ],
+        "input_threshold": 0.02,
+        "mhr_pose_data": [
+          "8",
+          0
+        ],
+        "mouth_strength": 1,
+        "sam3d_body_model": [
+          "7",
+          0
+        ],
+        "strength": 1
+      }
+    },
+    "10": {
+      "class_type": "SAM3DBody_Smooth",
+      "title": "Smooth Motion",
+      "inputs": {
+        "method": "gaussian",
+        "mhr_pose_data": [
+          "9",
+          0
+        ],
+        "rotation_threshold_degrees": 15,
+        "strength": 1,
+        "window": 7
+      }
+    },
+    "11": {
+      "class_type": "SAM3DBody_Render",
+      "title": "Render Body",
+      "inputs": {
+        "background": [
+          "3",
+          0
+        ],
+        "height": 0,
+        "pose_data": [
+          "10",
+          0
+        ],
+        "render_style": "mesh",
+        "render_style.opacity": 1,
+        "render_style.person_palette_falloff": 0.6,
+        "render_style.region": "full_body",
+        "render_style.shader": "default",
+        "width": 0
+      }
+    },
+    "12": {
+      "class_type": "CreateVideo",
+      "title": "Render Clip",
+      "inputs": {
+        "audio": [
+          "3",
+          1
+        ],
+        "fps": [
+          "3",
+          2
+        ],
+        "images": [
+          "11",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "SaveVideo",
+      "title": "Save Render",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/adrift_body3d",
+        "format": "auto",
+        "video": [
+          "12",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "BuildPoseFile",
+      "title": "Body File",
+      "inputs": {
+        "camera_translation": "off",
+        "format": "glb",
+        "format.bone_smooth_window": 0,
+        "format.mesh_style": "body_mesh",
+        "format.mesh_style.bone_vis": "off",
+        "format.mesh_style.shader": "default",
+        "fps": [
+          "3",
+          2
+        ],
+        "pose_data": [
+          "10",
+          0
+        ],
+        "sam3d_body_model": [
+          "7",
+          0
+        ],
+        "track_index": -1
+      }
+    },
+    "15": {
+      "class_type": "SaveGLB",
+      "title": "Save Body File",
+      "inputs": {
+        "filename_prefix": "3d/adrift_body3d",
+        "mesh": [
+          "14",
+          0
+        ]
+      }
+    }
+  }
+}

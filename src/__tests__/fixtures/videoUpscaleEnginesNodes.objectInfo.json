@@ -1,0 +1,826 @@
+{
+  "_meta": {
+    "source": "Recorded from the reference box /object_info: core LTXVContextWindows (newer than graphLint.objectInfo.json) and the ComfyUI-WanVideoWrapper 1.4.7 classes used by Upscale video's FlashVSR engine. Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-31"
+  },
+  "LTXVContextWindows": {
+    "input": {
+      "required": {
+        "model": [
+          "MODEL",
+          {}
+        ],
+        "context_length": [
+          "INT",
+          {
+            "default": 145,
+            "min": 1,
+            "max": 16384,
+            "step": 8
+          }
+        ],
+        "context_overlap": [
+          "INT",
+          {
+            "default": 40,
+            "min": 0,
+            "step": 8
+          }
+        ],
+        "context_schedule": [
+          "COMBO",
+          {
+            "default": "standard_uniform",
+            "multiselect": false,
+            "options": [
+              "standard_static",
+              "standard_uniform",
+              "looped_uniform",
+              "batched"
+            ]
+          }
+        ],
+        "context_stride": [
+          "INT",
+          {
+            "advanced": true,
+            "default": 1,
+            "min": 1
+          }
+        ],
+        "closed_loop": [
+          "BOOLEAN",
+          {
+            "advanced": true,
+            "default": false
+          }
+        ],
+        "fuse_method": [
+          "COMBO",
+          {
+            "default": "pyramid",
+            "multiselect": false,
+            "options": [
+              "pyramid",
+              "relative",
+              "flat",
+              "overlap-linear"
+            ]
+          }
+        ],
+        "freenoise": [
+          "BOOLEAN",
+          {
+            "advanced": true,
+            "default": true
+          }
+        ],
+        "retain_first_frame": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "split_conds_to_windows": [
+          "BOOLEAN",
+          {
+            "advanced": true,
+            "default": false
+          }
+        ]
+      }
+    },
+    "output": [
+      "MODEL"
+    ],
+    "output_name": [
+      "MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoModelLoader": {
+    "input": {
+      "required": {
+        "model": [
+          [
+            "example_model.safetensors"
+          ],
+          {}
+        ],
+        "base_precision": [
+          [
+            "fp32",
+            "bf16",
+            "fp16",
+            "fp16_fast"
+          ],
+          {
+            "default": "bf16"
+          }
+        ],
+        "quantization": [
+          [
+            "disabled",
+            "fp8_e4m3fn",
+            "fp8_e4m3fn_fast",
+            "fp8_e4m3fn_scaled",
+            "fp8_e4m3fn_scaled_fast",
+            "fp8_e5m2",
+            "fp8_e5m2_fast",
+            "fp8_e5m2_scaled",
+            "fp8_e5m2_scaled_fast"
+          ],
+          {
+            "default": "disabled"
+          }
+        ],
+        "load_device": [
+          [
+            "main_device",
+            "offload_device"
+          ],
+          {
+            "default": "offload_device"
+          }
+        ]
+      },
+      "optional": {
+        "attention_mode": [
+          [
+            "sdpa",
+            "flash_attn_2",
+            "flash_attn_3",
+            "sageattn",
+            "sageattn_3",
+            "radial_sage_attention",
+            "sageattn_compiled",
+            "sageattn_ultravico",
+            "comfy"
+          ],
+          {
+            "default": "sdpa"
+          }
+        ],
+        "compile_args": [
+          "WANCOMPILEARGS"
+        ],
+        "block_swap_args": [
+          "BLOCKSWAPARGS"
+        ],
+        "lora": [
+          "WANVIDLORA",
+          {
+            "default": null
+          }
+        ],
+        "vram_management_args": [
+          "VRAM_MANAGEMENTARGS",
+          {
+            "default": null
+          }
+        ],
+        "extra_model": [
+          "VACEPATH",
+          {
+            "default": null
+          }
+        ],
+        "fantasytalking_model": [
+          "FANTASYTALKINGMODEL",
+          {
+            "default": null
+          }
+        ],
+        "multitalk_model": [
+          "MULTITALKMODEL",
+          {
+            "default": null
+          }
+        ],
+        "fantasyportrait_model": [
+          "FANTASYPORTRAITMODEL",
+          {
+            "default": null
+          }
+        ],
+        "rms_norm_function": [
+          [
+            "default",
+            "pytorch"
+          ],
+          {
+            "default": "default"
+          }
+        ]
+      }
+    },
+    "output": [
+      "WANVIDEOMODEL"
+    ],
+    "output_name": [
+      "model"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoExtraModelSelect": {
+    "input": {
+      "required": {
+        "extra_model": [
+          [
+            "example_model.safetensors"
+          ],
+          {}
+        ]
+      },
+      "optional": {
+        "prev_model": [
+          "VACEPATH",
+          {
+            "default": null
+          }
+        ]
+      }
+    },
+    "output": [
+      "VACEPATH"
+    ],
+    "output_name": [
+      "extra_model"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "LoadWanVideoT5TextEncoder": {
+    "input": {
+      "required": {
+        "model_name": [
+          [
+            "example_model.safetensors"
+          ],
+          {}
+        ],
+        "precision": [
+          [
+            "fp32",
+            "bf16"
+          ],
+          {
+            "default": "bf16"
+          }
+        ]
+      },
+      "optional": {
+        "load_device": [
+          [
+            "main_device",
+            "offload_device"
+          ],
+          {
+            "default": "offload_device"
+          }
+        ],
+        "quantization": [
+          [
+            "disabled",
+            "fp8_e4m3fn"
+          ],
+          {
+            "default": "disabled"
+          }
+        ]
+      }
+    },
+    "output": [
+      "WANTEXTENCODER"
+    ],
+    "output_name": [
+      "wan_t5_model"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoTextEncode": {
+    "input": {
+      "required": {
+        "positive_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ],
+        "negative_prompt": [
+          "STRING",
+          {
+            "default": "",
+            "multiline": true
+          }
+        ]
+      },
+      "optional": {
+        "t5": [
+          "WANTEXTENCODER"
+        ],
+        "force_offload": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "model_to_offload": [
+          "WANVIDEOMODEL",
+          {}
+        ],
+        "use_disk_cache": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "device": [
+          [
+            "gpu",
+            "cpu"
+          ],
+          {
+            "default": "gpu"
+          }
+        ]
+      }
+    },
+    "output": [
+      "WANVIDEOTEXTEMBEDS"
+    ],
+    "output_name": [
+      "text_embeds"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoEmptyEmbeds": {
+    "input": {
+      "required": {
+        "width": [
+          "INT",
+          {
+            "default": 832,
+            "min": 64,
+            "max": 8096,
+            "step": 8
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 480,
+            "min": 64,
+            "max": 8096,
+            "step": 8
+          }
+        ],
+        "num_frames": [
+          "INT",
+          {
+            "default": 81,
+            "min": 1,
+            "max": 10000,
+            "step": 4
+          }
+        ]
+      },
+      "optional": {
+        "control_embeds": [
+          "WANVIDIMAGE_EMBEDS",
+          {}
+        ],
+        "extra_latents": [
+          "LATENT",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "WANVIDIMAGE_EMBEDS"
+    ],
+    "output_name": [
+      "image_embeds"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoAddFlashVSRInput": {
+    "input": {
+      "required": {
+        "embeds": [
+          "WANVIDIMAGE_EMBEDS"
+        ],
+        "images": [
+          "IMAGE",
+          {}
+        ],
+        "strength": [
+          "FLOAT",
+          {
+            "default": 1,
+            "min": 0,
+            "max": 2,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    "output": [
+      "WANVIDIMAGE_EMBEDS"
+    ],
+    "output_name": [
+      "image_embeds"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoContextOptions": {
+    "input": {
+      "required": {
+        "context_schedule": [
+          [
+            "uniform_standard",
+            "uniform_looped",
+            "static_standard"
+          ]
+        ],
+        "context_frames": [
+          "INT",
+          {
+            "default": 81,
+            "min": 2,
+            "max": 1000,
+            "step": 1
+          }
+        ],
+        "context_stride": [
+          "INT",
+          {
+            "default": 4,
+            "min": 4,
+            "max": 100,
+            "step": 1
+          }
+        ],
+        "context_overlap": [
+          "INT",
+          {
+            "default": 16,
+            "min": 4,
+            "max": 100,
+            "step": 1
+          }
+        ],
+        "freenoise": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "verbose": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ]
+      },
+      "optional": {
+        "fuse_method": [
+          [
+            "linear",
+            "pyramid"
+          ],
+          {
+            "default": "linear"
+          }
+        ],
+        "reference_latent": [
+          "LATENT",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "WANVIDCONTEXT"
+    ],
+    "output_name": [
+      "context_options"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoSampler": {
+    "input": {
+      "required": {
+        "model": [
+          "WANVIDEOMODEL"
+        ],
+        "image_embeds": [
+          "WANVIDIMAGE_EMBEDS"
+        ],
+        "steps": [
+          "INT",
+          {
+            "default": 30,
+            "min": 1
+          }
+        ],
+        "cfg": [
+          "FLOAT",
+          {
+            "default": 6,
+            "min": 0,
+            "max": 30,
+            "step": 0.01
+          }
+        ],
+        "shift": [
+          "FLOAT",
+          {
+            "default": 5,
+            "min": 0,
+            "max": 1000,
+            "step": 0.01
+          }
+        ],
+        "seed": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 18446744073709552000
+          }
+        ],
+        "force_offload": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ],
+        "scheduler": [
+          [
+            "euler",
+            "lcm",
+            "res_multistep",
+            "er_sde"
+          ],
+          {
+            "default": "unipc"
+          }
+        ],
+        "riflex_freq_index": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 1000,
+            "step": 1
+          }
+        ]
+      },
+      "optional": {
+        "text_embeds": [
+          "WANVIDEOTEXTEMBEDS"
+        ],
+        "samples": [
+          "LATENT",
+          {}
+        ],
+        "denoise_strength": [
+          "FLOAT",
+          {
+            "default": 1,
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ],
+        "feta_args": [
+          "FETAARGS"
+        ],
+        "context_options": [
+          "WANVIDCONTEXT"
+        ],
+        "cache_args": [
+          "CACHEARGS"
+        ],
+        "flowedit_args": [
+          "FLOWEDITARGS",
+          {}
+        ],
+        "batched_cfg": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "slg_args": [
+          "SLGARGS"
+        ],
+        "rope_function": [
+          [
+            "default",
+            "comfy",
+            "comfy_chunked"
+          ],
+          {
+            "default": "comfy"
+          }
+        ],
+        "loop_args": [
+          "LOOPARGS"
+        ],
+        "experimental_args": [
+          "EXPERIMENTALARGS"
+        ],
+        "sigmas": [
+          "SIGMAS"
+        ],
+        "unianimate_poses": [
+          "UNIANIMATE_POSE"
+        ],
+        "fantasytalking_embeds": [
+          "FANTASYTALKING_EMBEDS"
+        ],
+        "uni3c_embeds": [
+          "UNI3C_EMBEDS"
+        ],
+        "multitalk_embeds": [
+          "MULTITALK_EMBEDS"
+        ],
+        "freeinit_args": [
+          "FREEINITARGS"
+        ],
+        "start_step": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 10000,
+            "step": 1
+          }
+        ],
+        "end_step": [
+          "INT",
+          {
+            "default": -1,
+            "min": -1,
+            "max": 10000,
+            "step": 1
+          }
+        ],
+        "add_noise_to_samples": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ]
+      }
+    },
+    "output": [
+      "LATENT",
+      "LATENT"
+    ],
+    "output_name": [
+      "samples",
+      "denoised_samples"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoFlashVSRDecoderLoader": {
+    "input": {
+      "required": {
+        "model_name": [
+          [
+            "example_model.safetensors"
+          ],
+          {}
+        ]
+      },
+      "optional": {
+        "precision": [
+          [
+            "fp16",
+            "fp32",
+            "bf16"
+          ],
+          {
+            "default": "bf16"
+          }
+        ]
+      }
+    },
+    "output": [
+      "WANVAE"
+    ],
+    "output_name": [
+      "vae"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  },
+  "WanVideoDecode": {
+    "input": {
+      "required": {
+        "vae": [
+          "WANVAE"
+        ],
+        "samples": [
+          "LATENT"
+        ],
+        "enable_vae_tiling": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "tile_x": [
+          "INT",
+          {
+            "default": 272,
+            "min": 40,
+            "max": 2048,
+            "step": 8
+          }
+        ],
+        "tile_y": [
+          "INT",
+          {
+            "default": 272,
+            "min": 40,
+            "max": 2048,
+            "step": 8
+          }
+        ],
+        "tile_stride_x": [
+          "INT",
+          {
+            "default": 144,
+            "min": 32,
+            "max": 2040,
+            "step": 8
+          }
+        ],
+        "tile_stride_y": [
+          "INT",
+          {
+            "default": 128,
+            "min": 32,
+            "max": 2040,
+            "step": 8
+          }
+        ]
+      },
+      "optional": {
+        "normalization": [
+          [
+            "default",
+            "minmax",
+            "none"
+          ],
+          {
+            "advanced": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "images"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_node": false
+  }
+}

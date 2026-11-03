@@ -1,0 +1,24 @@
+Patch for https://github.com/sorryhyun/ComfyUI-MOSS-Toolkit (pinned commit 0c0d4665d529).
+This diff modifies that project's files and is distributed under its
+license (Apache-2.0), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/reference.py b/reference.py
+index 63e0a7d..dbaf9eb 100644
+--- a/reference.py
++++ b/reference.py
+@@ -43,9 +43,11 @@ def _time_mods(dit, times):
+     """``(block (B,6,D), head (B,2,D))`` modulations at ``times`` (B,), as training."""
+     # Training computes the sinusoid in float64 and feeds float32 into its MLP.
+     half = dit.freq_dim // 2
+-    freq = 10000 ** (-torch.arange(half, device=times.device, dtype=torch.float64) / half)
+-    phase = times.double()[:, None] * freq
+-    embedding = torch.cat((phase.cos(), phase.sin()), -1).float()
++    # local patch (Apple Silicon): MPS has no float64 -> do the sinusoid on CPU, move back as float32
++    times64 = times.detach().to("cpu").to(torch.float64)  # split: MPS rejects combined device+f64 cast
++    freq = 10000 ** (-torch.arange(half, dtype=torch.float64) / half)
++    phase = times64[:, None] * freq
++    embedding = torch.cat((phase.cos(), phase.sin()), -1).float().to(times.device)
+     time = dit.time_embedding(embedding.to(dit.time_embedding[0].weight.dtype)).float()
+     mod = dit.shared_block_modulation(time.to(dit.shared_block_modulation.weight.dtype))
+     head = dit.video_head_modulation(time.to(dit.video_head_modulation.weight.dtype))

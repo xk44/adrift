@@ -1,0 +1,14 @@
+# SREF System Dependencies
+# These are optional - the system falls back gracefully without them
+
+# Fast vector similarity search (optional)
+# hnswlib>=0.7.0
+
+# Image hashing for caching (included in most installs)
+# pillow>=9.0.0
+
+# Database already included with Python stdlib
+# sqlite3
+
+# Note: Core dependencies (torch, numpy, transformers) 
+# are provided by ComfyUI installation

@@ -1,0 +1,72 @@
+{
+  "name": "bg_remove",
+  "tool": "bg_remove",
+  "action": "bg_remove",
+  "workflow": "packs/utility/bg_remove.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]",
+        "upload": "image"
+      }
+    },
+    "2": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "title": "BiRefNet",
+      "inputs": {
+        "bg_removal_name": "birefnet.safetensors"
+      }
+    },
+    "3": {
+      "class_type": "RemoveBackground",
+      "title": "Foreground Mask",
+      "inputs": {
+        "bg_removal_model": [
+          "2",
+          0
+        ],
+        "image": [
+          "1",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "JoinImageWithAlpha",
+      "title": "Attach Alpha",
+      "inputs": {
+        "alpha": [
+          "6",
+          0
+        ],
+        "image": [
+          "1",
+          0
+        ]
+      }
+    },
+    "5": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "cj_bg_remove",
+        "images": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "InvertMask",
+      "title": "Mask Convention (1 = transparent)",
+      "inputs": {
+        "mask": [
+          "3",
+          0
+        ]
+      }
+    }
+  }
+}

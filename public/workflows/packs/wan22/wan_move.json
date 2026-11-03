@@ -1,0 +1,220 @@
+{
+  "_meta": {
+    "title": "Trajectory Motion (Wan-Move)",
+    "description": "Core ComfyUI nodes only, wired from the official video_wanmove_480p template. Wan2.1 Wan-Move 14B fp8 (KJ) + lightx2v I2V 480p cfg/step-distill LoRA (6 steps, er_sde/simple, CFG 1, shift 8), clip_vision_h on the start photo. The builder writes named trajectory presets as pixel track lists (JSON) into the string node; WanMoveTracksFromCoords turns them into tracks that drag the image content along those paths. 16 fps, ~480p."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Photo"
+    }
+  },
+  "2": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "Wan21-WanMove_fp8_scaled_e4m3fn_KJ.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "3": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "lightx2v distill"
+    }
+  },
+  "4": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "shift": 8.0
+    }
+  },
+  "5": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "8": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    }
+  },
+  "9": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": {
+      "clip_name": "clip_vision_h.safetensors"
+    }
+  },
+  "10": {
+    "class_type": "CLIPVisionEncode",
+    "inputs": {
+      "clip_vision": [
+        "9",
+        0
+      ],
+      "image": [
+        "1",
+        0
+      ],
+      "crop": "center"
+    }
+  },
+  "11": {
+    "class_type": "PrimitiveStringMultiline",
+    "inputs": {
+      "value": "[]"
+    },
+    "_meta": {
+      "title": "Track coords (JSON, pixels)"
+    }
+  },
+  "12": {
+    "class_type": "WanMoveTracksFromCoords",
+    "inputs": {
+      "track_coords": [
+        "11",
+        0
+      ]
+    }
+  },
+  "13": {
+    "class_type": "WanMoveTrackToVideo",
+    "inputs": {
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ],
+      "tracks": [
+        "12",
+        0
+      ],
+      "strength": 1.0,
+      "width": 832,
+      "height": 480,
+      "length": 81,
+      "batch_size": 1,
+      "start_image": [
+        "1",
+        0
+      ],
+      "clip_vision_output": [
+        "10",
+        0
+      ]
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "13",
+        0
+      ],
+      "negative": [
+        "13",
+        1
+      ],
+      "latent_image": [
+        "13",
+        2
+      ],
+      "seed": 0,
+      "steps": 6,
+      "cfg": 1.0,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "fps": 16.0
+    }
+  },
+  "17": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "16",
+        0
+      ],
+      "filename_prefix": "video/CJ_WanMove",
+      "format": "auto",
+      "codec": "auto"
+    }
+  }
+}

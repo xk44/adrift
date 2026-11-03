@@ -1,0 +1,6 @@
+# artistic mediums; nested wildcard demo
+oil painting, __colors__ palette
+watercolor, __colors__ wash
+charcoal sketch
+35mm film photo
+ink and gouache

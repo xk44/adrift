@@ -1,0 +1,102 @@
+{
+  "name": "interpolate",
+  "tool": "interpolate",
+  "action": "interpolate",
+  "workflow": "packs/interp/interpolate.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "8",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "FrameInterpolationModelLoader",
+      "title": "Interpolation Model",
+      "inputs": {
+        "model_name": "rife_v4.26.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "FrameInterpolate",
+      "title": "Interpolate Frames",
+      "inputs": {
+        "images": [
+          "2",
+          0
+        ],
+        "interp_model": [
+          "3",
+          0
+        ],
+        "multiplier": 2
+      }
+    },
+    "5": {
+      "class_type": "ComfyMathExpression",
+      "title": "Output FPS (smooth)",
+      "inputs": {
+        "expression": "a * 2",
+        "values.a": [
+          "2",
+          2
+        ]
+      }
+    },
+    "6": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video",
+      "inputs": {
+        "audio": [
+          "2",
+          1
+        ],
+        "fps": [
+          "5",
+          0
+        ],
+        "images": [
+          "4",
+          0
+        ]
+      }
+    },
+    "7": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_Interpolate",
+        "format": "auto",
+        "video": [
+          "6",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "VideoTemporalCrop",
+      "title": "Length cap (head; builder sets frames = 960 / multiplier)",
+      "inputs": {
+        "length": 480,
+        "start_frame": 0,
+        "video": [
+          "1",
+          0
+        ]
+      }
+    }
+  }
+}

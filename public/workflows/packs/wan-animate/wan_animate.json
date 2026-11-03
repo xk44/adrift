@@ -1,0 +1,481 @@
+{
+    "_meta": {
+        "title": "Animate Character (Wan Animate 2)",
+        "description": "Core ComfyUI nodes only. Motion transfer: the clip's frames drive WanAnimate2ToVideo (pose_video = raw frames, no pose extractor) and the character photo is the reference identity; the output keeps the photo's background. Distilled int8 checkpoint, LCM 10 steps, CFG 1, shift 5, WanAnimate2Cache (cpu/int8 -- gpu OOMs a 24GB card with a desktop on it). Frames are taken 1:1 from the clip (output keeps the clip fps and audio), capped at 241 frames and floored to 4n+1; ContextWindowsManual (21 latent frames, overlap 8) only kicks in past one 81-frame window. The builder (src/lib/oj/wanAnimate.ts) sets inputs/size/seed, swaps to the full checkpoint + lightx2v LoRA for speed=quality, and appends a BiRefNet matte + composite over the original frames for mode=replace."
+    },
+    "1": {
+        "class_type": "LoadVideo",
+        "inputs": {
+            "file": ""
+        },
+        "_meta": {
+            "title": "Source Clip (motion)"
+        }
+    },
+    "2": {
+        "class_type": "GetVideoComponents",
+        "inputs": {
+            "video": [
+                "1",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Frames + Audio + FPS"
+        }
+    },
+    "3": {
+        "class_type": "ImageFromBatch",
+        "inputs": {
+            "image": [
+                "2",
+                0
+            ],
+            "batch_index": 0,
+            "length": 241
+        },
+        "_meta": {
+            "title": "Frame Cap"
+        }
+    },
+    "4": {
+        "class_type": "ResizeImageMaskNode",
+        "inputs": {
+            "input": [
+                "3",
+                0
+            ],
+            "resize_type": "scale dimensions",
+            "resize_type.width": 480,
+            "resize_type.height": 832,
+            "resize_type.crop": "center",
+            "scale_method": "area"
+        },
+        "_meta": {
+            "title": "Resize Clip"
+        }
+    },
+    "5": {
+        "class_type": "GetImageSize",
+        "inputs": {
+            "image": [
+                "4",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Clip Size"
+        }
+    },
+    "6": {
+        "class_type": "ComfyMathExpression",
+        "inputs": {
+            "expression": "4 * floor((a - 1) / 4) + 1",
+            "values.a": [
+                "5",
+                2
+            ]
+        },
+        "_meta": {
+            "title": "Length 4n+1"
+        }
+    },
+    "7": {
+        "class_type": "LoadImage",
+        "inputs": {
+            "image": ""
+        },
+        "_meta": {
+            "title": "Character Photo"
+        }
+    },
+    "8": {
+        "class_type": "ResizeImageMaskNode",
+        "inputs": {
+            "input": [
+                "7",
+                0
+            ],
+            "resize_type": "scale dimensions",
+            "resize_type.width": 480,
+            "resize_type.height": 832,
+            "resize_type.crop": "center",
+            "scale_method": "area"
+        },
+        "_meta": {
+            "title": "Resize Character"
+        }
+    },
+    "9": {
+        "class_type": "CLIPVisionLoader",
+        "inputs": {
+            "clip_name": "clip_vision_h.safetensors"
+        },
+        "_meta": {
+            "title": "CLIP Vision"
+        }
+    },
+    "10": {
+        "class_type": "CLIPVisionEncode",
+        "inputs": {
+            "clip_vision": [
+                "9",
+                0
+            ],
+            "image": [
+                "8",
+                0
+            ],
+            "crop": "none"
+        },
+        "_meta": {
+            "title": "CLIP Vision (character)"
+        }
+    },
+    "11": {
+        "class_type": "ImageFromBatch",
+        "inputs": {
+            "image": [
+                "4",
+                0
+            ],
+            "batch_index": 0,
+            "length": 1
+        },
+        "_meta": {
+            "title": "First Clip Frame"
+        }
+    },
+    "12": {
+        "class_type": "CLIPVisionEncode",
+        "inputs": {
+            "clip_vision": [
+                "9",
+                0
+            ],
+            "image": [
+                "11",
+                0
+            ],
+            "crop": "none"
+        },
+        "_meta": {
+            "title": "CLIP Vision (pose)"
+        }
+    },
+    "13": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+            "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+            "type": "wan",
+            "device": "default"
+        },
+        "_meta": {
+            "title": "UMT5"
+        }
+    },
+    "14": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": [
+                "13",
+                0
+            ],
+            "text": "Character appearance description: the character in the reference image, keeping its exact look, colors and outfit.\nBackground description: the background of the reference image."
+        },
+        "_meta": {
+            "title": "Positive Prompt"
+        }
+    },
+    "15": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": [
+                "13",
+                0
+            ],
+            "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+        },
+        "_meta": {
+            "title": "Negative Prompt"
+        }
+    },
+    "16": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": [
+                "13",
+                0
+            ],
+            "text": "A person moving naturally, following the reference motion, camera static"
+        },
+        "_meta": {
+            "title": "Pose Prompt"
+        }
+    },
+    "17": {
+        "class_type": "VAELoader",
+        "inputs": {
+            "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+        },
+        "_meta": {
+            "title": "Wan 2.1 VAE"
+        }
+    },
+    "18": {
+        "class_type": "UNETLoader",
+        "inputs": {
+            "unet_name": "wan_animate_2_distill_int8_convrot.safetensors",
+            "weight_dtype": "default"
+        },
+        "_meta": {
+            "title": "Wan Animate 2 (distilled)"
+        }
+    },
+    "19": {
+        "class_type": "ContextWindowsManual",
+        "inputs": {
+            "model": [
+                "18",
+                0
+            ],
+            "context_length": 21,
+            "context_overlap": 8,
+            "context_schedule": "standard_static",
+            "context_stride": 1,
+            "closed_loop": false,
+            "fuse_method": "pyramid",
+            "dim": 2,
+            "freenoise": true,
+            "cond_retain_index_list": "0",
+            "split_conds_to_windows": false,
+            "latent_retain_index_list": "",
+            "causal_window_fix": true
+        },
+        "_meta": {
+            "title": "Context Windows (long clips)"
+        }
+    },
+    "20": {
+        "class_type": "WanAnimate2Cache",
+        "inputs": {
+            "model": [
+                "19",
+                0
+            ],
+            "device": "cpu",
+            "dtype": "int8"
+        },
+        "_meta": {
+            "title": "Animate Cache"
+        }
+    },
+    "21": {
+        "class_type": "ModelSamplingSD3",
+        "inputs": {
+            "model": [
+                "20",
+                0
+            ],
+            "shift": 5
+        },
+        "_meta": {
+            "title": "Shift"
+        }
+    },
+    "22": {
+        "class_type": "WanAnimate2ToVideo",
+        "inputs": {
+            "positive": [
+                "14",
+                0
+            ],
+            "negative": [
+                "15",
+                0
+            ],
+            "vae": [
+                "17",
+                0
+            ],
+            "width": 480,
+            "height": 832,
+            "length": [
+                "6",
+                1
+            ],
+            "batch_size": 1,
+            "video_frame_offset": 0,
+            "pose_strength": 1.0,
+            "pose_start_percent": 0.0,
+            "pose_end_percent": 1.0,
+            "reference_image_strength": 1.0,
+            "reference_image": [
+                "8",
+                0
+            ],
+            "pose_video": [
+                "4",
+                0
+            ],
+            "clip_vision_output": [
+                "10",
+                0
+            ],
+            "positive_pose": [
+                "16",
+                0
+            ],
+            "clip_vision_output_pose": [
+                "12",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Wan Animate 2"
+        }
+    },
+    "23": {
+        "class_type": "KSamplerSelect",
+        "inputs": {
+            "sampler_name": "lcm"
+        },
+        "_meta": {
+            "title": "Sampler"
+        }
+    },
+    "24": {
+        "class_type": "BasicScheduler",
+        "inputs": {
+            "model": [
+                "21",
+                0
+            ],
+            "scheduler": "simple",
+            "steps": 10,
+            "denoise": 1.0
+        },
+        "_meta": {
+            "title": "Scheduler"
+        }
+    },
+    "25": {
+        "class_type": "SamplerCustom",
+        "inputs": {
+            "model": [
+                "21",
+                0
+            ],
+            "add_noise": true,
+            "noise_seed": 2,
+            "cfg": 1.0,
+            "positive": [
+                "22",
+                0
+            ],
+            "negative": [
+                "22",
+                1
+            ],
+            "sampler": [
+                "23",
+                0
+            ],
+            "sigmas": [
+                "24",
+                0
+            ],
+            "latent_image": [
+                "22",
+                2
+            ]
+        },
+        "_meta": {
+            "title": "Sample"
+        }
+    },
+    "26": {
+        "class_type": "TrimVideoLatent",
+        "inputs": {
+            "samples": [
+                "25",
+                0
+            ],
+            "trim_amount": [
+                "22",
+                3
+            ]
+        },
+        "_meta": {
+            "title": "Trim Latent"
+        }
+    },
+    "27": {
+        "class_type": "VAEDecode",
+        "inputs": {
+            "samples": [
+                "26",
+                0
+            ],
+            "vae": [
+                "17",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Decode"
+        }
+    },
+    "28": {
+        "class_type": "ImageFromBatch",
+        "inputs": {
+            "image": [
+                "27",
+                0
+            ],
+            "batch_index": [
+                "22",
+                4
+            ],
+            "length": 4096
+        },
+        "_meta": {
+            "title": "Drop Continuation Frames"
+        }
+    },
+    "29": {
+        "class_type": "CreateVideo",
+        "inputs": {
+            "images": [
+                "28",
+                0
+            ],
+            "fps": [
+                "2",
+                2
+            ],
+            "audio": [
+                "2",
+                1
+            ]
+        },
+        "_meta": {
+            "title": "Mux Video"
+        }
+    },
+    "30": {
+        "class_type": "SaveVideo",
+        "inputs": {
+            "video": [
+                "29",
+                0
+            ],
+            "filename_prefix": "video/CJ_WanAnimate",
+            "format": "auto",
+            "codec": "auto"
+        },
+        "_meta": {
+            "title": "Save Video"
+        }
+    }
+}

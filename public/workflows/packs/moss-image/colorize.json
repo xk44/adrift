@@ -1,0 +1,84 @@
+{
+  "_meta": {
+    "title": "MOSS-Image colorize (MOSS Toolkit i2i)",
+    "description": "sorryhyun moss-image-colorize v2 recipe: MOSSImageLoader (OpenMOSS moss-image node) BASE DiT + Qwen3.5 TE (vision tower) + flux2 VAE -> MOSSi2iReference (colorize LoRA set by the tool, page as a clean VAE ref latent, ref_scale 2) -> ModelSamplingSD3 5 -> SLG single 22 -> KSampler 30 steps CFG 3 er_sde/sgm_uniform. Positive = MOSSi2iTextEncode (page through the vision tower + colour tags); negative = plain empty text. Needs custom_nodes moss-image + moss-image-toolkit, diffusion_models/moss_image_base_bf16.safetensors, loras/moss_image_base_colorize_v2.safetensors."
+  },
+  "1": {
+    "class_type": "MOSSImageLoader",
+    "inputs": {
+      "dit": "moss_image_base_bf16.safetensors",
+      "weight_dtype": "default",
+      "text_encoder": "qwen3.5_9b_bf16.safetensors",
+      "vae": "flux2-vae.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "page.png", "upload": "image" },
+    "_meta": { "title": "Page" }
+  },
+  "3": {
+    "class_type": "MOSSi2iReference",
+    "inputs": {
+      "model": ["1", 0],
+      "vae": ["1", 2],
+      "image": ["2", 0],
+      "lora_name": "moss_image_base_colorize_v2.safetensors",
+      "strength": 1.0,
+      "resolution": 1024,
+      "ref_scale": 2
+    }
+  },
+  "4": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": { "model": ["3", 0], "shift": 5 }
+  },
+  "5": {
+    "class_type": "SkipLayerGuidanceDiTSimple",
+    "inputs": {
+      "model": ["4", 0],
+      "double_layers": "",
+      "single_layers": "22",
+      "start_percent": 0.0,
+      "end_percent": 1.0
+    }
+  },
+  "6": {
+    "class_type": "MOSSi2iTextEncode",
+    "inputs": {
+      "clip": ["1", 1],
+      "image": ["2", 0],
+      "text": "",
+      "resolution": 1024
+    },
+    "_meta": { "title": "Positive Prompt" }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["1", 1], "text": "" },
+    "_meta": { "title": "Negative Prompt" }
+  },
+  "8": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["5", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["3", 1],
+      "seed": 1,
+      "steps": 30,
+      "cfg": 3.0,
+      "sampler_name": "er_sde",
+      "scheduler": "sgm_uniform",
+      "denoise": 1.0
+    }
+  },
+  "9": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["8", 0], "vae": ["1", 2] }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["9", 0], "filename_prefix": "cj_tool_moss_colorize" }
+  }
+}

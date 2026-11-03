@@ -1,0 +1,386 @@
+{
+  "_meta": {
+    "source": "Recorded from the reference box /object_info (core comfy_extras.nodes_images, ComfyUI 2026-10-19). ImageColorSpace added 2026-10-31 for packs/ltx25/vfx_sdr_to_hdr.json from the same box. graphLint.objectInfo.json predates these nodes; re-record it to supersede.",
+    "transcribed_at": "2026-10-31"
+  },
+  "ImageSDRToHDR": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {
+            "tooltip": "SDR image(s) in sRGB."
+          }
+        ],
+        "algorithm": [
+          "COMFY_DYNAMICCOMBO_V3",
+          {
+            "tooltip": "Lottes-style rational expansion blended with a calibrated monotonic log-gain curve.",
+            "options": [
+              {
+                "key": "lottes",
+                "inputs": {
+                  "required": {
+                    "target_luminance": [
+                      "FLOAT",
+                      {
+                        "tooltip": "Peak-white target in nits. 0 keeps the calibrated rendering. Dark images are not normalized to this peak.",
+                        "default": 650.0,
+                        "min": 0.0,
+                        "max": 10000.0,
+                        "step": 1.0
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image",
+        "algorithm"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "ImageSDRToHDR",
+    "display_name": "Convert SDR to HDR",
+    "description": "Expand sRGB brightness into Rec.2020 HLG HDR. Save the result with the HDR color space selected. Alpha is preserved.",
+    "python_module": "comfy_extras.nodes_images",
+    "category": "image/color",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "SaveImageAdvanced": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE",
+          {
+            "tooltip": "The images to save."
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "tooltip": "The prefix for the file to save. May include formatting tokens such as %date:yyyy-MM-dd% or %Empty Latent Image.width%.",
+            "default": "ComfyUI",
+            "multiline": false
+          }
+        ],
+        "format": [
+          "COMFY_DYNAMICCOMBO_V3",
+          {
+            "tooltip": "The file format in which to save the image.",
+            "options": [
+              {
+                "key": "png",
+                "inputs": {
+                  "required": {
+                    "bit_depth": [
+                      "COMBO",
+                      {
+                        "advanced": true,
+                        "default": "8-bit",
+                        "multiselect": false,
+                        "options": [
+                          "8-bit",
+                          "16-bit"
+                        ]
+                      }
+                    ],
+                    "input_color_space": [
+                      "COMBO",
+                      {
+                        "advanced": true,
+                        "default": "sRGB",
+                        "multiselect": false,
+                        "options": [
+                          "sRGB"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "key": "exr",
+                "inputs": {
+                  "required": {
+                    "bit_depth": [
+                      "COMBO",
+                      {
+                        "advanced": true,
+                        "default": "16-bit float",
+                        "multiselect": false,
+                        "options": [
+                          "32-bit float",
+                          "16-bit float"
+                        ]
+                      }
+                    ],
+                    "input_color_space": [
+                      "COMBO",
+                      {
+                        "tooltip": "Colorspace of the input tensor. The EXR is always written as scene-linear in the matching gamut.\nsRGB — input is sRGB-encoded Rec.709; the inverse sRGB EOTF is applied.\nHDR — input is HLG-encoded Rec.2020 (BT.2100); the inverse HLG OETF is applied to get scene-linear light.\nlinear — input is already scene-linear (Rec.709 primaries); written through unchanged. Use this for renderer/compositor output.\nlinear ACEScg — input is already scene-linear ACEScg (AP1 / D60); written through unchanged with ACEScg chromaticities.",
+                        "advanced": true,
+                        "default": "sRGB",
+                        "multiselect": false,
+                        "options": [
+                          "sRGB",
+                          "HDR",
+                          "linear",
+                          "linear ACEScg"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "key": "avif",
+                "inputs": {
+                  "required": {
+                    "bit_depth": [
+                      "COMBO",
+                      {
+                        "tooltip": "Auto uses 8-bit YUV420 for sRGB and 10-bit YUV420 for HDR.",
+                        "advanced": true,
+                        "default": "auto",
+                        "multiselect": false,
+                        "options": [
+                          "auto",
+                          "8-bit YUV420",
+                          "10-bit YUV420"
+                        ]
+                      }
+                    ],
+                    "input_color_space": [
+                      "COMBO",
+                      {
+                        "tooltip": "Colorspace of the input images. HDR selects BT.2020/HLG and HDR PQ selects BT.2020/PQ.",
+                        "advanced": true,
+                        "default": "sRGB",
+                        "multiselect": false,
+                        "options": [
+                          "sRGB",
+                          "HDR",
+                          "HDR PQ"
+                        ]
+                      }
+                    ],
+                    "crf": [
+                      "INT",
+                      {
+                        "tooltip": "Lower values produce higher quality and larger files.",
+                        "advanced": true,
+                        "default": 18,
+                        "min": 1,
+                        "max": 63
+                      }
+                    ],
+                    "save_mode": [
+                      "COMFY_DYNAMICCOMBO_V3",
+                      {
+                        "display_name": "save mode",
+                        "options": [
+                          {
+                            "key": "still images",
+                            "inputs": {
+                              "required": {}
+                            }
+                          },
+                          {
+                            "key": "animated",
+                            "inputs": {
+                              "required": {
+                                "fps": [
+                                  "FLOAT",
+                                  {
+                                    "default": 6.0,
+                                    "min": 0.01,
+                                    "max": 1000.0,
+                                    "step": 0.01
+                                  }
+                                ],
+                                "loop_count": [
+                                  "INT",
+                                  {
+                                    "tooltip": "Number of times to loop the animation. 0 loops forever.",
+                                    "advanced": true,
+                                    "default": 0,
+                                    "min": 0,
+                                    "max": 1000
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "hidden": {
+        "prompt": [
+          "PROMPT"
+        ],
+        "extra_pnginfo": [
+          "EXTRA_PNGINFO"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "filename_prefix",
+        "format"
+      ],
+      "hidden": [
+        "prompt",
+        "extra_pnginfo"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "images"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "SaveImageAdvanced",
+    "display_name": "Save Image (Advanced)",
+    "description": "Saves the input images to your ComfyUI output directory.",
+    "python_module": "comfy_extras.nodes_images",
+    "category": "image",
+    "output_node": true,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": [
+      "save",
+      "save image",
+      "export image",
+      "output image",
+      "write image"
+    ],
+    "essentials_category": "Basics",
+    "has_intermediate_output": false
+  },
+  "ImageColorSpace": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "source": [
+          "COMBO",
+          {
+            "tooltip": "Color space of the input pixels.",
+            "default": "sRGB",
+            "multiselect": false,
+            "options": [
+              "sRGB",
+              "HDR",
+              "HDR ACEScct",
+              "HDR LogC3",
+              "HDR PQ",
+              "linear",
+              "linear ACEScg"
+            ]
+          }
+        ],
+        "destination": [
+          "COMBO",
+          {
+            "tooltip": "Color space of the output pixels. Set the save node to this same color space. Convert LogC3 or ACEScct to linear ACEScg for ACEScg EXR, or to linear for Rec.709 EXR. Convert to sRGB/HDR/HDR PQ before saving video.",
+            "default": "sRGB",
+            "multiselect": false,
+            "options": [
+              "sRGB",
+              "HDR",
+              "HDR ACEScct",
+              "HDR LogC3",
+              "HDR PQ",
+              "linear",
+              "linear ACEScg"
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image",
+        "source",
+        "destination"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "ImageColorSpace",
+    "display_name": "Convert Image Color Space",
+    "description": "Convert sRGB, linear Rec.709, HDR (Rec.2020 HLG), HDR PQ (Rec.2020 PQ), HDR LogC3, linear ACEScg, and HDR ACEScct. LogC3 uses the EI 800 curve with Rec.709 primaries and codes clamped to [0, 1]. ACEScg is scene-linear AP1 with D60 white. ACEScct is the ACEScg log encoding. Both use Bradford adaptation to D65. Convert LogC3 or ACEScct to linear ACEScg (AP1 scene-linear) or linear (Rec.709) before saving EXR. Linear 1.0 and ACEScg 1.0 use the same 203-nit reference white as sRGB; HLG uses a 1000-nit reference display. Linear, ACEScg, and ACEScct outputs preserve extended values. Linear-to-HDR conversions preserve highlights without tone mapping; HLG and PQ outputs clip negative channels. SDR output and PQ-to-HLG conversion tone-map excess luminance across the batch and compress out-of-gamut colors. Conversions compute in float32 and return the intermediate device and dtype. Straight alpha is not color-transformed.",
+    "python_module": "comfy_extras.nodes_images",
+    "category": "image/color",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  }
+}

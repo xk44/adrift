@@ -1,0 +1,439 @@
+{
+  "name": "animate",
+  "tool": "animate",
+  "action": "animate_low",
+  "workflow": "packs/ltx25/i2v.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "LTX-2.5 22B Distilled",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "Gemma 4 12B Text Encoder",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "device": "default",
+        "type": "ltxv"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "LTX-2.5 Video VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "LTX-2.5 Audio VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden test subject Subtle, gentle motion; the camera stays almost still."
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "pc game, console game, video game, cartoon, childish, ugly"
+      }
+    },
+    "7": {
+      "class_type": "LTXVConditioning",
+      "title": "LTXV Frame Rate Conditioning",
+      "inputs": {
+        "frame_rate": 24,
+        "negative": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "LatentUpscaleModelLoader",
+      "title": "LTX-2.5 Latent Upscaler x2",
+      "inputs": {
+        "model_name": "ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      }
+    },
+    "9": {
+      "class_type": "LoadImage",
+      "title": "Start Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize Start Image",
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale longer dimension",
+        "resize_type.longer_size": 1536,
+        "scale_method": "lanczos"
+      }
+    },
+    "11": {
+      "class_type": "LTXVPreprocess",
+      "title": "LTXV Preprocess",
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "12": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "title": "Stage 1 Latent (half res)",
+      "inputs": {
+        "batch_size": 1,
+        "height": 416,
+        "length": 121,
+        "width": 736
+      }
+    },
+    "13": {
+      "class_type": "LTXVImgToVideoInplace",
+      "title": "Stage 1 Image Guide",
+      "inputs": {
+        "bypass": false,
+        "image": [
+          "11",
+          0
+        ],
+        "latent": [
+          "12",
+          0
+        ],
+        "strength": 0.7,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "title": "Audio Latent",
+      "inputs": {
+        "audio_vae": [
+          "4",
+          0
+        ],
+        "batch_size": 1,
+        "frame_rate": 24,
+        "frames_number": 121
+      }
+    },
+    "15": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "Stage 1 AV Latent",
+      "inputs": {
+        "audio_latent": [
+          "14",
+          0
+        ],
+        "video_latent": [
+          "13",
+          0
+        ]
+      }
+    },
+    "16": {
+      "class_type": "RandomNoise",
+      "title": "Stage 1 Noise",
+      "inputs": {
+        "noise_seed": 314799534
+      }
+    },
+    "17": {
+      "class_type": "KSamplerSelect",
+      "title": "Stage 1 Sampler",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      }
+    },
+    "18": {
+      "class_type": "ManualSigmas",
+      "title": "Stage 1 Sigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      }
+    },
+    "19": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Stage 1 Guider (distilled, cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "7",
+          1
+        ],
+        "positive": [
+          "7",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "20": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Stage 1",
+      "inputs": {
+        "guider": [
+          "19",
+          0
+        ],
+        "latent_image": [
+          "15",
+          0
+        ],
+        "noise": [
+          "16",
+          0
+        ],
+        "sampler": [
+          "17",
+          0
+        ],
+        "sigmas": [
+          "18",
+          0
+        ]
+      }
+    },
+    "21": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Stage 1 Split",
+      "inputs": {
+        "av_latent": [
+          "20",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "LTXVLatentUpsampler",
+      "title": "Upscale Latent x2",
+      "inputs": {
+        "samples": [
+          "21",
+          0
+        ],
+        "upscale_model": [
+          "8",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "23": {
+      "class_type": "LTXVImgToVideoInplace",
+      "title": "Stage 2 Image Guide",
+      "inputs": {
+        "bypass": false,
+        "image": [
+          "11",
+          0
+        ],
+        "latent": [
+          "22",
+          0
+        ],
+        "strength": 1,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "24": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "Stage 2 AV Latent",
+      "inputs": {
+        "audio_latent": [
+          "21",
+          1
+        ],
+        "video_latent": [
+          "23",
+          0
+        ]
+      }
+    },
+    "25": {
+      "class_type": "RandomNoise",
+      "title": "Stage 2 Refine Noise",
+      "inputs": {
+        "noise_seed": 42
+      }
+    },
+    "26": {
+      "class_type": "KSamplerSelect",
+      "title": "Stage 2 Refine Sampler",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      }
+    },
+    "27": {
+      "class_type": "ManualSigmas",
+      "title": "Stage 2 Refine Sigmas",
+      "inputs": {
+        "sigmas": "0.85, 0.7250, 0.4219, 0.0"
+      }
+    },
+    "28": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Stage 2 Refine Guider (distilled, cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "7",
+          1
+        ],
+        "positive": [
+          "7",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "29": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Stage 2 Refine",
+      "inputs": {
+        "guider": [
+          "28",
+          0
+        ],
+        "latent_image": [
+          "24",
+          0
+        ],
+        "noise": [
+          "25",
+          0
+        ],
+        "sampler": [
+          "26",
+          0
+        ],
+        "sigmas": [
+          "27",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Split Video / Audio",
+      "inputs": {
+        "av_latent": [
+          "29",
+          0
+        ]
+      }
+    },
+    "31": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode Video (tiled)",
+      "inputs": {
+        "overlap": 64,
+        "samples": [
+          "30",
+          0
+        ],
+        "temporal_overlap": 16,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "32": {
+      "class_type": "LTXVAudioVAEDecode",
+      "title": "Decode Audio",
+      "inputs": {
+        "audio_vae": [
+          "4",
+          0
+        ],
+        "samples": [
+          "30",
+          1
+        ]
+      }
+    },
+    "33": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video + Audio",
+      "inputs": {
+        "audio": [
+          "32",
+          0
+        ],
+        "bit_depth": 8,
+        "fps": 24,
+        "images": [
+          "31",
+          0
+        ]
+      }
+    },
+    "34": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "filename_prefix": "video/Adrift_ltx25_i2v",
+        "format": "auto",
+        "format.codec": "auto",
+        "video": [
+          "33",
+          0
+        ]
+      }
+    }
+  }
+}

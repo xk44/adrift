@@ -1,0 +1,58 @@
+{
+  "name": "sdr_to_hdr",
+  "tool": "sdr_to_hdr",
+  "action": "sdr_to_hdr",
+  "workflow": "packs/image-tools/sdr_to_hdr.json",
+  "seed": 0,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "ImageSDRToHDR",
+      "title": "SDR to HDR (HLG)",
+      "inputs": {
+        "algorithm": "lottes",
+        "algorithm.target_luminance": 650,
+        "image": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "SaveImageAdvanced",
+      "title": "HDR preview (AVIF, HLG)",
+      "inputs": {
+        "filename_prefix": "CJ_HDR/hdr",
+        "format": "avif",
+        "format.bit_depth": "10-bit YUV420",
+        "format.crf": 18,
+        "format.input_color_space": "HDR",
+        "format.save_mode": "still images",
+        "images": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "SaveImageAdvanced",
+      "title": "HDR master (EXR, scene-linear Rec.2020)",
+      "inputs": {
+        "filename_prefix": "adrift_master/Adrift_sdr-to-hdr_hdr_master",
+        "format": "exr",
+        "format.bit_depth": "16-bit float",
+        "format.input_color_space": "HDR",
+        "images": [
+          "2",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "flux",
+  "name": "Flux",
+  "description": "Workflow pack for Flux-family models (Flux.1 Dev, Flux.1 Schnell). Uses UNETLoader, LoraLoaderModelOnly, and FluxSampler instead of CheckpointLoaderSimple and KSampler.",
+  "version": "1.0.0",
+  "modelFamily": "flux",
+  "isDefault": false,
+  "modelPatterns": [
+    "flux",
+    "flux1",
+    "flux\\.1"
+  ],
+  "baseResolution": 1024,
+  "adapterConfig": {
+    "loraLoaderClass": "LoraLoaderModelOnly",
+    "ipAdapterLoaderClass": "IPAdapterFlux",
+    "samplerClass": "FluxSampler",
+    "latentClass": "EmptyLatentImageFlux",
+    "textEncoderClass": "CLIPTextEncodeFlux",
+    "supportsNegativePrompt": false,
+    "supportsCfgScale": true,
+    "defaultSampler": "euler",
+    "defaultScheduler": "normal"
+  },
+  "workflows": {
+    "t2i": "t2i.json"
+  },
+  "defaultOverrides": {
+    "steps": 20,
+    "cfg": 3.5,
+    "sampler": "euler",
+    "scheduler": "normal",
+    "denoise": 1.0
+  }
+}

@@ -1,0 +1,17 @@
+# musubi-tuner Krea 2 RAW LoRA training settings
+
+[models]
+raw_dit = ""  # set to a local file path
+turbo_dit = ""  # set to a local file path
+# musubi's Qwen3-VL loader needs the bf16 encoder (the ComfyUI fp8_scaled has comfy_quant keys it rejects)
+text_encoder = ""  # set to a local file path
+vae = ""  # set to a local file path
+
+[train]
+steps = {{steps}}
+lr = {{lr}}
+rank = {{rank}}
+resolution = {{resolution}}
+blocks_to_swap = {{blocks_to_swap}}
+output_name = "{{run_name}}"
+trigger_word = "{{trigger_word}}"

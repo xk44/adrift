@@ -1,0 +1,196 @@
+{
+  "_meta": {
+    "source": "Recorded from a live ComfyUI GET /object_info: ComfyUI-VOSR2 custom node pack (github.com/ylchen333/ComfyUI-VOSR2 @ 6a21810b, Apache-2.0). Not on the reference box the main fixture was recorded from.",
+    "transcribed_at": "2026-10-31"
+  },
+  "VOSR2ModelLoader": {
+    "input": {
+      "required": {
+        "model": [
+          "COMBO",
+          {
+            "tooltip": "VOSR 2.0 bundle folder under models/vosr2/ (DiT + its matched VAE + vision encoder). Downloaded from CSWRY/VOSR on first run if absent.",
+            "default": "VOSR2",
+            "multiselect": false,
+            "options": [
+              "VOSR2"
+            ]
+          }
+        ],
+        "dtype": [
+          "COMBO",
+          {
+            "tooltip": "Compute dtype for the DiT and vision encoder. The VAE always runs in fp32.",
+            "default": "default",
+            "multiselect": false,
+            "options": [
+              "default",
+              "fp16",
+              "bf16"
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model",
+        "dtype"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "VOSR2_MODEL"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "model"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "VOSR2ModelLoader",
+    "display_name": "VOSR 2.0 Model Loader",
+    "description": "Load a VOSR 2.0 (one-step 1.4B) bundle: matched LightningDiT + Qwen-Image 2D VAE + DINOv2-L. The whole bundle is downloaded from the CSWRY/VOSR Hugging Face repo on first run if absent.",
+    "python_module": "custom_nodes.ComfyUI-VOSR2",
+    "category": "image/upscaling/VOSR2",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "VOSR2Upscale": {
+    "input": {
+      "required": {
+        "model": [
+          "VOSR2_MODEL",
+          {
+            "tooltip": "Loaded VOSR 2.0 bundle."
+          }
+        ],
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "upscale": [
+          "INT",
+          {
+            "tooltip": "Exact output multiplier. VOSR 2.0 was trained on degradations up to 16x, so higher factors are supported, but there's no general quality guarantee above ~4x -- results depend on the specific image and starting/target resolution, not just the factor. Uncapped so you can experiment; use tiling for large outputs.",
+            "default": 4,
+            "min": 1,
+            "max": 9223372036854775807
+          }
+        ],
+        "seed": [
+          "INT",
+          {
+            "tooltip": "Initial latent-noise seed.",
+            "default": 42,
+            "min": 0,
+            "max": 9223372036854775807,
+            "control_after_generate": "fixed"
+          }
+        ],
+        "color_alignment": [
+          "COMBO",
+          {
+            "default": "wavelet",
+            "multiselect": false,
+            "options": [
+              "wavelet",
+              "adain",
+              "none"
+            ]
+          }
+        ],
+        "tile_size": [
+          "INT",
+          {
+            "tooltip": "DiT pixel tile size; 0 disables tiling. VOSR 2.0 was trained natively at up to 512px, so tiling is required (e.g. 512) whenever the upscaled output exceeds 512x512 -- otherwise quality degrades.",
+            "default": 0,
+            "min": 0,
+            "max": 4096,
+            "step": 64
+          }
+        ],
+        "tile_overlap": [
+          "INT",
+          {
+            "default": 32,
+            "min": 0,
+            "max": 512,
+            "step": 8
+          }
+        ],
+        "vae_tile_size": [
+          "INT",
+          {
+            "tooltip": "VAE pixel tile size; 0 disables VAE tiling and decodes the full image in one pass regardless of tile_size -- a common source of CUDA OOM once the upscaled output goes much past 1024px. Set a nonzero value (e.g. 1024) for large outputs.",
+            "default": 0,
+            "min": 0,
+            "max": 8192,
+            "step": 64
+          }
+        ],
+        "vae_tile_overlap": [
+          "INT",
+          {
+            "default": 32,
+            "min": 0,
+            "max": 512,
+            "step": 8
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "model",
+        "image",
+        "upscale",
+        "seed",
+        "color_alignment",
+        "tile_size",
+        "tile_overlap",
+        "vae_tile_size",
+        "vae_tile_overlap"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "VOSR2Upscale",
+    "display_name": "VOSR 2.0 Upscale",
+    "description": "One-step VOSR 2.0 image super-resolution.",
+    "python_module": "custom_nodes.ComfyUI-VOSR2",
+    "category": "image/upscaling/VOSR2",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  }
+}

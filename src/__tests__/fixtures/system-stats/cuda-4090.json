@@ -1,0 +1,20 @@
+{
+  "_source": "synthetic RTX 4090 (24 GiB) shape per ComfyUI server.py system_stats; values illustrative",
+  "system": {
+    "os": "linux",
+    "ram_total": 68719476736,
+    "ram_free": 51539607552,
+    "comfyui_version": "0.42.0"
+  },
+  "devices": [
+    {
+      "name": "cuda:0 NVIDIA GeForce RTX 4090 : cudaMallocAsync",
+      "type": "cuda",
+      "index": 0,
+      "vram_total": 25757220864,
+      "vram_free": 23622320128,
+      "torch_vram_total": 0,
+      "torch_vram_free": 0
+    }
+  ]
+}

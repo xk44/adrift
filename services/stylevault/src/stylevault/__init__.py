@@ -1,0 +1,1 @@
+"""StyleVault core package."""

@@ -1,0 +1,322 @@
+{
+  "_meta": {
+    "source": "Generated from INPUT_TYPES of comfy_nodes/cj_h3_tools/cj_followcam.py (in-repo node, not yet installed on the reference box). Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-30"
+  },
+  "CJFollowCamPlate": {
+    "input": {
+      "required": {
+        "source": [
+          "VIDEO",
+          {
+            "tooltip": "The ORIGINAL LoadVideo."
+          }
+        ],
+        "frames": [
+          "IMAGE",
+          {
+            "tooltip": "The prepared frames (LabsH3PrepareVideo): geometry + frame count."
+          }
+        ]
+      },
+      "optional": {
+        "max_side": [
+          "INT",
+          {
+            "default": 1920,
+            "min": 256,
+            "max": 4096,
+            "step": 32,
+            "tooltip": "Long-side cap of the plate (RAM: T x W x H x 12 bytes)."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "source",
+        "frames"
+      ],
+      "optional": [
+        "max_side"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "plate"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJFollowCamPlate",
+    "display_name": "Follow-Cam Plate (source detail, prepared geometry)",
+    "category": "image/video",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "output_node": false
+  },
+  "CJFollowCamTrack": {
+    "input": {
+      "required": {
+        "mask": [
+          "MASK",
+          {
+            "tooltip": "Per-frame subject mask (include everything the tool may change)."
+          }
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 832,
+            "min": 32,
+            "max": 8192,
+            "tooltip": "Model width (crop output)."
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 480,
+            "min": 32,
+            "max": 8192,
+            "tooltip": "Model height (crop output)."
+          }
+        ]
+      },
+      "optional": {
+        "mode": [
+          [
+            "auto",
+            "on",
+            "off"
+          ],
+          {
+            "default": "auto",
+            "tooltip": "auto: follow only when the subject is small (zoom >= auto_min_zoom); off: full frame."
+          }
+        ],
+        "padding": [
+          "FLOAT",
+          {
+            "default": 0.15,
+            "min": 0.0,
+            "max": 2.0,
+            "step": 0.01,
+            "tooltip": "Margin around the subject box, per side, as a fraction of its size."
+          }
+        ],
+        "smooth": [
+          "FLOAT",
+          {
+            "default": 6.0,
+            "min": 0.0,
+            "max": 48.0,
+            "step": 0.5,
+            "tooltip": "Gaussian sigma in frames for the window centre (size uses 2x)."
+          }
+        ],
+        "max_zoom": [
+          "FLOAT",
+          {
+            "default": 4.0,
+            "min": 1.0,
+            "max": 8.0,
+            "step": 0.1
+          }
+        ],
+        "auto_min_zoom": [
+          "FLOAT",
+          {
+            "default": 1.5,
+            "min": 1.0,
+            "max": 8.0,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "mask",
+        "width",
+        "height"
+      ],
+      "optional": [
+        "mode",
+        "padding",
+        "smooth",
+        "max_zoom",
+        "auto_min_zoom"
+      ]
+    },
+    "output": [
+      "FOLLOWCAM",
+      "FLOAT",
+      "STRING"
+    ],
+    "output_name": [
+      "followcam",
+      "zoom",
+      "info"
+    ],
+    "output_is_list": [
+      false,
+      false,
+      false
+    ],
+    "name": "CJFollowCamTrack",
+    "display_name": "Follow-Cam Track (smoothed subject window)",
+    "category": "image/video",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "output_node": false
+  },
+  "CJFollowCamCrop": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "followcam": [
+          "FOLLOWCAM"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "followcam"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJFollowCamCrop",
+    "display_name": "Follow-Cam Crop Frames",
+    "category": "image/video",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "output_node": false
+  },
+  "CJFollowCamCropMask": {
+    "input": {
+      "required": {
+        "mask": [
+          "MASK"
+        ],
+        "followcam": [
+          "FOLLOWCAM"
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "mask",
+        "followcam"
+      ]
+    },
+    "output": [
+      "MASK"
+    ],
+    "output_name": [
+      "MASK"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJFollowCamCropMask",
+    "display_name": "Follow-Cam Crop Mask",
+    "category": "image/video",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "output_node": false
+  },
+  "CJFollowCamPaste": {
+    "input": {
+      "required": {
+        "base": [
+          "IMAGE",
+          {
+            "tooltip": "Frames to paste into (the plate, or the previous subject's paste)."
+          }
+        ],
+        "crops": [
+          "IMAGE",
+          {
+            "tooltip": "The tool's output on the crops (any resolution, same aspect)."
+          }
+        ],
+        "followcam": [
+          "FOLLOWCAM"
+        ]
+      },
+      "optional": {
+        "mask": [
+          "MASK",
+          {
+            "tooltip": "Crop-space subject / edit mask. Empty: the whole crop."
+          }
+        ],
+        "grow_px": [
+          "INT",
+          {
+            "default": 4,
+            "min": 0,
+            "max": 128
+          }
+        ],
+        "feather_px": [
+          "INT",
+          {
+            "default": 6,
+            "min": 0,
+            "max": 64
+          }
+        ],
+        "edge_px": [
+          "INT",
+          {
+            "default": 8,
+            "min": 0,
+            "max": 128,
+            "tooltip": "Fade to the base over this many crop pixels at the window border."
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "base",
+        "crops",
+        "followcam"
+      ],
+      "optional": [
+        "mask",
+        "grow_px",
+        "feather_px",
+        "edge_px"
+      ]
+    },
+    "output": [
+      "IMAGE",
+      "MASK"
+    ],
+    "output_name": [
+      "frames",
+      "alpha"
+    ],
+    "output_is_list": [
+      false,
+      false
+    ],
+    "name": "CJFollowCamPaste",
+    "display_name": "Follow-Cam Paste Back (feathered, subject only)",
+    "category": "image/video",
+    "python_module": "custom_nodes.cj_h3_tools",
+    "output_node": false
+  }
+}

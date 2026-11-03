@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "title": "Depth, normals & 3D (MoGe)",
+    "description": "One image -> geometry with core MoGe nodes: LoadMoGeModel (models/geometry_estimation/moge_2_vitl_normal_fp16.safetensors, MIT; node 14 is the opt-in MoGe-3 moge_3_vitg_fp16.safetensors, MIT, marked optional so it does not gate the tool: the builder rewires node 3 to it, drops the optional flag and sets refine_steps 3, else deletes it) -> MoGeInference (auto FOV) -> MoGeRender depth (normalized disparity, near = white) and normal_opengl -> SaveImage; MoGePointMapToMesh (source image as baseColor texture) -> SaveGLB; MoGeGeometryToFOV horizontal + vertical -> StringFormat -> PreviewAny (text output). Panorama mode swaps node 3 for MoGePanoramaInference (equirectangular, 12 perspective splits) and drops the FOV nodes (a panorama has no intrinsics). Builder: src/lib/oj/mogeGeometry.ts."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source image" }
+  },
+  "2": {
+    "class_type": "LoadMoGeModel",
+    "inputs": { "model_name": "moge_2_vitl_normal_fp16.safetensors" },
+    "_meta": { "title": "MoGe-2 model" }
+  },
+  "3": {
+    "class_type": "MoGeInference",
+    "inputs": {
+      "moge_model": ["2", 0],
+      "image": ["1", 0],
+      "resolution_level": 9,
+      "fov_x_degrees": 0.0,
+      "batch_size": 1,
+      "force_projection": true,
+      "apply_mask": true,
+      "refine_steps": 0
+    },
+    "_meta": { "title": "Geometry" }
+  },
+  "4": {
+    "class_type": "MoGeRender",
+    "inputs": { "moge_geometry": ["3", 0], "output": "depth" },
+    "_meta": { "title": "Depth map (near = white)" }
+  },
+  "5": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["4", 0], "filename_prefix": "CJ_MoGe/depth" },
+    "_meta": { "title": "Save depth" }
+  },
+  "6": {
+    "class_type": "MoGeRender",
+    "inputs": { "moge_geometry": ["3", 0], "output": "normal_opengl" },
+    "_meta": { "title": "Normal map" }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["6", 0], "filename_prefix": "CJ_MoGe/normal" },
+    "_meta": { "title": "Save normals" }
+  },
+  "8": {
+    "class_type": "MoGePointMapToMesh",
+    "inputs": {
+      "moge_geometry": ["3", 0],
+      "batch_index": 0,
+      "decimation": 1,
+      "discontinuity_threshold": 0.04,
+      "texture": true
+    },
+    "_meta": { "title": "Point map mesh" }
+  },
+  "9": {
+    "class_type": "SaveGLB",
+    "inputs": { "mesh": ["8", 0], "filename_prefix": "3d/adrift_moge" },
+    "_meta": { "title": "Save GLB" }
+  },
+  "10": {
+    "class_type": "MoGeGeometryToFOV",
+    "inputs": {
+      "moge_geometry": ["3", 0],
+      "axis": "horizontal",
+      "unit": "degrees"
+    },
+    "_meta": { "title": "Horizontal FOV" }
+  },
+  "11": {
+    "class_type": "MoGeGeometryToFOV",
+    "inputs": {
+      "moge_geometry": ["3", 0],
+      "axis": "vertical",
+      "unit": "degrees"
+    },
+    "_meta": { "title": "Vertical FOV" }
+  },
+  "12": {
+    "class_type": "StringFormat",
+    "inputs": {
+      "values.a": ["10", 0],
+      "values.b": ["11", 0],
+      "values.c": ["10", 1],
+      "f_string": "Estimated FOV: {a:.1f}° horizontal, {b:.1f}° vertical (focal length {c:.0f} px)"
+    },
+    "_meta": { "title": "FOV text" }
+  },
+  "13": {
+    "class_type": "PreviewAny",
+    "inputs": { "source": ["12", 0] },
+    "_meta": { "title": "Estimated FOV" }
+  },
+  "14": {
+    "class_type": "LoadMoGeModel",
+    "inputs": { "model_name": "moge_3_vitg_fp16.safetensors" },
+    "_meta": { "title": "MoGe-3 giant model (opt-in)", "optional": true }
+  }
+}

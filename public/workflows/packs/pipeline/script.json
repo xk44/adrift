@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "title": "Pipeline script (Qwen3-VL TextGenerate)",
+    "description": "LLM script step for the Shorts Studio and Click to Ad pipelines, core ComfyUI only. CLIPLoader loads Qwen3-VL 8B (text_encoders/qwen3vl_8b_bf16.safetensors, Apache-2.0, the same file Qwen-Image 2.1 uses as its text encoder) as a generate-capable model; TextGenerate writes a JSON scene list from the compiled prompt; PreviewAny returns it as a text output. The optional LoadImage (node 2) feeds the product photo to TextGenerate for ads and is deleted when the source run has no image. Builder: src/lib/oj/pipelineScript.ts (prompt from src/lib/tools/pipelines.ts scriptPrompt)."
+  },
+  "1": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_bf16.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "_meta": { "title": "Qwen3-VL 8B" }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "product.png" },
+    "_meta": { "title": "Product Photo (ads only)" }
+  },
+  "3": {
+    "class_type": "TextGenerate",
+    "inputs": {
+      "clip": ["1", 0],
+      "prompt": "",
+      "max_length": 1536,
+      "sampling_mode": "on",
+      "sampling_mode.temperature": 0.7,
+      "sampling_mode.top_k": 64,
+      "sampling_mode.top_p": 0.95,
+      "sampling_mode.min_p": 0.05,
+      "sampling_mode.repetition_penalty": 1.05,
+      "sampling_mode.seed": 0,
+      "image": ["2", 0],
+      "thinking": false,
+      "use_default_template": true
+    },
+    "_meta": { "title": "Write Script" }
+  },
+  "4": {
+    "class_type": "PreviewAny",
+    "inputs": { "source": ["3", 0] },
+    "_meta": { "title": "Script JSON" }
+  }
+}

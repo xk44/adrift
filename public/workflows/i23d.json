@@ -1,0 +1,43 @@
+{
+  "3": {
+    "class_type": "TripoSRModelLoader",
+    "inputs": {
+      "model": "TripoSR"
+    },
+    "_meta": {
+      "title": "TripoSR Model"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Source Image"
+    }
+  },
+  "5": {
+    "class_type": "TripoSRSampler",
+    "inputs": {
+      "image": ["4", 0],
+      "model": ["3", 0],
+      "resolution": 256,
+      "chunk_size": 8192
+    },
+    "_meta": {
+      "title": "TripoSR Generate"
+    }
+  },
+  "6": {
+    "class_type": "SaveGLB",
+    "inputs": {
+      "mesh": ["5", 0],
+      "filename_prefix": "Adrift_i23d"
+    },
+    "_meta": {
+      "title": "Save 3D Model"
+    }
+  }
+}

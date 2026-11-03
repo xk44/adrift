@@ -1,0 +1,45 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    }
+  },
+  "2": {
+    "class_type": "MoreJPEG",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "recipe": "pro_plus",
+      "jpeg_quality": 10,
+      "passes": 1,
+      "noise_scale": 0.0,
+      "sharpness": 1.0,
+      "contrast": 1.0,
+      "posterize_bits": 8,
+      "blur_radius": 0.0,
+      "pixelate_box": 1,
+      "invert": false,
+      "grayscale": false,
+      "emboss": false,
+      "edge_enhance": false,
+      "seed": 0
+    },
+    "_meta": {
+      "title": "Realisim Enhancor"
+    }
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "2",
+        0
+      ],
+      "filename_prefix": "krea2_realism"
+    }
+  }
+}

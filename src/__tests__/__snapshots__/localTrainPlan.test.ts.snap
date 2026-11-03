@@ -1,0 +1,298 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildTrainPlan: ai-toolkit krea2 (untested route) > writes one yaml and runs run.py 1`] = `
+[
+  {
+    "argv": [
+      "/opt/ai-toolkit/.venv/bin/python",
+      "/opt/ai-toolkit/run.py",
+      "/data/training/jobs/local-0123456789ab/ai-toolkit.yaml",
+    ],
+    "name": "train",
+  },
+]
+`;
+
+exports[`buildTrainPlan: ai-toolkit krea2 (untested route) > writes one yaml and runs run.py 2`] = `
+[
+  {
+    "content": "---
+job: extension
+config:
+  name: "mystyle_v1"
+  process:
+    - type: sd_trainer
+      training_folder: "/data/training/jobs/local-0123456789ab/output"
+      device: cuda:0
+      trigger_word: "mystyle"
+      network:
+        type: lora
+        linear: 32
+        linear_alpha: 32
+      save:
+        dtype: bf16
+        save_every: 500
+        max_step_saves_to_keep: 2
+      datasets:
+        - folder_path: "/data/moodboards/b1/train/v1"
+          caption_ext: "txt"
+          caption_dropout_rate: 0.05
+          shuffle_tokens: false
+          cache_latents_to_disk: true
+          resolution: [1024]
+      train:
+        batch_size: 1
+        cache_text_embeddings: true
+        steps: 1200
+        gradient_accumulation: 1
+        train_unet: true
+        train_text_encoder: false
+        gradient_checkpointing: true
+        noise_scheduler: flowmatch
+        optimizer: adamw8bit
+        lr: 0.0001
+        dtype: bf16
+        skip_first_sample: true
+        disable_sampling: true
+      model:
+        name_or_path: "/models/krea2_turbo.safetensors"
+        arch: krea2
+        quantize: true
+        quantize_te: true
+        low_vram: true
+        assistant_lora_path: "ostris/krea2_turbo_training_adapter/krea2_turbo_training_adapter_v1.safetensors"
+meta:
+  name: "mystyle_v1"
+  model_family: "krea2"
+",
+    "path": "/data/training/jobs/local-0123456789ab/ai-toolkit.yaml",
+  },
+]
+`;
+
+exports[`buildTrainPlan: musubi-tuner krea2 > darwin: mps caches, no fp8/block swap, mixed_precision no 1`] = `
+[
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_cache_latents.py",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--vae",
+      "/models/qwen_image_vae.safetensors",
+      "--device",
+      "mps",
+    ],
+    "name": "cache latents",
+  },
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_cache_text_encoder_outputs.py",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--text_encoder",
+      "/models/qwen3vl_4b_bf16.safetensors",
+      "--batch_size",
+      "1",
+      "--device",
+      "mps",
+    ],
+    "name": "cache text encoder",
+  },
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "-m",
+      "accelerate.commands.launch",
+      "--config_file",
+      "/data/training/jobs/local-0123456789ab/accelerate.yaml",
+      "--num_cpu_threads_per_process",
+      "1",
+      "--mixed_precision",
+      "no",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_train_network.py",
+      "--dit",
+      "/models/krea2_raw.safetensors",
+      "--vae",
+      "/models/qwen_image_vae.safetensors",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--sdpa",
+      "--mixed_precision",
+      "no",
+      "--timestep_sampling",
+      "shift",
+      "--weighting_scheme",
+      "none",
+      "--discrete_flow_shift",
+      "2.5",
+      "--optimizer_type",
+      "adamw",
+      "--learning_rate",
+      "5e-5",
+      "--gradient_checkpointing",
+      "--max_grad_norm",
+      "1.0",
+      "--lr_scheduler",
+      "constant_with_warmup",
+      "--lr_warmup_steps",
+      "0.05",
+      "--max_data_loader_n_workers",
+      "2",
+      "--persistent_data_loader_workers",
+      "--network_module",
+      "networks.lora_krea2",
+      "--network_args",
+      "exclude_patterns=["first","last\\..*","tmlp\\..*","txtmlp\\..*","tproj\\..*","txtfusion\\..*"]",
+      "--network_dim",
+      "32",
+      "--network_alpha",
+      "32",
+      "--max_train_steps",
+      "1200",
+      "--save_every_n_steps",
+      "500",
+      "--seed",
+      "42",
+      "--output_dir",
+      "/data/training/jobs/local-0123456789ab/output",
+      "--output_name",
+      "mystyle_v1",
+    ],
+    "name": "train",
+  },
+]
+`;
+
+exports[`buildTrainPlan: musubi-tuner krea2 > linux: cache latents, cache TE, accelerate train (fp8 + block swap) 1`] = `
+[
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_cache_latents.py",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--vae",
+      "/models/qwen_image_vae.safetensors",
+    ],
+    "name": "cache latents",
+  },
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_cache_text_encoder_outputs.py",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--text_encoder",
+      "/models/qwen3vl_4b_bf16.safetensors",
+      "--batch_size",
+      "1",
+    ],
+    "name": "cache text encoder",
+  },
+  {
+    "argv": [
+      "/opt/musubi-tuner/.venv/bin/python",
+      "-m",
+      "accelerate.commands.launch",
+      "--config_file",
+      "/data/training/jobs/local-0123456789ab/accelerate.yaml",
+      "--num_cpu_threads_per_process",
+      "1",
+      "--mixed_precision",
+      "bf16",
+      "/opt/musubi-tuner/src/musubi_tuner/krea2_train_network.py",
+      "--dit",
+      "/models/krea2_raw.safetensors",
+      "--vae",
+      "/models/qwen_image_vae.safetensors",
+      "--dataset_config",
+      "/data/training/jobs/local-0123456789ab/dataset.toml",
+      "--sdpa",
+      "--mixed_precision",
+      "bf16",
+      "--timestep_sampling",
+      "shift",
+      "--weighting_scheme",
+      "none",
+      "--discrete_flow_shift",
+      "2.5",
+      "--optimizer_type",
+      "adamw8bit",
+      "--learning_rate",
+      "5e-5",
+      "--gradient_checkpointing",
+      "--max_grad_norm",
+      "1.0",
+      "--lr_scheduler",
+      "constant_with_warmup",
+      "--lr_warmup_steps",
+      "0.05",
+      "--max_data_loader_n_workers",
+      "2",
+      "--persistent_data_loader_workers",
+      "--network_module",
+      "networks.lora_krea2",
+      "--network_args",
+      "exclude_patterns=["first","last\\..*","tmlp\\..*","txtmlp\\..*","tproj\\..*","txtfusion\\..*"]",
+      "--network_dim",
+      "32",
+      "--network_alpha",
+      "32",
+      "--max_train_steps",
+      "1200",
+      "--save_every_n_steps",
+      "500",
+      "--seed",
+      "42",
+      "--output_dir",
+      "/data/training/jobs/local-0123456789ab/output",
+      "--output_name",
+      "mystyle_v1",
+      "--fp8_base",
+      "--fp8_scaled",
+      "--blocks_to_swap",
+      "20",
+    ],
+    "name": "train",
+  },
+]
+`;
+
+exports[`buildTrainPlan: musubi-tuner krea2 > linux: cache latents, cache TE, accelerate train (fp8 + block swap) 2`] = `
+[
+  {
+    "content": "[general]
+resolution = [1024, 1024]
+caption_extension = ".txt"
+batch_size = 1
+enable_bucket = true
+bucket_no_upscale = false
+
+[[datasets]]
+image_directory = "/data/moodboards/b1/train/v1"
+cache_directory = "/data/training/jobs/local-0123456789ab/cache"
+num_repeats = 1
+",
+    "path": "/data/training/jobs/local-0123456789ab/dataset.toml",
+  },
+  {
+    "content": "compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: 'NO'
+downcast_bf16: 'no'
+enable_cpu_affinity: false
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 1
+rdzv_backend: static
+same_network: true
+use_cpu: false
+",
+    "path": "/data/training/jobs/local-0123456789ab/accelerate.yaml",
+  },
+]
+`;

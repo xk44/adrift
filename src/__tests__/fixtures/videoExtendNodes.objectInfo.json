@@ -1,0 +1,121 @@
+{
+  "_meta": {
+    "source": "Generated from INPUT_TYPES of comfy_nodes/cj_video_extend/cj_extend_nodes.py (in-repo node, not yet installed on the reference box). Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-27"
+  },
+  "CJColorMatchToReference": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE",
+          {
+            "tooltip": "Frames to correct (the generated continuation)."
+          }
+        ],
+        "reference": [
+          "IMAGE",
+          {
+            "tooltip": "Frames whose colours are the target (the context frames)."
+          }
+        ],
+        "strength": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05
+          }
+        ],
+        "method": [
+          [
+            "mean_std_lab"
+          ],
+          {
+            "default": "mean_std_lab"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "reference",
+        "strength",
+        "method"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJColorMatchToReference",
+    "display_name": "Colour Match to Reference (LAB)",
+    "category": "Adrift/Video",
+    "python_module": "custom_nodes.cj_video_extend",
+    "output_node": false
+  },
+  "CJRetimeFrames": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "src_fps": [
+          "FLOAT",
+          {
+            "default": 16.0,
+            "min": 0.01,
+            "max": 240.0,
+            "step": 0.001
+          }
+        ],
+        "dst_fps": [
+          "FLOAT",
+          {
+            "default": 30.0,
+            "min": 0.01,
+            "max": 240.0,
+            "step": 0.001
+          }
+        ],
+        "method": [
+          [
+            "nearest",
+            "blend"
+          ],
+          {
+            "default": "nearest"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "src_fps",
+        "dst_fps",
+        "method"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJRetimeFrames",
+    "display_name": "Retime Frames (fps)",
+    "category": "Adrift/Video",
+    "python_module": "custom_nodes.cj_video_extend",
+    "output_node": false
+  }
+}

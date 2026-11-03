@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "title": "Voice changer (Chatterbox VC)",
+    "description": "Voice changer tool, audio in. LoadAudio reads the uploaded source speech; TrimAudioDuration caps it at 120 s. A second LoadAudio + TrimAudioDuration takes up to 15 s of the target voice sample (the builder removes both when no sample is given, so the pack's built-in voice is used). ChatterboxVC (wildminder/ComfyUI-Chatterbox, Resemble AI Chatterbox, MIT) re-voices the speech while keeping its words and timing, chunked at 30 s on silences. SaveAudioMP3 writes audio/adrift_vc. Builder: src/lib/oj/voiceChange.ts."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Source Speech" }
+  },
+  "2": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["1", 0], "start_index": 0.0, "duration": 120.0 },
+    "_meta": { "title": "Converted Span" }
+  },
+  "3": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Target Voice Sample" }
+  },
+  "4": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["3", 0], "start_index": 0.0, "duration": 15.0 },
+    "_meta": { "title": "Target Voice Reference" }
+  },
+  "5": {
+    "class_type": "ChatterboxVC",
+    "inputs": {
+      "model_pack_name": "chatterbox_local",
+      "source_audio": ["2", 0],
+      "n_timesteps": 10,
+      "temperature": 1.0,
+      "flow_cfg_scale": 0.7,
+      "use_watermark": false,
+      "device": "auto",
+      "dtype": "auto",
+      "attention_mode": "sdpa",
+      "refinement_passes": 1,
+      "max_chunk_duration": 30.0,
+      "chunk_method": "smart",
+      "target_voice_audio": ["4", 0]
+    },
+    "_meta": { "title": "Chatterbox Voice Conversion" }
+  },
+  "6": {
+    "class_type": "SaveAudioMP3",
+    "inputs": {
+      "audio": ["5", 0],
+      "filename_prefix": "audio/adrift_vc",
+      "quality": "V0"
+    },
+    "_meta": { "title": "Save Converted Speech" }
+  }
+}

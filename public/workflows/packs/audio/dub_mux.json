@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "title": "Dub video: lay the dubbed speech over the frames",
+    "description": "Final step of the Video Translator (Dub video) tool. Uses only core nodes and VideoHelperSuite, no models. VHS_LoadVideo reads the frames at a fixed 25 fps, caps the long edge at 1280 and caps the frame count to the dubbed span: the source clip in audio-only mode, or the uploaded lipsynced clip in lipsync mode. LoadAudio loads the dubbed speech, which is re-uploaded as an input. To keep the original audio under the dub, LoadAudio reads the source clip's soundtrack, TrimAudioDuration cuts it to the span, AudioAdjustVolume turns it down and AudioMerge adds the speech on top; with the original replaced the builder drops those four nodes and the speech goes straight to CreateVideo. SaveVideo writes video/adrift_dub. Builder: buildDubMuxWorkflow in src/lib/oj/dubVideo.ts."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 25.0,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 750,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Frames" }
+  },
+  "2": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Dubbed Speech" }
+  },
+  "3": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["1", 0], "fps": 25.0, "audio": ["8", 0] },
+    "_meta": { "title": "Mux Dub" }
+  },
+  "4": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["3", 0],
+      "filename_prefix": "video/adrift_dub",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Dubbed Video" }
+  },
+  "5": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Original Soundtrack" }
+  },
+  "6": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["5", 0], "start_index": 0.0, "duration": 14.76 },
+    "_meta": { "title": "Original Span" }
+  },
+  "7": {
+    "class_type": "AudioAdjustVolume",
+    "inputs": { "audio": ["6", 0], "volume": -12 },
+    "_meta": { "title": "Original Level" }
+  },
+  "8": {
+    "class_type": "AudioMerge",
+    "inputs": { "audio1": ["7", 0], "audio2": ["2", 0], "merge_method": "add" },
+    "_meta": { "title": "Speech over Original" }
+  }
+}

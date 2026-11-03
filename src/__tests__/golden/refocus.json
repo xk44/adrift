@@ -1,0 +1,86 @@
+{
+  "name": "refocus",
+  "tool": "refocus",
+  "action": "refocus",
+  "workflow": "packs/image-tools/refocus.json",
+  "seed": 0,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "LoadDA3Model",
+      "title": "Depth model",
+      "inputs": {
+        "model_name": "depth_anything_3_mono_large.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "3": {
+      "class_type": "DA3Inference",
+      "title": "Depth",
+      "inputs": {
+        "da3_model": [
+          "2",
+          0
+        ],
+        "image": [
+          "1",
+          0
+        ],
+        "mode": "mono",
+        "resize_method": "upper_bound_resize",
+        "resolution": 1008
+      }
+    },
+    "4": {
+      "class_type": "DA3Render",
+      "title": "Depth map (near = white)",
+      "inputs": {
+        "da3_geometry": [
+          "3",
+          0
+        ],
+        "output": "depth",
+        "output.apply_sky_clip": false,
+        "output.normalization": "v2_style"
+      }
+    },
+    "5": {
+      "class_type": "CJRefocus",
+      "title": "Refocus",
+      "inputs": {
+        "blur_amount": 2.4,
+        "depth": [
+          "4",
+          0
+        ],
+        "depth_smoothing": 0,
+        "focus_range": 0.04,
+        "focus_x": 0.4,
+        "focus_y": 0.5,
+        "highlights": 0.3,
+        "image": [
+          "1",
+          0
+        ],
+        "invert_depth": false
+      }
+    },
+    "6": {
+      "class_type": "SaveImage",
+      "title": "Save",
+      "inputs": {
+        "filename_prefix": "CJ_Refocus/refocus",
+        "images": [
+          "5",
+          0
+        ]
+      }
+    }
+  }
+}

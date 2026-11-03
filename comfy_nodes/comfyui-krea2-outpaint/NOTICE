@@ -1,0 +1,12 @@
+comfyui-krea2-outpaint (part of Adrift, MIT License)
+
+The bbox reference placement implemented here follows the reference pipeline
+published with "Krea 2 Registered Outpaint"
+(https://huggingface.co/yijunwang2/krea2-outpaint), whose pipeline and helper
+code are distributed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0). No files from that repository
+are included; the LoRA weights are not included and are licensed separately
+under the Krea 2 Community License Agreement.
+
+This pack contains no code from ostris/ComfyUI-Krea2-Ostris-Edit; it loads
+that pack, installed separately by the user, at runtime.

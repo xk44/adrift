@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "title": "Upscale (SeedVR2)",
+    "description": "Core ComfyUI SeedVR2 one-step restoration/upscale (Comfy-Org utility_seedvr2_* templates, flattened). Image branch: LoadImage -> ResizeImageMaskNode -> SeedVR2Preprocess -> VAEEncodeTiled -> SeedVR2Conditioning -> KSampler (1 step, cfg 1) -> VAEDecodeTiled -> SeedVR2PostProcessing (lab color match) -> SaveImage. Video branch: LoadVideo -> GetVideoComponents -> same chain with SeedVR2TemporalChunk (auto = largest chunk that fits free VRAM) before the sampler and SeedVR2TemporalMerge after it -> CreateVideo (source fps + audio) -> SaveVideo. The builder (src/lib/oj/seedvr2Upscale.ts) keeps one branch, rewires the shared chain and sets scale, model and color match (lab / wavelet / adain / none). Models (Comfy-Org/SeedVR2): diffusion_models/seedvr2_3b_fp8_e4m3fn.safetensors (fast, default), seedvr2_7b_fp8_e4m3fn.safetensors (quality) or seedvr2_7b_sharp_fp8_e4m3fn.safetensors (sharp), vae/seedvr2_ema_vae_fp16.safetensors. Nodes 18-19 are optional loaders that only name the 7B files for setup; the builder removes them."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source Image" }
+  },
+  "2": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "" },
+    "_meta": { "title": "Source Video" }
+  },
+  "3": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["2", 0] },
+    "_meta": { "title": "Frames + Audio + FPS" }
+  },
+  "4": {
+    "class_type": "ResizeImageMaskNode",
+    "inputs": {
+      "input": ["1", 0],
+      "resize_type": "scale by multiplier",
+      "resize_type.multiplier": 2,
+      "scale_method": "lanczos"
+    },
+    "_meta": { "title": "Target Size" }
+  },
+  "5": {
+    "class_type": "SeedVR2Preprocess",
+    "inputs": { "resized_images": ["4", 0] },
+    "_meta": { "title": "SeedVR2 Preprocess" }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "seedvr2_ema_vae_fp16.safetensors" },
+    "_meta": { "title": "SeedVR2 VAE" }
+  },
+  "7": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "seedvr2_3b_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "SeedVR2 Model" }
+  },
+  "8": {
+    "class_type": "VAEEncodeTiled",
+    "inputs": {
+      "pixels": ["5", 0],
+      "vae": ["6", 0],
+      "tile_size": 512,
+      "overlap": 128,
+      "temporal_size": 64,
+      "temporal_overlap": 8
+    },
+    "_meta": { "title": "Encode (tiled)" }
+  },
+  "9": {
+    "class_type": "SeedVR2TemporalChunk",
+    "inputs": {
+      "latent": ["8", 0],
+      "temporal_overlap": 0,
+      "chunking_mode": "auto"
+    },
+    "_meta": { "title": "Split Latent (video)" }
+  },
+  "10": {
+    "class_type": "SeedVR2Conditioning",
+    "inputs": { "model": ["7", 0], "vae_conditioning": ["8", 0] },
+    "_meta": { "title": "SeedVR2 Conditioning" }
+  },
+  "11": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["7", 0],
+      "positive": ["10", 0],
+      "negative": ["10", 1],
+      "latent_image": ["8", 0],
+      "seed": 0,
+      "steps": 1,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    },
+    "_meta": { "title": "SeedVR2 One-step Sampler" }
+  },
+  "12": {
+    "class_type": "SeedVR2TemporalMerge",
+    "inputs": { "latents": ["11", 0], "temporal_overlap": ["9", 1] },
+    "_meta": { "title": "Merge Latent (video)" }
+  },
+  "13": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "samples": ["11", 0],
+      "vae": ["6", 0],
+      "tile_size": 512,
+      "overlap": 128,
+      "temporal_size": 64,
+      "temporal_overlap": 8
+    },
+    "_meta": { "title": "Decode (tiled)" }
+  },
+  "14": {
+    "class_type": "SeedVR2PostProcessing",
+    "inputs": {
+      "images": ["13", 0],
+      "original_resized_images": ["4", 0],
+      "color_correction_method": "lab"
+    },
+    "_meta": { "title": "SeedVR2 Post-process" }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["14", 0], "filename_prefix": "CJ_SeedVR2" },
+    "_meta": { "title": "Save Image" }
+  },
+  "16": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["14", 0], "fps": ["3", 2], "audio": ["3", 1] },
+    "_meta": { "title": "Mux Video (source fps + audio)" }
+  },
+  "17": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["16", 0],
+      "filename_prefix": "video/CJ_SeedVR2",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Video" }
+  },
+  "18": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "seedvr2_7b_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "SeedVR2 7B (model choice)", "optional": true }
+  },
+  "19": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "seedvr2_7b_sharp_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "SeedVR2 7B sharp (model choice)", "optional": true }
+  }
+}

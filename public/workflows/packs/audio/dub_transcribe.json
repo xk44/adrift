@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "title": "Dub video: transcribe (Whisper)",
+    "description": "Step 1 of the Dub video tool. LoadAudio reads the audio track directly from the uploaded clip, so no video frames are decoded. TrimAudioDuration keeps only the span being dubbed: up to 14.76 s in lipsync mode, up to 30 s in audio-only mode. CJWhisperASR (comfy_nodes/cj_whisper_asr) transcribes it offline with the local whisper-large-v3-turbo model. Two PreviewAny nodes return the plain transcript and a JSON array of timed segments as text outputs. Builder: src/lib/oj/dubVideo.ts."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Source Clip (audio track)" }
+  },
+  "2": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["1", 0], "start_index": 0.0, "duration": 14.76 },
+    "_meta": { "title": "Dubbed Span" }
+  },
+  "3": {
+    "class_type": "CJWhisperASR",
+    "inputs": {
+      "audio": ["2", 0],
+      "language": "auto",
+      "task": "transcribe",
+      "model_path": "whisper/whisper-large-v3-turbo",
+      "return_timestamps": true,
+      "device": "auto",
+      "keep_loaded": false
+    },
+    "_meta": { "title": "Whisper ASR" }
+  },
+  "4": {
+    "class_type": "PreviewAny",
+    "inputs": { "source": ["3", 0] },
+    "_meta": { "title": "Transcript" }
+  },
+  "5": {
+    "class_type": "PreviewAny",
+    "inputs": { "source": ["3", 1] },
+    "_meta": { "title": "Segments JSON" }
+  }
+}

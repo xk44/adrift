@@ -1,0 +1,87 @@
+{
+  "name": "video_bg_remove",
+  "tool": "video_bg_remove",
+  "action": "video_bg_remove",
+  "workflow": "packs/utility/video_bg_remove.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "LoadBackgroundRemovalModel",
+      "title": "BiRefNet",
+      "inputs": {
+        "bg_removal_name": "birefnet.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "RemoveBackground",
+      "title": "Foreground Mask (per frame)",
+      "inputs": {
+        "bg_removal_model": [
+          "3",
+          0
+        ],
+        "image": [
+          "2",
+          0
+        ]
+      }
+    },
+    "5": {
+      "class_type": "InvertMask",
+      "title": "Background Mask",
+      "inputs": {
+        "mask": [
+          "4",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "JoinImageWithAlpha",
+      "title": "Frames + alpha (RGBA; node inverts the mask it gets)",
+      "inputs": {
+        "alpha": [
+          "5",
+          0
+        ],
+        "image": [
+          "2",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "SaveAnimatedPNG",
+      "title": "Save transparent APNG (background=alpha)",
+      "inputs": {
+        "compress_level": 4,
+        "filename_prefix": "video/CJ_VideoBgRemove_alpha",
+        "fps": [
+          "2",
+          2
+        ],
+        "images": [
+          "10",
+          0
+        ]
+      }
+    }
+  }
+}

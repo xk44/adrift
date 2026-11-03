@@ -1,0 +1,280 @@
+{
+  "_meta": {
+    "title": "Material maps (Marigold V2)",
+    "description": "Marigold V2 material maps with core ComfyUI nodes (Comfy-Org 'Image Depth / Normal / Albedo Estimation (Marigold V2)' blueprints, flattened into one graph). LoadImage -> ImageScaleToTotalPixels (1MP, multiple of 16) -> per map: UNETLoader (Qwen-Image-Edit-2509) -> map LoRA -> ModelSamplingAuraFlow (shift 1.73, img_to_img_velocity as in the Comfy-Org workflow templates; the blueprints' 'flow' halves the input latent under DisableNoise) -> BasicGuider with the map's precomputed ConditioningLoader embedding (no text encoder) -> VAEEncode with the map's fine-tuned VAE -> SamplerCustomAdvanced (DisableNoise, euler, ManualSigmas '0.5, 0' = one step) -> VAEDecode -> MarigoldV2PostProcess (depth: channel mean, near = bright; normals: renormalized; albedo: linear -> sRGB) -> ImageScale back to the source size -> SaveImage. Branches: depth 10-20, normals 30-40, albedo 50-60. The builder (src/lib/oj/materialMaps.ts) sets the image and resolution and drops unselected branches. Models (Apache-2.0, Comfy-Org/marigold-v2-0): diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors (the blueprint default is the int8_convrot build), loras/marigold_v2_{depth_log_stage2,normals,albedo}.safetensors, vae/marigold_v2_{depth_log_stage2,normals,albedo}_vae.safetensors, embeddings/marigold_v2_{depth,normals,albedo}_conditioning.safetensors."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source image" }
+  },
+  "2": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": ["1", 0],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 16
+    },
+    "_meta": { "title": "Scale to 1MP (multiple of 16)" }
+  },
+  "3": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Qwen-Image-Edit-2509" }
+  },
+  "4": {
+    "class_type": "KSamplerSelect",
+    "inputs": { "sampler_name": "euler" },
+    "_meta": { "title": "Sampler" }
+  },
+  "5": {
+    "class_type": "ManualSigmas",
+    "inputs": { "sigmas": "0.5, 0" },
+    "_meta": { "title": "One step (0.5 -> 0)" }
+  },
+  "6": {
+    "class_type": "DisableNoise",
+    "inputs": {},
+    "_meta": { "title": "No noise" }
+  },
+  "7": {
+    "class_type": "GetImageSize",
+    "inputs": { "image": ["1", 0] },
+    "_meta": { "title": "Source size" }
+  },
+  "10": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["3", 0],
+      "lora_name": "marigold_v2_depth_log_stage2.safetensors",
+      "strength_model": 1
+    },
+    "_meta": { "title": "Depth LoRA" }
+  },
+  "11": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": ["10", 0],
+      "shift": 1.73,
+      "sampling": "img_to_img_velocity"
+    },
+    "_meta": { "title": "Depth model sampling" }
+  },
+  "12": {
+    "class_type": "ConditioningLoader",
+    "inputs": {
+      "conditioning_name": "marigold_v2_depth_conditioning.safetensors"
+    },
+    "_meta": { "title": "Depth conditioning" }
+  },
+  "13": {
+    "class_type": "BasicGuider",
+    "inputs": { "model": ["11", 0], "conditioning": ["12", 0] },
+    "_meta": { "title": "Depth guider" }
+  },
+  "14": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "marigold_v2_depth_log_stage2_vae.safetensors" },
+    "_meta": { "title": "Depth VAE" }
+  },
+  "15": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["2", 0], "vae": ["14", 0] },
+    "_meta": { "title": "Depth encode" }
+  },
+  "16": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["6", 0],
+      "guider": ["13", 0],
+      "sampler": ["4", 0],
+      "sigmas": ["5", 0],
+      "latent_image": ["15", 0]
+    },
+    "_meta": { "title": "Depth sample" }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["16", 0], "vae": ["14", 0] },
+    "_meta": { "title": "Depth decode" }
+  },
+  "18": {
+    "class_type": "MarigoldV2PostProcess",
+    "inputs": { "image": ["17", 0], "prediction": "depth" },
+    "_meta": { "title": "Depth post-process" }
+  },
+  "19": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["18", 0],
+      "upscale_method": "bilinear",
+      "width": ["7", 0],
+      "height": ["7", 1],
+      "crop": "disabled"
+    },
+    "_meta": { "title": "Depth at source size" }
+  },
+  "20": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["19", 0], "filename_prefix": "CJ_Marigold/depth" },
+    "_meta": { "title": "Save depth" }
+  },
+  "30": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["3", 0],
+      "lora_name": "marigold_v2_normals.safetensors",
+      "strength_model": 1
+    },
+    "_meta": { "title": "Normals LoRA" }
+  },
+  "31": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": ["30", 0],
+      "shift": 1.73,
+      "sampling": "img_to_img_velocity"
+    },
+    "_meta": { "title": "Normals model sampling" }
+  },
+  "32": {
+    "class_type": "ConditioningLoader",
+    "inputs": {
+      "conditioning_name": "marigold_v2_normals_conditioning.safetensors"
+    },
+    "_meta": { "title": "Normals conditioning" }
+  },
+  "33": {
+    "class_type": "BasicGuider",
+    "inputs": { "model": ["31", 0], "conditioning": ["32", 0] },
+    "_meta": { "title": "Normals guider" }
+  },
+  "34": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "marigold_v2_normals_vae.safetensors" },
+    "_meta": { "title": "Normals VAE" }
+  },
+  "35": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["2", 0], "vae": ["34", 0] },
+    "_meta": { "title": "Normals encode" }
+  },
+  "36": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["6", 0],
+      "guider": ["33", 0],
+      "sampler": ["4", 0],
+      "sigmas": ["5", 0],
+      "latent_image": ["35", 0]
+    },
+    "_meta": { "title": "Normals sample" }
+  },
+  "37": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["36", 0], "vae": ["34", 0] },
+    "_meta": { "title": "Normals decode" }
+  },
+  "38": {
+    "class_type": "MarigoldV2PostProcess",
+    "inputs": { "image": ["37", 0], "prediction": "normals" },
+    "_meta": { "title": "Normals post-process" }
+  },
+  "39": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["38", 0],
+      "upscale_method": "bilinear",
+      "width": ["7", 0],
+      "height": ["7", 1],
+      "crop": "disabled"
+    },
+    "_meta": { "title": "Normals at source size" }
+  },
+  "40": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["39", 0], "filename_prefix": "CJ_Marigold/normals" },
+    "_meta": { "title": "Save normals" }
+  },
+  "50": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["3", 0],
+      "lora_name": "marigold_v2_albedo.safetensors",
+      "strength_model": 1
+    },
+    "_meta": { "title": "Albedo LoRA" }
+  },
+  "51": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": ["50", 0],
+      "shift": 1.73,
+      "sampling": "img_to_img_velocity"
+    },
+    "_meta": { "title": "Albedo model sampling" }
+  },
+  "52": {
+    "class_type": "ConditioningLoader",
+    "inputs": {
+      "conditioning_name": "marigold_v2_albedo_conditioning.safetensors"
+    },
+    "_meta": { "title": "Albedo conditioning" }
+  },
+  "53": {
+    "class_type": "BasicGuider",
+    "inputs": { "model": ["51", 0], "conditioning": ["52", 0] },
+    "_meta": { "title": "Albedo guider" }
+  },
+  "54": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "marigold_v2_albedo_vae.safetensors" },
+    "_meta": { "title": "Albedo VAE" }
+  },
+  "55": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["2", 0], "vae": ["54", 0] },
+    "_meta": { "title": "Albedo encode" }
+  },
+  "56": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["6", 0],
+      "guider": ["53", 0],
+      "sampler": ["4", 0],
+      "sigmas": ["5", 0],
+      "latent_image": ["55", 0]
+    },
+    "_meta": { "title": "Albedo sample" }
+  },
+  "57": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["56", 0], "vae": ["54", 0] },
+    "_meta": { "title": "Albedo decode" }
+  },
+  "58": {
+    "class_type": "MarigoldV2PostProcess",
+    "inputs": { "image": ["57", 0], "prediction": "albedo" },
+    "_meta": { "title": "Albedo post-process" }
+  },
+  "59": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["58", 0],
+      "upscale_method": "bilinear",
+      "width": ["7", 0],
+      "height": ["7", 1],
+      "crop": "disabled"
+    },
+    "_meta": { "title": "Albedo at source size" }
+  },
+  "60": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["59", 0], "filename_prefix": "CJ_Marigold/albedo" },
+    "_meta": { "title": "Save albedo" }
+  }
+}

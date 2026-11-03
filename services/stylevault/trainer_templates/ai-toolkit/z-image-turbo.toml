@@ -1,0 +1,40 @@
+# ai-toolkit template for Z-Image Turbo LoRA training
+# Placeholders are rendered by stylevault.trainers._render_trainer_config()
+
+[config]
+name = "{{run_name}}"
+process = [
+    {type = "train", training_folder = "{{output_dir}}"},
+]
+
+[model]
+name_or_path = "{{base_model}}"
+is_flux = false
+is_v2 = false
+is_xl = false
+
+[network]
+type = "lora"
+linear = 16
+linear_alpha = 16
+
+[train]
+batch_size = 1
+steps = 1500
+lr = 1e-4
+unet_lr = 1e-4
+text_encoder_lr = 5e-5
+optimizer = "adamw8bit"
+lr_scheduler = "cosine"
+max_grad_norm = 1.0
+noise_scheduler = "ddpm"
+
+[dataset]
+resolution = 1024
+folder_path = "{{dataset_manifest}}"
+caption_ext = ".txt"
+
+[save]
+save_every_n_steps = 500
+max_step_saves_to_keep = 2
+dtype = "float16"

@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "title": "Grid video (beat-synced grid music video)",
+    "description": "One source clip or still + a music track -> a beat-synced grid music video (poster grid, style infection or temporal mosaic). No models: a single CJGridVideo node (comfy_nodes/cj_h3_tools/cj_grid_video.py, numpy + ffmpeg) renders the plan the builder (src/lib/oj/gridVideo.ts) computes from the beats and muxes the music as the soundtrack (H.264 + AAC MP4)."
+  },
+  "1": {
+    "class_type": "CJGridVideo",
+    "inputs": {
+      "source": "",
+      "audio": "",
+      "plan": "",
+      "filename_prefix": "video/adrift_grid",
+      "crf": 18
+    },
+    "_meta": { "title": "Grid Video" }
+  }
+}

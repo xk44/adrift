@@ -1,0 +1,158 @@
+{
+  "name": "upscale_seedvr2",
+  "tool": "upscale_seedvr2",
+  "action": "seedvr2_upscale",
+  "workflow": "packs/seedvr2/seedvr2_upscale.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "4": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Target Size",
+      "inputs": {
+        "input": [
+          "1",
+          0
+        ],
+        "resize_type": "scale by multiplier",
+        "resize_type.multiplier": 2,
+        "scale_method": "lanczos"
+      }
+    },
+    "5": {
+      "class_type": "SeedVR2Preprocess",
+      "title": "SeedVR2 Preprocess",
+      "inputs": {
+        "resized_images": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "VAELoader",
+      "title": "SeedVR2 VAE",
+      "inputs": {
+        "vae_name": "seedvr2_ema_vae_fp16.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "UNETLoader",
+      "title": "SeedVR2 Model",
+      "inputs": {
+        "unet_name": "seedvr2_3b_fp8_e4m3fn.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "8": {
+      "class_type": "VAEEncodeTiled",
+      "title": "Encode (tiled)",
+      "inputs": {
+        "overlap": 128,
+        "pixels": [
+          "5",
+          0
+        ],
+        "temporal_overlap": 8,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "SeedVR2Conditioning",
+      "title": "SeedVR2 Conditioning",
+      "inputs": {
+        "model": [
+          "7",
+          0
+        ],
+        "vae_conditioning": [
+          "8",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "KSampler",
+      "title": "SeedVR2 One-step Sampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "8",
+          0
+        ],
+        "model": [
+          "7",
+          0
+        ],
+        "negative": [
+          "10",
+          1
+        ],
+        "positive": [
+          "10",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 7,
+        "steps": 1
+      }
+    },
+    "13": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode (tiled)",
+      "inputs": {
+        "overlap": 128,
+        "samples": [
+          "11",
+          0
+        ],
+        "temporal_overlap": 8,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "6",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SeedVR2PostProcessing",
+      "title": "SeedVR2 Post-process",
+      "inputs": {
+        "color_correction_method": "lab",
+        "images": [
+          "13",
+          0
+        ],
+        "original_resized_images": [
+          "4",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "SaveImage",
+      "title": "Save Image",
+      "inputs": {
+        "filename_prefix": "CJ_SeedVR2",
+        "images": [
+          "14",
+          0
+        ]
+      }
+    }
+  }
+}

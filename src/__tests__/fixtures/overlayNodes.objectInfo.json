@@ -1,0 +1,1232 @@
+{
+  "ImageBatch": {
+    "input": {
+      "required": {
+        "image1": [
+          "IMAGE"
+        ],
+        "image2": [
+          "IMAGE"
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "ImageBlend": {
+    "input": {
+      "required": {
+        "image1": [
+          "IMAGE",
+          {}
+        ],
+        "image2": [
+          "IMAGE",
+          {}
+        ],
+        "blend_factor": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01
+          }
+        ],
+        "blend_mode": [
+          "COMBO",
+          {
+            "multiselect": false,
+            "options": [
+              "normal",
+              "multiply",
+              "screen",
+              "overlay",
+              "soft_light",
+              "difference"
+            ]
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "ImageCompositeMasked": {
+    "input": {
+      "required": {
+        "destination": [
+          "IMAGE",
+          {}
+        ],
+        "source": [
+          "IMAGE",
+          {}
+        ],
+        "x": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "y": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "resize_source": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ]
+      },
+      "optional": {
+        "mask": [
+          "MASK",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "ImageCrop": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 512,
+            "min": 1,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 512,
+            "min": 1,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "x": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "y": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "ImageScale": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE"
+        ],
+        "upscale_method": [
+          [
+            "nearest-exact",
+            "bilinear",
+            "area",
+            "bicubic",
+            "lanczos"
+          ]
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 512,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 512,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "crop": [
+          [
+            "disabled",
+            "center"
+          ]
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "InvertMask": {
+    "input": {
+      "required": {
+        "mask": [
+          "MASK",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "MASK"
+    ],
+    "output_name": [
+      "MASK"
+    ]
+  },
+  "JoinImageWithAlpha": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "alpha": [
+          "MASK",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ]
+  },
+  "LoadImage": {
+    "input": {
+      "required": {
+        "image": [
+          [],
+          {
+            "image_upload": true
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "MASK"
+    ],
+    "output_name": [
+      "IMAGE",
+      "MASK"
+    ]
+  },
+  "MaskComposite": {
+    "input": {
+      "required": {
+        "destination": [
+          "MASK",
+          {}
+        ],
+        "source": [
+          "MASK",
+          {}
+        ],
+        "x": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "y": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "operation": [
+          "COMBO",
+          {
+            "multiselect": false,
+            "options": [
+              "multiply",
+              "add",
+              "subtract",
+              "and",
+              "or",
+              "xor"
+            ]
+          }
+        ]
+      }
+    },
+    "output": [
+      "MASK"
+    ],
+    "output_name": [
+      "MASK"
+    ]
+  },
+  "SolidMask": {
+    "input": {
+      "required": {
+        "value": [
+          "FLOAT",
+          {
+            "default": 1.0,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.01
+          }
+        ],
+        "width": [
+          "INT",
+          {
+            "default": 512,
+            "min": 1,
+            "max": 16384,
+            "step": 1
+          }
+        ],
+        "height": [
+          "INT",
+          {
+            "default": 512,
+            "min": 1,
+            "max": 16384,
+            "step": 1
+          }
+        ]
+      }
+    },
+    "output": [
+      "MASK"
+    ],
+    "output_name": [
+      "MASK"
+    ]
+  },
+  "SplitImageWithAlpha": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {}
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "MASK"
+    ],
+    "output_name": [
+      "IMAGE",
+      "MASK"
+    ]
+  },
+  "VHS_LoadVideo": {
+    "input": {
+      "required": {
+        "video": [
+          []
+        ],
+        "force_rate": [
+          "FLOAT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 60,
+            "step": 1,
+            "disable": 0
+          }
+        ],
+        "custom_width": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 8192,
+            "disable": 0
+          }
+        ],
+        "custom_height": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 8192,
+            "disable": 0
+          }
+        ],
+        "frame_load_cap": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 9007199254740991,
+            "step": 1,
+            "disable": 0
+          }
+        ],
+        "skip_first_frames": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 9007199254740991,
+            "step": 1
+          }
+        ],
+        "select_every_nth": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 9007199254740991,
+            "step": 1
+          }
+        ]
+      },
+      "optional": {
+        "meta_batch": [
+          "VHS_BatchManager"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "format": [
+          [
+            "None",
+            "AnimateDiff",
+            "Mochi",
+            "LTXV",
+            "Hunyuan",
+            "Cosmos",
+            "Wan"
+          ],
+          {
+            "default": "AnimateDiff",
+            "formats": {
+              "None": {},
+              "AnimateDiff": {
+                "target_rate": 8,
+                "dim": [
+                  8,
+                  0,
+                  512,
+                  512
+                ]
+              },
+              "Mochi": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  848,
+                  480
+                ],
+                "frames": [
+                  6,
+                  1
+                ]
+              },
+              "LTXV": {
+                "target_rate": 24,
+                "dim": [
+                  32,
+                  0,
+                  768,
+                  512
+                ],
+                "frames": [
+                  8,
+                  1
+                ]
+              },
+              "Hunyuan": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  848,
+                  480
+                ],
+                "frames": [
+                  4,
+                  1
+                ]
+              },
+              "Cosmos": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  1280,
+                  704
+                ],
+                "frames": [
+                  8,
+                  1
+                ]
+              },
+              "Wan": {
+                "target_rate": 16,
+                "dim": [
+                  8,
+                  0,
+                  832,
+                  480
+                ],
+                "frames": [
+                  4,
+                  1
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "hidden": {
+        "force_size": "STRING",
+        "unique_id": "UNIQUE_ID"
+      }
+    },
+    "output": [
+      "IMAGE",
+      "INT",
+      "AUDIO",
+      "VHS_VIDEOINFO"
+    ],
+    "output_name": [
+      "IMAGE",
+      "frame_count",
+      "audio",
+      "video_info"
+    ]
+  },
+  "VHS_LoadVideoFFmpeg": {
+    "input": {
+      "required": {
+        "video": [
+          []
+        ],
+        "force_rate": [
+          "FLOAT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 60,
+            "step": 1,
+            "disable": 0
+          }
+        ],
+        "custom_width": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 8192,
+            "disable": 0
+          }
+        ],
+        "custom_height": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 8192,
+            "disable": 0
+          }
+        ],
+        "frame_load_cap": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 9007199254740991,
+            "step": 1,
+            "disable": 0
+          }
+        ],
+        "start_time": [
+          "FLOAT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 9007199254740991,
+            "step": 0.001,
+            "widgetType": "VHSTIMESTAMP"
+          }
+        ]
+      },
+      "optional": {
+        "meta_batch": [
+          "VHS_BatchManager"
+        ],
+        "vae": [
+          "VAE"
+        ],
+        "format": [
+          [
+            "None",
+            "AnimateDiff",
+            "Mochi",
+            "LTXV",
+            "Hunyuan",
+            "Cosmos",
+            "Wan"
+          ],
+          {
+            "default": "AnimateDiff",
+            "formats": {
+              "None": {},
+              "AnimateDiff": {
+                "target_rate": 8,
+                "dim": [
+                  8,
+                  0,
+                  512,
+                  512
+                ]
+              },
+              "Mochi": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  848,
+                  480
+                ],
+                "frames": [
+                  6,
+                  1
+                ]
+              },
+              "LTXV": {
+                "target_rate": 24,
+                "dim": [
+                  32,
+                  0,
+                  768,
+                  512
+                ],
+                "frames": [
+                  8,
+                  1
+                ]
+              },
+              "Hunyuan": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  848,
+                  480
+                ],
+                "frames": [
+                  4,
+                  1
+                ]
+              },
+              "Cosmos": {
+                "target_rate": 24,
+                "dim": [
+                  16,
+                  0,
+                  1280,
+                  704
+                ],
+                "frames": [
+                  8,
+                  1
+                ]
+              },
+              "Wan": {
+                "target_rate": 16,
+                "dim": [
+                  8,
+                  0,
+                  832,
+                  480
+                ],
+                "frames": [
+                  4,
+                  1
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "hidden": {
+        "force_size": "STRING",
+        "unique_id": "UNIQUE_ID"
+      }
+    },
+    "output": [
+      "IMAGE",
+      "MASK",
+      "AUDIO",
+      "VHS_VIDEOINFO"
+    ],
+    "output_name": [
+      "IMAGE",
+      "mask",
+      "audio",
+      "video_info"
+    ]
+  },
+  "VHS_SplitImages": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "split_index": [
+          "INT",
+          {
+            "default": 0,
+            "step": 1,
+            "min": -9007199254740991,
+            "max": 9007199254740991
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "INT",
+      "IMAGE",
+      "INT"
+    ],
+    "output_name": [
+      "IMAGE_A",
+      "A_count",
+      "IMAGE_B",
+      "B_count"
+    ]
+  },
+  "VHS_VideoCombine": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "frame_rate": [
+          "FLOAT",
+          {
+            "default": 8,
+            "min": 1,
+            "step": 1
+          }
+        ],
+        "loop_count": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": "AnimateDiff"
+          }
+        ],
+        "format": [
+          [
+            "image/gif",
+            "image/webp",
+            "video/16bit-png",
+            "video/8bit-png",
+            "video/ProRes",
+            "video/av1-webm",
+            "video/ffmpeg-gif",
+            "video/ffv1-mkv",
+            "video/h264-mp4",
+            "video/h265-mp4",
+            "video/nvenc_av1-mp4",
+            "video/nvenc_h264-mp4",
+            "video/nvenc_hevc-mp4",
+            "video/webm"
+          ],
+          {
+            "formats": {
+              "video/ProRes": [
+                [
+                  "profile",
+                  [
+                    "lt",
+                    "standard",
+                    "hq",
+                    "4444",
+                    "4444xq"
+                  ],
+                  {
+                    "default": "hq"
+                  }
+                ]
+              ],
+              "video/av1-webm": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p10le",
+                    "yuv420p"
+                  ]
+                ],
+                [
+                  "crf",
+                  "INT",
+                  {
+                    "default": 23,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1
+                  }
+                ],
+                [
+                  "input_color_depth",
+                  [
+                    "8bit",
+                    "16bit"
+                  ]
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ],
+              "video/ffmpeg-gif": [
+                [
+                  "dither",
+                  [
+                    "bayer",
+                    "heckbert",
+                    "floyd_steinberg",
+                    "sierra2",
+                    "sierra2_4a",
+                    "sierra3",
+                    "burkes",
+                    "atkinson",
+                    "none"
+                  ],
+                  {
+                    "default": "sierra2_4a"
+                  },
+                  "[0:v] split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse=dither=$val"
+                ]
+              ],
+              "video/ffv1-mkv": [
+                [
+                  "level",
+                  [
+                    "0",
+                    "1",
+                    "3"
+                  ],
+                  {
+                    "default": "3"
+                  }
+                ],
+                [
+                  "coder",
+                  [
+                    "0",
+                    "1",
+                    "2"
+                  ],
+                  {
+                    "default": "1"
+                  }
+                ],
+                [
+                  "context",
+                  [
+                    "0",
+                    "1"
+                  ],
+                  {
+                    "default": "1"
+                  }
+                ],
+                [
+                  "gop_size",
+                  "INT",
+                  {
+                    "default": 1,
+                    "min": 1,
+                    "max": 300,
+                    "step": 1
+                  }
+                ],
+                [
+                  "slices",
+                  [
+                    "4",
+                    "6",
+                    "9",
+                    "12",
+                    "16",
+                    "20",
+                    "24",
+                    "30"
+                  ],
+                  {
+                    "default": "16"
+                  }
+                ],
+                [
+                  "slicecrc",
+                  [
+                    "0",
+                    "1"
+                  ],
+                  {
+                    "default": "1"
+                  }
+                ],
+                [
+                  "pix_fmt",
+                  [
+                    "rgba64le",
+                    "bgra",
+                    "yuv420p",
+                    "yuv422p",
+                    "yuv444p",
+                    "yuva420p",
+                    "yuva422p",
+                    "yuva444p",
+                    "yuv420p10le",
+                    "yuv422p10le",
+                    "yuv444p10le",
+                    "yuv420p12le",
+                    "yuv422p12le",
+                    "yuv444p12le",
+                    "yuv420p14le",
+                    "yuv422p14le",
+                    "yuv444p14le",
+                    "yuv420p16le",
+                    "yuv422p16le",
+                    "yuv444p16le",
+                    "gray",
+                    "gray10le",
+                    "gray12le",
+                    "gray16le"
+                  ],
+                  {
+                    "default": "rgba64le"
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "trim_to_audio",
+                  "BOOLEAN",
+                  {
+                    "default": false
+                  }
+                ]
+              ],
+              "video/h264-mp4": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p",
+                    "yuv420p10le"
+                  ]
+                ],
+                [
+                  "crf",
+                  "INT",
+                  {
+                    "default": 19,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "trim_to_audio",
+                  "BOOLEAN",
+                  {
+                    "default": false
+                  }
+                ]
+              ],
+              "video/h265-mp4": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p10le",
+                    "yuv420p"
+                  ]
+                ],
+                [
+                  "crf",
+                  "INT",
+                  {
+                    "default": 22,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ],
+              "video/nvenc_av1-mp4": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p",
+                    "p010le"
+                  ]
+                ],
+                [
+                  "bitrate",
+                  "INT",
+                  {
+                    "default": 10,
+                    "min": 1,
+                    "max": 999,
+                    "step": 1
+                  }
+                ],
+                [
+                  "megabit",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ],
+              "video/nvenc_h264-mp4": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p",
+                    "p010le"
+                  ]
+                ],
+                [
+                  "bitrate",
+                  "INT",
+                  {
+                    "default": 10,
+                    "min": 1,
+                    "max": 999,
+                    "step": 1
+                  }
+                ],
+                [
+                  "megabit",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ],
+              "video/nvenc_hevc-mp4": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p",
+                    "p010le"
+                  ]
+                ],
+                [
+                  "bitrate",
+                  "INT",
+                  {
+                    "default": 10,
+                    "min": 1,
+                    "max": 999,
+                    "step": 1
+                  }
+                ],
+                [
+                  "megabit",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ],
+              "video/webm": [
+                [
+                  "pix_fmt",
+                  [
+                    "yuv420p",
+                    "yuva420p"
+                  ]
+                ],
+                [
+                  "crf",
+                  "INT",
+                  {
+                    "default": 20,
+                    "min": 0,
+                    "max": 100,
+                    "step": 1
+                  }
+                ],
+                [
+                  "save_metadata",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ],
+                [
+                  "trim_to_audio",
+                  "BOOLEAN",
+                  {
+                    "default": false
+                  }
+                ]
+              ],
+              "image/webp": [
+                [
+                  "lossless",
+                  "BOOLEAN",
+                  {
+                    "default": true
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "pingpong": [
+          "BOOLEAN",
+          {
+            "default": false
+          }
+        ],
+        "save_output": [
+          "BOOLEAN",
+          {
+            "default": true
+          }
+        ]
+      },
+      "optional": {
+        "audio": [
+          "AUDIO"
+        ],
+        "meta_batch": [
+          "VHS_BatchManager"
+        ],
+        "vae": [
+          "VAE"
+        ]
+      },
+      "hidden": {
+        "prompt": "PROMPT",
+        "extra_pnginfo": "EXTRA_PNGINFO",
+        "unique_id": "UNIQUE_ID"
+      }
+    },
+    "output": [
+      "VHS_FILENAMES"
+    ],
+    "output_name": [
+      "Filenames"
+    ]
+  }
+}

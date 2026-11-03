@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "title": "Character from reference (Anima Ref Adapter v2)",
+    "description": "Anima base v1.0 + ElectronGirl Anima Ref Adapter v2 (ComfyUI-Anima-Ref-Adapter @ fb587d2): one reference image of a character supplies identity, the prompt supplies only quality tags + gender/solo + scene/pose. About 2x faster than the pilot adapter (the reference is encoded once per image, not at every step). LoadImage -> AnimaRefAdapter (ref_guidance 4.5, APG correction; patches the MODEL) -> KSampler (er_sde / simple, 30 steps, cfg 4.5) on an EmptyLatentImage (832x1216). Two characters: the builder adds a second LoadImage and a core ImageStitch (right, match size, no spacing) in front of the adapter and switches to a landscape latent; the prompt says who is on the left and who is on the right. Weights: diffusion_models/anima-base-v1.0.safetensors, text_encoders/qwen_3_06b_base.safetensors, vae/qwen_image_vae.safetensors (circlestone-labs/Anima), loras/anima_ref_adapter_v2_r64.safetensors (ElectronGirl/anima-ref-adapter; the node downloads a missing adapter file on first use, so model status lists it as required). CircleStone Labs Non-Commercial License (Anima base and the adapter weights). Falls back to packs/anima/anima_ref_pilot.json when the installed node pack has no AnimaRefAdapter. Built by src/lib/oj/animaRef.ts (reference image(s), prompt, negative, size, seed)."
+  },
+  "_fallback": {
+    "file": "packs/anima/anima_ref_pilot.json",
+    "warning": "ComfyUI-Anima-Ref-Adapter predates v2 (no AnimaRefAdapter node): Character from reference runs the slower pilot graph, one character only"
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "anima-base-v1.0.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Anima base v1.0" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_06b_base.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "_meta": { "title": "Qwen3 0.6B text encoder" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "qwen_image_vae.safetensors" },
+    "_meta": { "title": "Qwen-Image VAE" }
+  },
+  "4": {
+    "class_type": "AnimaRefAdapter",
+    "inputs": {
+      "model": ["1", 0],
+      "vae": ["3", 0],
+      "image": ["7", 0],
+      "lora_name": "anima_ref_adapter_v2_r64.safetensors",
+      "ref_guidance": 4.5,
+      "correction": "apg",
+      "strength": 1.0,
+      "ref_end": 1.0,
+      "ref_megapixels": 1.0
+    },
+    "_meta": { "title": "Anima Ref Adapter v2" }
+  },
+  "7": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Character Reference" }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "masterpiece, best quality, score_7, newest, highres, absurdres, safe, 1girl, solo, standing, looking at viewer, simple background"
+    },
+    "_meta": { "title": "Positive (scene only)" }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "worst quality, low quality, score_1, score_2, score_3, blurry, jpeg artifacts, chromatic aberration, bad anatomy, bad hands, extra arms, extra fingers, missing fingers"
+    },
+    "_meta": { "title": "Negative" }
+  },
+  "11": {
+    "class_type": "EmptyLatentImage",
+    "inputs": { "width": 832, "height": 1216, "batch_size": 1 },
+    "_meta": { "title": "Size" }
+  },
+  "15": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["4", 0],
+      "positive": ["9", 0],
+      "negative": ["10", 0],
+      "latent_image": ["11", 0],
+      "seed": 0,
+      "steps": 30,
+      "cfg": 4.5,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Sample" }
+  },
+  "16": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["15", 0], "vae": ["3", 0] },
+    "_meta": { "title": "Decode" }
+  },
+  "17": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["16", 0], "filename_prefix": "anima_ref/anima_ref" },
+    "_meta": { "title": "Save" }
+  }
+}

@@ -1,0 +1,270 @@
+{
+  "_comment": "Bundled supply-chain blocklist. Generated from comfy-sweep/blocklist.json (static sweep 2026-07-19). DO NOT hand-edit to ADD trust \u2014 a human clears an entry only after re-auditing. Consumed by nodeBlocklist.ts to refuse Manager installs.",
+  "generated": "2026-07-19",
+  "source": "comfy-sweep static supply-chain sweep (5855 repos)",
+  "entries": [
+    {
+      "slug": "aemotionstudio/comfyui-discordsend",
+      "url": "https://github.com/AEmotionStudio/ComfyUI-DiscordSend",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "akharytonchyk/comfyui-telegram-bot-node",
+      "url": "https://github.com/AKharytonchyk/ComfyUI-telegram-bot-node",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "asagi4/comfyui-prompt-control",
+      "url": "https://github.com/asagi4/comfyui-prompt-control",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "bananasss00/comfyui-sp-nodes",
+      "url": "https://github.com/bananasss00/ComfyUI-SP-Nodes",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "brantje/comfyui_magicquill",
+      "url": "https://github.com/brantje/ComfyUI_MagicQuill",
+      "rules": [
+        "env-exfil",
+        "getenv-secrets"
+      ]
+    },
+    {
+      "slug": "cozy-comfyui/cozy_comm",
+      "url": "https://github.com/cozy-comfyui/cozy_comm",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "dayuppy/comfyui-discordwebhook",
+      "url": "https://github.com/Dayuppy/ComfyUI-DiscordWebhook",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "ericrollei/eric_image_processing_nodes",
+      "url": "https://github.com/EricRollei/Eric_Image_Processing_Nodes",
+      "rules": [
+        "env-exfil",
+        "getenv-secrets"
+      ]
+    },
+    {
+      "slug": "fabioamigo/comfyui-dockersandbox",
+      "url": "https://github.com/fabioamigo/ComfyUI-DockerSandbox",
+      "rules": [
+        "b64-exec"
+      ]
+    },
+    {
+      "slug": "filliptm/comfyui_fill-nodes",
+      "url": "https://github.com/filliptm/ComfyUI_Fill-Nodes",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "gmorks/comfyui-sendtodiscord",
+      "url": "https://github.com/gmorks/ComfyUI-SendToDiscord",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "hay86/comfyui_minicpm-v",
+      "url": "https://github.com/hay86/ComfyUI_MiniCPM-V",
+      "rules": [
+        "env-exfil",
+        "getenv-secrets"
+      ]
+    },
+    {
+      "slug": "huyl3-cpu/comfyui-sortlist",
+      "url": "https://github.com/huyl3-cpu/comfyui-sortlist",
+      "rules": [
+        "obfuscation"
+      ]
+    },
+    {
+      "slug": "inubq8/comfyui-notificationbridge",
+      "url": "https://github.com/INuBq8/ComfyUI-NotificationBridge",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "izumikeita/comfyui_kqube",
+      "url": "https://github.com/IzumiKeita/ComfyUI_KQube",
+      "rules": [
+        "obfuscation"
+      ]
+    },
+    {
+      "slug": "kaiery/comfyui_funcode",
+      "url": "https://github.com/kaiery/ComfyUI_FunCode",
+      "rules": [
+        "obfuscation"
+      ]
+    },
+    {
+      "slug": "karas17/comfyui_glm_tts",
+      "url": "https://github.com/karas17/comfyui_GLM_TTS",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "kijai/comfyui-llava-onevision",
+      "url": "https://github.com/kijai/ComfyUI-LLaVA-OneVision",
+      "rules": [
+        "env-exfil",
+        "getenv-secrets"
+      ]
+    },
+    {
+      "slug": "kytrascript/comfyui_kytrawebhookhttp",
+      "url": "https://github.com/KytraScript/ComfyUI_KytraWebhookHTTP",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "lineseafood/comfyui-easytguploader",
+      "url": "https://github.com/LineSeaFood/ComfyUI-EasyTgUploader",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "maxmad62/comfyui-discordwebhookwithinput",
+      "url": "https://github.com/maxmad62/ComfyUI-DiscordWebhookWithInput",
+      "rules": [
+        "discord-webhook"
+      ]
+    },
+    {
+      "slug": "mvnt-app/comfyui-mvnt",
+      "url": "https://github.com/mvnt-app/ComfyUI-MVNT",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "oshtz/comfyui-oshtz-nodes",
+      "url": "https://github.com/oshtz/ComfyUI-oshtz-nodes",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "realmarauder/comfyui-tensortrap",
+      "url": "https://github.com/realmarauder/ComfyUI-TensorTrap",
+      "rules": [
+        "obfuscation"
+      ]
+    },
+    {
+      "slug": "rookiestar28/comfyui-openclaw",
+      "url": "https://github.com/rookiestar28/ComfyUI-OpenClaw",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "sebord/comfyui-lmcq",
+      "url": "https://github.com/sebord/ComfyUI-LMCQ",
+      "rules": [
+        "obfuscation"
+      ]
+    },
+    {
+      "slug": "smbdsbrain/comfyui-telegramsender",
+      "url": "https://github.com/smbdsbrain/ComfyUI-TelegramSender",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "smthemex/comfyui_kv_edit",
+      "url": "https://github.com/smthemex/ComfyUI_KV_Edit",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "smthemex/comfyui_lucidflux",
+      "url": "https://github.com/smthemex/ComfyUI_LucidFlux",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "smthemex/comfyui_visualcloze",
+      "url": "https://github.com/smthemex/ComfyUI_VisualCloze",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "stevanisya/comfyui_photoshop_bridge",
+      "url": "https://github.com/stevanisya/comfyui_photoshop_bridge",
+      "rules": [
+        "persistence"
+      ]
+    },
+    {
+      "slug": "tri3d-lc/tri3d-comfyui-nodes",
+      "url": "https://github.com/TRI3D-LC/tri3d-comfyui-nodes",
+      "rules": [
+        "env-exfil"
+      ]
+    },
+    {
+      "slug": "vkabuto23/comfyui_tg_notification",
+      "url": "https://github.com/Vkabuto23/comfyui_tg_notification",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "weekii/comfyui-gguf-fx",
+      "url": "https://github.com/weekii/ComfyUI-GGUF-FX",
+      "rules": [
+        "persistence"
+      ]
+    },
+    {
+      "slug": "xlinx/comfyui-decadetw-auto-messaging-realtime",
+      "url": "https://github.com/xlinx/ComfyUI-decadetw-auto-messaging-realtime",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "ye0l/comfyui-kstr-nodes",
+      "url": "https://github.com/Ye0l/ComfyUI-KSTR-Nodes",
+      "rules": [
+        "telegram-bot"
+      ]
+    },
+    {
+      "slug": "yolain/savevideorgba",
+      "url": "https://github.com/yolain/SaveVideoRGBA",
+      "rules": [
+        "obfuscation"
+      ]
+    }
+  ]
+}

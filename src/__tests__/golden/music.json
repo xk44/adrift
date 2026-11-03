@@ -1,0 +1,142 @@
+{
+  "name": "music",
+  "tool": "music",
+  "action": "music",
+  "workflow": "packs/audio/music.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "acestep_v1.5_turbo.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 3
+      }
+    },
+    "3": {
+      "class_type": "DualCLIPLoader",
+      "inputs": {
+        "clip_name1": "qwen_0.6b_ace15.safetensors",
+        "clip_name2": "qwen_1.7b_ace15.safetensors",
+        "device": "default",
+        "type": "ace"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ace_1.5_vae.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "TextEncodeAceStepAudio1.5",
+      "inputs": {
+        "bpm": 120,
+        "cfg_scale": 2,
+        "clip": [
+          "3",
+          0
+        ],
+        "duration": 40,
+        "generate_audio_codes": true,
+        "keyscale": "C major",
+        "language": "en",
+        "lyrics": "golden second text",
+        "min_p": 0,
+        "seed": 1234,
+        "tags": "golden test subject",
+        "temperature": 0.85,
+        "timesignature": "4",
+        "top_k": 0,
+        "top_p": 0.9
+      }
+    },
+    "6": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+        "conditioning": [
+          "5",
+          0
+        ]
+      }
+    },
+    "7": {
+      "class_type": "EmptyAceStep1.5LatentAudio",
+      "inputs": {
+        "batch_size": 1,
+        "seconds": 40
+      }
+    },
+    "8": {
+      "class_type": "KSampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "7",
+          0
+        ],
+        "model": [
+          "2",
+          0
+        ],
+        "negative": [
+          "6",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 1234,
+        "steps": 8
+      }
+    },
+    "9": {
+      "class_type": "VAEDecodeAudio",
+      "inputs": {
+        "samples": [
+          "8",
+          0
+        ],
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "SaveAudioMP3",
+      "inputs": {
+        "audio": [
+          "11",
+          0
+        ],
+        "filename_prefix": "audio/adrift_music",
+        "quality": "V0"
+      }
+    },
+    "11": {
+      "class_type": "TrimAudioDuration",
+      "inputs": {
+        "audio": [
+          "9",
+          0
+        ],
+        "duration": 30,
+        "start_index": 0
+      }
+    }
+  }
+}

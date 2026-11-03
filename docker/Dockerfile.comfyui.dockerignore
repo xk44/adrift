@@ -1,0 +1,11 @@
+# The ComfyUI image only needs comfy_nodes/ and a few files from docker/.
+*
+!comfy_nodes/
+!docker/comfyui-constraints.txt
+!docker/install-comfy-packs.py
+!docker/comfyui-packs-requirements.txt
+!docs/custom-nodes.json
+!docs/patches/
+!docker/extra_model_paths.yaml
+!docker/comfyui-entrypoint.sh
+**/__pycache__

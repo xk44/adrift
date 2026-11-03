@@ -1,0 +1,9 @@
+{
+  "name": "Adrift Overlay",
+  "description": "Adrift studio overlay for ComfyUI: shows the Adrift UI over the node graph.",
+  "version": "0.1.0",
+  "author": "Adrift contributors",
+  "project_url": "https://github.com/xk44/adrift",
+  "tags": ["UI", "overlay"],
+  "files": ["adrift_overlay.js"]
+}

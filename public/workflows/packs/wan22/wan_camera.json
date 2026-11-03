@@ -1,0 +1,299 @@
+{
+  "40": {
+    "class_type": "WanCameraEmbedding",
+    "inputs": {
+      "camera_pose": "Zoom In",
+      "width": 624,
+      "height": 624,
+      "length": 81,
+      "speed": 1.0,
+      "fx": 0.5,
+      "fy": 0.5,
+      "cx": 0.5,
+      "cy": 0.5
+    },
+    "_meta": {
+      "title": "Camera pose"
+    }
+  },
+  "1": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Text encoder"
+    }
+  },
+  "2": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "VAE"
+    }
+  },
+  "3": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    },
+    "_meta": {
+      "title": "Source image"
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        0
+      ],
+      "text": "The scene comes to life with natural motion, the camera slowly zooms in."
+    },
+    "_meta": {
+      "title": "Positive prompt"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        0
+      ],
+      "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+    },
+    "_meta": {
+      "title": "Negative prompt"
+    }
+  },
+  "6": {
+    "class_type": "WanCameraImageToVideo",
+    "inputs": {
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "vae": [
+        "2",
+        0
+      ],
+      "batch_size": 1,
+      "start_image": [
+        "3",
+        0
+      ],
+      "width": [
+        "40",
+        1
+      ],
+      "height": [
+        "40",
+        2
+      ],
+      "length": [
+        "40",
+        3
+      ],
+      "camera_conditions": [
+        "40",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Image to video"
+    }
+  },
+  "30": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Fun Camera high noise"
+    }
+  },
+  "31": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Fun Camera low noise"
+    }
+  },
+  "32": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 speed (high)"
+    }
+  },
+  "33": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "31",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 speed (low)"
+    }
+  },
+  "50": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "32",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift (high)"
+    }
+  },
+  "51": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "33",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift (low)"
+    }
+  },
+  "52": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "50",
+        0
+      ],
+      "add_noise": "enable",
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "6",
+        2
+      ],
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable"
+    },
+    "_meta": {
+      "title": "High-noise sampler"
+    }
+  },
+  "53": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "51",
+        0
+      ],
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "52",
+        0
+      ],
+      "start_at_step": 2,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    },
+    "_meta": {
+      "title": "Low-noise sampler"
+    }
+  },
+  "60": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "53",
+        0
+      ],
+      "vae": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "61": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "60",
+        0
+      ],
+      "fps": 16
+    },
+    "_meta": {
+      "title": "Create video"
+    }
+  },
+  "62": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "61",
+        0
+      ],
+      "filename_prefix": "video/CJ_wan_camera",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  }
+}

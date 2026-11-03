@@ -1,0 +1,212 @@
+{
+  "_meta": {
+    "source": "Generated from INPUT_TYPES of comfy_nodes/cj_h3_tools/cj_exact.py (in-repo node, not yet installed on the reference box). Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-11-02"
+  },
+  "CJExactPrepare": {
+    "input": {
+      "required": {
+        "video": [
+          "VIDEO"
+        ],
+        "resolution": [
+          [
+            "480",
+            "768"
+          ],
+          {
+            "default": "480",
+            "tooltip": "480 = up to 0.5 MP, 768 = up to 1 MP."
+          }
+        ]
+      },
+      "optional": {
+        "duration_seconds": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "min": 0.0,
+            "max": 3600.0,
+            "step": 0.1,
+            "tooltip": "0 = the whole clip. Otherwise the first N seconds."
+          }
+        ]
+      }
+    },
+    "output": [
+      "IMAGE",
+      "AUDIO",
+      "INT",
+      "INT",
+      "INT",
+      "INT",
+      "FLOAT",
+      "STRING"
+    ],
+    "output_name": [
+      "reference_frames",
+      "source_audio",
+      "width",
+      "height",
+      "h3_length",
+      "source_frames",
+      "fps",
+      "summary"
+    ],
+    "name": "CJExactPrepare",
+    "display_name": "CJExactPrepare",
+    "category": "image/video",
+    "output_node": false
+  },
+  "CJExactPasteSave": {
+    "input": {
+      "required": {
+        "frames": [
+          "IMAGE",
+          {
+            "tooltip": "Generated frames at the CJExactPrepare size."
+          }
+        ],
+        "source": [
+          "VIDEO",
+          {
+            "tooltip": "The original LoadVideo."
+          }
+        ],
+        "raw_mask": [
+          "MASK"
+        ],
+        "expanded_mask": [
+          "MASK",
+          {
+            "tooltip": "What the model was allowed to change."
+          }
+        ],
+        "source_frames": [
+          "INT",
+          {
+            "default": 1,
+            "min": 1,
+            "max": 3592
+          }
+        ],
+        "filename_prefix": [
+          "STRING",
+          {
+            "default": "video/CJ_H3_Exact"
+          }
+        ]
+      },
+      "optional": {
+        "crf": [
+          "INT",
+          {
+            "default": 14,
+            "min": 0,
+            "max": 51
+          }
+        ],
+        "master": [
+          "BOOLEAN",
+          {
+            "default": false,
+            "tooltip": "Lossless x264 (qp 0): pixels outside the edit decode bit-identical. Large files, and browsers won't play them."
+          }
+        ],
+        "diff_thresh": [
+          "FLOAT",
+          {
+            "default": 6.0,
+            "min": 0.0,
+            "max": 255.0,
+            "step": 0.5
+          }
+        ],
+        "grow_px": [
+          "INT",
+          {
+            "default": 8,
+            "min": 0,
+            "max": 128
+          }
+        ],
+        "feather_px": [
+          "INT",
+          {
+            "default": 6,
+            "min": 0,
+            "max": 64
+          }
+        ],
+        "t_radius": [
+          "INT",
+          {
+            "default": 2,
+            "min": 0,
+            "max": 24
+          }
+        ],
+        "match_colour": [
+          "BOOLEAN",
+          {
+            "default": true,
+            "tooltip": "Remove the model's colour drift at the mask edge."
+          }
+        ],
+        "edge_ramp_px": [
+          "INT",
+          {
+            "default": 0,
+            "min": 0,
+            "max": 128
+          }
+        ]
+      }
+    },
+    "output": [
+      "STRING",
+      "STRING"
+    ],
+    "output_name": [
+      "path",
+      "report"
+    ],
+    "name": "CJExactPasteSave",
+    "display_name": "CJExactPasteSave",
+    "category": "image/video",
+    "output_node": true
+  },
+  "CJRefOnScene": {
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "name": "CJRefOnScene",
+    "display_name": "Reference On Scene (hide the photo's background)",
+    "category": "image/video",
+    "output_node": false,
+    "input": {
+      "required": {
+        "reference": [
+          "IMAGE"
+        ],
+        "reference_masks": [
+          "MASK"
+        ],
+        "scene": [
+          "IMAGE"
+        ]
+      },
+      "optional": {
+        "scene_mask": [
+          "MASK"
+        ]
+      }
+    },
+    "output_is_list": [
+      false
+    ]
+  }
+}

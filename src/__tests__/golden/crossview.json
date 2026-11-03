@@ -1,0 +1,5 @@
+{
+  "name": "crossview",
+  "tool": "crossview",
+  "error": "CrossView video is unavailable: ComfyUI-CrossViewWarp custom node (not installed). The CrossView-Warp LoRA needs its multi-stage warp pipeline."
+}

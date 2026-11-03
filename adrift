@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+# Start Adrift (and your local ComfyUI) and open it in the browser.
+#
+#   ./adrift            start whatever is not running yet, open the app
+#   ./adrift --dev      use the dev server even when a production build exists
+#   ./adrift --mock     try it without a GPU: a mock ComfyUI that answers
+#                       every job with a bundled sample (Ctrl+C stops both)
+#
+# Serves the production build (.next-build, from ./install.sh or
+# `npm run build`) when it is newer than the source, else the dev server.
+# Starts ComfyUI from COMFY_ROOT (environment or .env.local) via
+# scripts/start-comfyui.sh; with a remote ComfyUI URL, or no ComfyUI set up
+# yet, only the app is started (the setup wizard takes it from there).
+# Ports: PORT (app, default 3000), COMFY_PORT (ComfyUI, default 8188).
+# The work is done by scripts/launch-adrift.sh (logs and knobs are there).
+set -euo pipefail
+
+APP_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$APP_DIR"
+
+MODE=auto
+case "${1:-}" in
+  -h|--help) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  --dev) MODE=dev ;;
+  --mock) MODE=mock ;;
+  "") ;;
+  *) echo "unknown option: $1 (see ./adrift --help)" >&2; exit 2 ;;
+esac
+
+# ── prerequisites ───────────────────────────────────────────────────────────
+need_node() {
+  echo "  Install Node.js 20 or newer (an LTS release), then run ./adrift again:" >&2
+  case "$(uname -s)" in
+    Darwin) echo "    brew install node@22        (Homebrew)  or the LTS installer from https://nodejs.org" >&2 ;;
+    MINGW*|MSYS*|CYGWIN*) echo "    winget install OpenJS.NodeJS.LTS        or the LTS installer from https://nodejs.org" >&2 ;;
+    *) echo "    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash" >&2
+       echo "    then open a new terminal and run:  nvm install --lts" >&2 ;;
+  esac
+  exit 1
+}
+command -v node >/dev/null 2>&1 || { echo "✗ Node.js is not installed." >&2; need_node; }
+NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+case "$NODE_MAJOR" in ''|*[!0-9]*) NODE_MAJOR=0 ;; esac
+if [ "$NODE_MAJOR" -lt 20 ]; then
+  echo "✗ Node.js $(node -v 2>/dev/null) is too old (Adrift needs 20 or newer)." >&2; need_node
+fi
+if ! command -v curl >/dev/null 2>&1; then
+  echo "✗ curl is needed to check the servers. Debian/Ubuntu: sudo apt-get -y install curl   Fedora: sudo dnf -y install curl" >&2
+  exit 1
+fi
+
+if [ ! -d node_modules ]; then
+  echo "Adrift is not installed yet."
+  if [ -t 0 ] && [ -t 1 ]; then
+    reply=""; read -r -p "Run ./install.sh now? [Y/n] " reply || reply=n
+    case "$reply" in [Nn]*) ;; *) exec "$APP_DIR/install.sh" --start ;; esac
+  fi
+  echo "Run ./install.sh first (it ends by offering to start Adrift)." >&2
+  exit 1
+fi
+
+open_url() {
+  if [ "${ADRIFT_NO_OPEN:-0}" = 1 ]; then return 0
+  elif [ "$(uname)" = "Darwin" ]; then open "$1"
+  elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$1" >/dev/null 2>&1 || true
+  elif command -v cmd.exe >/dev/null 2>&1; then cmd.exe /c start "" "$1" >/dev/null 2>&1 || true
+  fi
+}
+
+# ── --mock: no GPU, nothing generated ───────────────────────────────────────
+if [ "$MODE" = mock ]; then
+  MOCK_PORT="${MOCK_PORT:-18999}"
+  PORT="${PORT:-3100}"
+  FAKE_ROOT="${FAKE_ROOT:-${TMPDIR:-/tmp}/adrift-mock-root}"
+  node scripts/mock-comfy/server.mjs --port "$MOCK_PORT" --fake-root "$FAKE_ROOT" &
+  MOCK_PID=$!
+  trap 'kill "$MOCK_PID" 2>/dev/null || true' EXIT INT TERM
+  ( for _ in $(seq 1 120); do
+      if curl -s -m 2 -o /dev/null "http://127.0.0.1:$PORT"; then open_url "http://127.0.0.1:$PORT"; exit 0; fi
+      sleep 1
+    done ) &
+  echo "Mock ComfyUI on :$MOCK_PORT; Adrift on http://127.0.0.1:$PORT (Ctrl+C to stop)"
+  MOCK_PORT="$MOCK_PORT" PORT="$PORT" FAKE_ROOT="$FAKE_ROOT" scripts/mock-comfy/dev.sh
+  exit $?
+fi
+
+# ── which ComfyUI ───────────────────────────────────────────────────────────
+env_value() { # KEY from the environment, else .env.local (never printed)
+  local v
+  v="$(printenv "$1" 2>/dev/null || true)"
+  if [ -z "$v" ] && [ -f .env.local ]; then
+    v="$(sed -n "s/^[[:space:]]*\(export[[:space:]]\{1,\}\)\{0,1\}$1=//p" .env.local | tail -n 1 | tr -d "\"'\r")"
+  fi
+  printf '%s' "$v"
+}
+is_loopback_url() {
+  case "$1" in
+    http://localhost*|https://localhost*|http://127.*|https://127.*|http://\[::1\]*|https://\[::1\]*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+COMFY_URL_CFG="$(env_value COMFY_HTTP_URL)"
+if [ -z "$COMFY_URL_CFG" ] && [ -f data/runtime_settings.json ]; then
+  # A connection saved by the setup wizard.
+  COMFY_URL_CFG="$(node -e 'try{const s=require("./data/runtime_settings.json");process.stdout.write((s.comfy&&s.comfy.httpUrl)||"")}catch{}' 2>/dev/null || true)"
+fi
+COMFY_ROOT_CFG="$(env_value COMFY_ROOT)"
+case "$COMFY_ROOT_CFG" in
+  "~/"*) COMFY_ROOT_CFG="$HOME/${COMFY_ROOT_CFG#\~/}" ;;
+  /*|[A-Za-z]:*|"") ;;
+  *) COMFY_ROOT_CFG="$APP_DIR/$COMFY_ROOT_CFG" ;;
+esac
+
+START_COMFY=1
+comfy_options() {
+  echo "  Point Adrift at it (then run ./adrift again), or pick it in the app's setup wizard:"
+  echo "    ./install.sh --comfy /path/to/ComfyUI       a ComfyUI folder on this computer"
+  echo "    ./install.sh --remote http://HOST:8188      ComfyUI on another computer"
+  echo "    ./install.sh --install-comfy                install ComfyUI next to Adrift (~6 GB)"
+}
+if [ -n "$COMFY_URL_CFG" ] && ! is_loopback_url "$COMFY_URL_CFG"; then
+  START_COMFY=0; echo "ComfyUI: $COMFY_URL_CFG (remote, not started here)"
+elif [ -n "$COMFY_ROOT_CFG" ] && [ ! -f "$COMFY_ROOT_CFG/main.py" ]; then
+  START_COMFY=0
+  if [ -d "$COMFY_ROOT_CFG" ]; then
+    echo "ComfyUI: start ComfyUI Desktop (or your ComfyUI) yourself; $COMFY_ROOT_CFG has no main.py"
+  else
+    echo "ComfyUI: COMFY_ROOT points at $COMFY_ROOT_CFG, which does not exist."
+    comfy_options
+  fi
+elif [ -z "$COMFY_ROOT_CFG" ] && [ ! -f "$APP_DIR/../ComfyUI/main.py" ]; then
+  START_COMFY=0; echo "ComfyUI: not set up yet, so only the app is started."
+  comfy_options
+fi
+if [ -n "$COMFY_ROOT_CFG" ]; then export COMFY_ROOT="$COMFY_ROOT_CFG"
+elif [ "$START_COMFY" = 1 ]; then export COMFY_ROOT="$APP_DIR/../ComfyUI"; fi
+
+# ── which server ────────────────────────────────────────────────────────────
+APP_MODE=dev
+if [ "$MODE" = auto ]; then
+  if REASON="$(node scripts/build-fresh.mjs)"; then
+    APP_MODE=start
+  elif [ -d .next-build ]; then
+    echo "Using the dev server: $REASON. Rebuild with ./install.sh --build"
+  fi
+fi
+
+ADRIFT_COMFY="$START_COMFY" ADRIFT_APP_MODE="$APP_MODE" ADRIFT_OPEN_COMFY=0 \
+  exec "$APP_DIR/scripts/launch-adrift.sh"

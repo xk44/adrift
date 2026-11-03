@@ -1,0 +1,168 @@
+{
+  "name": "rtx_upscale",
+  "tool": "rtx_upscale",
+  "action": "rtx_upscale",
+  "workflow": "packs/rtx/rtx_upscale.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "GetImageSize",
+      "title": "Source size + frame count",
+      "inputs": {
+        "image": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "ComfyMathExpression",
+      "title": "Scale factor",
+      "inputs": {
+        "expression": "min(2, max(1, 3840 / max(a, b)))",
+        "values.a": [
+          "3",
+          0
+        ],
+        "values.b": [
+          "3",
+          1
+        ]
+      }
+    },
+    "5": {
+      "class_type": "ComfyMathExpression",
+      "title": "Target width (/8)",
+      "inputs": {
+        "expression": "8 * ((a * b + 4) // 8)",
+        "values.a": [
+          "3",
+          0
+        ],
+        "values.b": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ComfyMathExpression",
+      "title": "Target height (/8)",
+      "inputs": {
+        "expression": "8 * ((a * b + 4) // 8)",
+        "values.a": [
+          "3",
+          1
+        ],
+        "values.b": [
+          "4",
+          0
+        ]
+      }
+    },
+    "7": {
+      "class_type": "ComfyMathExpression",
+      "title": "Frame cap: output RAM (240 frames at 4K)",
+      "inputs": {
+        "expression": "min(4096, c, max(1, 1990656000 // (a * b)))",
+        "values.a": [
+          "5",
+          1
+        ],
+        "values.b": [
+          "6",
+          1
+        ],
+        "values.c": [
+          "3",
+          2
+        ]
+      }
+    },
+    "8": {
+      "class_type": "ImageFromBatch",
+      "title": "Cap clip length",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "2",
+          0
+        ],
+        "length": [
+          "7",
+          1
+        ]
+      }
+    },
+    "9": {
+      "class_type": "RTXVideoSuperResolution",
+      "title": "RTX Video Super Resolution",
+      "inputs": {
+        "image_encoding": "8-bit RGB",
+        "images": [
+          "8",
+          0
+        ],
+        "quality": "HIGHBITRATE_ULTRA",
+        "resize_type": "target dimensions",
+        "resize_type.height": [
+          "6",
+          1
+        ],
+        "resize_type.width": [
+          "5",
+          1
+        ],
+        "strength": 1
+      }
+    },
+    "10": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video (source fps + audio)",
+      "inputs": {
+        "audio": [
+          "2",
+          1
+        ],
+        "fps": [
+          "2",
+          2
+        ],
+        "images": [
+          "9",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "filename_prefix": "video/CJ_Upscale_RTX",
+        "format": "auto",
+        "format.codec": "auto",
+        "video": [
+          "10",
+          0
+        ]
+      }
+    }
+  }
+}

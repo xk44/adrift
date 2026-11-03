@@ -1,0 +1,247 @@
+{
+ "VibeVoiceASR": {
+  "input": {
+   "required": {
+    "model_name": [
+     "COMBO",
+     {
+      "tooltip": "Select the VibeVoice ASR model to use.",
+      "default": "VibeVoice-ASR-HF",
+      "multiselect": false,
+      "options": [
+       "VibeVoice-ASR-HF"
+      ]
+     }
+    ],
+    "audio": [
+     "AUDIO",
+     {
+      "tooltip": "Audio to transcribe. Supports up to 60 minutes of audio."
+     }
+    ],
+    "context_info": [
+     "STRING",
+     {
+      "tooltip": "Optional hotwords or context info to improve transcription accuracy (e.g., 'Tea Brew, Aiden Host').",
+      "default": "",
+      "multiline": false
+     }
+    ],
+    "max_new_tokens": [
+     "INT",
+     {
+      "tooltip": "Maximum number of tokens to generate. Increase for longer audio.",
+      "default": 32768,
+      "min": 256,
+      "max": 131072
+     }
+    ],
+    "temperature": [
+     "FLOAT",
+     {
+      "tooltip": "Temperature for sampling. 0 = greedy (deterministic).",
+      "default": 0.0,
+      "min": 0.0,
+      "max": 2.0,
+      "step": 0.01
+     }
+    ],
+    "top_p": [
+     "FLOAT",
+     {
+      "tooltip": "Top-p for nucleus sampling. Active only if temperature > 0.",
+      "default": 1.0,
+      "min": 0.0,
+      "max": 1.0,
+      "step": 0.01
+     }
+    ],
+    "do_sample": [
+     "BOOLEAN",
+     {
+      "tooltip": "Enable sampling for more varied output. Disable for deterministic transcription.",
+      "default": false,
+      "label_on": "Sampling",
+      "label_off": "Greedy"
+     }
+    ],
+    "num_beams": [
+     "INT",
+     {
+      "tooltip": "Number of beams for beam search. 1 = no beam search. Higher values may improve quality but are slower.",
+      "default": 1,
+      "min": 1,
+      "max": 10
+     }
+    ],
+    "device": [
+     "COMBO",
+     {
+      "tooltip": "Device to run inference on.",
+      "default": "cuda",
+      "multiselect": false,
+      "options": [
+       "cuda",
+       "cpu"
+      ]
+     }
+    ],
+    "dtype": [
+     "COMBO",
+     {
+      "tooltip": "Data type for model precision. 'auto' selects optimal type for device.",
+      "default": "auto",
+      "multiselect": false,
+      "options": [
+       "auto",
+       "bf16",
+       "fp16",
+       "fp32"
+      ]
+     }
+    ],
+    "attention_mode": [
+     "COMBO",
+     {
+      "tooltip": "Attention implementation: Eager (safest), SDPA (balanced), Flash Attention 2 (fastest).",
+      "default": "sdpa",
+      "multiselect": false,
+      "options": [
+       "eager",
+       "sdpa",
+       "flash_attention_2",
+       "sage"
+      ]
+     }
+    ],
+    "force_offload": [
+     "BOOLEAN",
+     {
+      "tooltip": "Force model to be offloaded from VRAM after transcription.",
+      "default": false,
+      "label_on": "Force Offload",
+      "label_off": "Keep in VRAM"
+     }
+    ]
+   },
+   "optional": {
+    "external_model": [
+     "VIBEVOICE_MODEL",
+     {
+      "tooltip": "Optional externally-loaded VibeVoice ASR model (from the 'Load VibeVoice Model' node). When connected, this overrides the model_name dropdown."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "model_name",
+    "audio",
+    "context_info",
+    "max_new_tokens",
+    "temperature",
+    "top_p",
+    "do_sample",
+    "num_beams",
+    "device",
+    "dtype",
+    "attention_mode",
+    "force_offload"
+   ],
+   "optional": [
+    "external_model"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "STRING",
+   "STRING"
+  ],
+  "output_is_list": [
+   false,
+   false
+  ],
+  "output_name": [
+   "Transcription",
+   "Segments (JSON)"
+  ],
+  "output_tooltips": [
+   null,
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "VibeVoiceASR",
+  "display_name": "VibeVoice ASR",
+  "description": "Transcribe audio to text using VibeVoice ASR. Supports speaker diarization, timestamps, hotwords, and 50+ languages. Handles up to 60 minutes of audio in a single pass.",
+  "python_module": "custom_nodes.ComfyUI-VibeVoice",
+  "category": "WMNodes/sound/asr",
+  "output_node": false,
+  "deprecated": false,
+  "experimental": false,
+  "dev_only": false,
+  "api_node": false,
+  "price_badge": null,
+  "search_aliases": null,
+  "essentials_category": null,
+  "has_intermediate_output": false
+ },
+ "CJRepeatAudio": {
+  "input": {
+   "required": {
+    "audio": [
+     "AUDIO",
+     {}
+    ],
+    "times": [
+     "INT",
+     {
+      "default": 1,
+      "min": 1,
+      "max": 8
+     }
+    ],
+    "gap_seconds": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "min": 0.0,
+      "max": 10.0,
+      "step": 0.1
+     }
+    ],
+    "copy_seconds": [
+     "FLOAT",
+     {
+      "default": 30.0,
+      "min": 0.1,
+      "max": 3600.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "audio",
+    "times",
+    "gap_seconds",
+    "copy_seconds"
+   ]
+  },
+  "output": [
+   "AUDIO"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "audio"
+  ],
+  "name": "CJRepeatAudio",
+  "display_name": "Repeat Audio (CJ)",
+  "description": "",
+  "python_module": "custom_nodes.cj_h3_tools",
+  "category": "cj_h3_tools/audio",
+  "output_node": false
+ }
+}

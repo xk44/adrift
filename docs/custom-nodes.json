@@ -1,0 +1,712 @@
+{
+  "$comment": "Source of truth for docs/custom-nodes.md. Edit this file, then run: node scripts/gen-custom-nodes.mjs --object-info <object_info.json>. 'classes' lists only the node classes Adrift's shipped graphs/builders use.",
+  "comfyui": {
+    "repo": "https://github.com/Comfy-Org/ComfyUI",
+    "commit": "e3bee7ffcb7d6547ed0bcd15221792f3b8646b17",
+    "note": "Core commit every pin below was tested against (\"Support MOSS-image color-depth control (#17206)\"). Krea 2, MOSS-Image and MiniMax H3 support are core nodes at this commit; older cores will report many missing classes."
+  },
+  "packs": [
+    {
+      "id": "krea2t-enhancer",
+      "dir": "ComfyUI-Krea2T-Enhancer",
+      "repo": "https://github.com/metalust/ComfyUI-Krea2T-Enhancer",
+      "commit": "b15ba7f8d4b9eb695e434d605934fe94fb77e3fa",
+      "license": "MIT",
+      "classes": [
+        "ComfyUI-Krea2T-Enhancer"
+      ],
+      "notes": [
+        "The original repository (github.com/capitan01R/ComfyUI-Krea2T-Enhancer) returns 404 as of 2026-10-23 and is not in the Comfy registry. The pin is a public verbatim snapshot of upstream commit 958898e (MIT, original copyright retained).",
+        "Adrift was tested on the earlier upstream commit 50422e3 plus a local fix that makes the diffusion-model wrapper accept any positional arguments (newer cores pass extra ones to the Krea 2 forward). That commit can no longer be fetched; the pinned snapshot carries the same fix upstream, and the Enhancer node's inputs (`model`, `enabled`, `strength`, `debug`) are unchanged."
+      ]
+    },
+    {
+      "id": "krea2-conditioning",
+      "dir": "comfyui-krea2-conditioning",
+      "repo": "https://github.com/huwhitememes/comfyui-krea2-conditioning",
+      "commit": "729cda4fade982988a375b01928f515458407a5c",
+      "license": "Apache-2.0",
+      "classes": [
+        "ConditioningKrea2Rebalance"
+      ],
+      "notes": [
+        "Fork of nova452/ComfyUI-Conditioning-Rebalance. Use this fork: Adrift graphs pass the `preset` and `renormalize` inputs, which the original ignores. Do not install both (same class name)."
+      ]
+    },
+    {
+      "id": "krea2-negpip",
+      "dir": "ComfyUI-krea2-negpip",
+      "repo": "https://github.com/blue-pen5805/ComfyUI-krea2-negpip",
+      "commit": "6e2a66505033e4359d69adf4813aa21b74ad01de",
+      "license": "AGPL-3.0-only",
+      "classes": [
+        "ApplyKrea2NegPiP"
+      ]
+    },
+    {
+      "id": "gguf",
+      "dir": "ComfyUI-GGUF",
+      "repo": "https://github.com/city96/ComfyUI-GGUF",
+      "commit": "c09b4b799b44efcc69d3b13ff1acad5a882c0d62",
+      "license": "Apache-2.0",
+      "requirements": true,
+      "classes": [
+        "UnetLoaderGGUF"
+      ],
+      "patches": [
+        {
+          "file": "docs/patches/comfyui-gguf-krea2-arch.patch",
+          "required": true,
+          "why": "Adds \"krea2\" to IMG_ARCH_LIST so Krea 2 GGUF UNETs load (tensor names match the core Krea 2 model)."
+        }
+      ],
+      "notes": [
+        "Commit = Comfy registry release 1.1.10 (`stable` branch)."
+      ]
+    },
+    {
+      "id": "impact-pack",
+      "dir": "ComfyUI-Impact-Pack",
+      "repo": "https://github.com/ltdrdata/ComfyUI-Impact-Pack",
+      "commit": "429d0159ad429e64d2b3916e6e7be9c22d025c3c",
+      "license": "GPL-3.0-only",
+      "requirements": true,
+      "classes": [
+        "FaceDetailer"
+      ],
+      "notes": [
+        "Ships an install.py that ComfyUI-Manager runs; a plain `pip install -r requirements.txt` is sufficient for FaceDetailer."
+      ]
+    },
+    {
+      "id": "impact-subpack",
+      "dir": "ComfyUI-Impact-Subpack",
+      "repo": "https://github.com/ltdrdata/ComfyUI-Impact-Subpack",
+      "commit": "50c7b71a6a224734cc9b21963c6d1926816a97f1",
+      "license": "AGPL-3.0-only",
+      "requirements": true,
+      "classes": [
+        "UltralyticsDetectorProvider"
+      ],
+      "notes": [
+        "Pulls in `ultralytics` (AGPL-3.0)."
+      ]
+    },
+    {
+      "id": "inpaint-cropandstitch",
+      "dir": "ComfyUI-Inpaint-CropAndStitch",
+      "repo": "https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch",
+      "commit": "8584b08d851762965df898b421a39075fc5357ae",
+      "license": "GPL-3.0-only",
+      "classes": [
+        "InpaintCropImproved",
+        "InpaintStitchImproved"
+      ]
+    },
+    {
+      "id": "ultimate-sd-upscale",
+      "dir": "ComfyUI_UltimateSDUpscale",
+      "repo": "https://github.com/ssitu/ComfyUI_UltimateSDUpscale",
+      "commit": "a5547db9e1d07d3318bb21e9e9c474f4c1e9c8df",
+      "license": "GPL-3.0-only",
+      "recursive": true,
+      "classes": [
+        "UltimateSDUpscale"
+      ],
+      "notes": [
+        "Needs its git submodule (`repositories/ultimate_sd_upscale`): clone with `--recursive` or run `git submodule update --init` after checkout."
+      ]
+    },
+    {
+      "id": "controlnet-aux",
+      "dir": "comfyui_controlnet_aux",
+      "repo": "https://github.com/Fannovel16/comfyui_controlnet_aux",
+      "commit": "e8b689a513c3e6b63edc44066560ca5919c0576e",
+      "license": "Apache-2.0",
+      "requirements": true,
+      "classes": [
+        "CannyEdgePreprocessor"
+      ],
+      "notes": [
+        "Commit = Comfy registry release 1.1.5."
+      ]
+    },
+    {
+      "id": "ipadapter-plus",
+      "dir": "ComfyUI_IPAdapter_plus",
+      "repo": "https://github.com/cubiq/ComfyUI_IPAdapter_plus",
+      "commit": "f904b4c3c3adbda990f32b90eb52e1924467c9ef",
+      "license": "GPL-3.0-only",
+      "optional": true,
+      "classes": [
+        "IPAdapterModelLoader",
+        "IPAdapterAdvanced"
+      ],
+      "notes": [
+        "Only for the legacy SD1.5/SDXL IP-Adapter style path built in src/lib/oj/adapters.ts. Commit = Comfy registry release 2.0.0."
+      ]
+    },
+    {
+      "id": "videohelpersuite",
+      "dir": "ComfyUI-VideoHelperSuite",
+      "repo": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite",
+      "commit": "3234937ff5f3ca19068aaba5042771514de2429d",
+      "license": "GPL-3.0-only",
+      "requirements": true,
+      "classes": [
+        "VHS_LoadVideo",
+        "VHS_VideoCombine"
+      ],
+      "notes": [
+        "Commit = Comfy registry release 1.7.9."
+      ]
+    },
+    {
+      "id": "mmaudio",
+      "dir": "ComfyUI-MMAudio",
+      "repo": "https://github.com/kijai/ComfyUI-MMAudio",
+      "commit": "8eaeb72edc3aaf2059b57f2d96a1f6f689f19ae2",
+      "license": "MIT",
+      "requirements": true,
+      "classes": [
+        "MMAudioModelLoader",
+        "MMAudioFeatureUtilsLoader",
+        "MMAudioSampler"
+      ]
+    },
+    {
+      "id": "vibevoice",
+      "dir": "ComfyUI-VibeVoice",
+      "repo": "https://github.com/wildminder/ComfyUI-VibeVoice",
+      "commit": "de6ee6bf81ba426a8a20e362fd26f2d58ea68950",
+      "license": "MIT",
+      "requirements": true,
+      "classes": [
+        "VibeVoiceTTS",
+        "VibeVoiceASR"
+      ],
+      "patches": [
+        {
+          "file": "docs/patches/comfyui-vibevoice-transformers55.patch",
+          "required": true,
+          "why": "transformers 5.5 compatibility for the streaming model: the mock KV-cache layer subclasses `transformers.cache_utils.CacheLayerMixin`, and `get_mask_sizes` accepts the int `query_length` 5.5 now passes. Without it VibeVoiceTTS fails at generation time."
+        }
+      ],
+      "notes": [
+        "Verified with Python 3.14.6, torch 2.11.0+cu130, transformers 5.5.0 (patched). requirements.txt leaves transformers unpinned on purpose."
+      ]
+    },
+    {
+      "id": "chatterbox",
+      "dir": "ComfyUI-Chatterbox",
+      "repo": "https://github.com/wildminder/ComfyUI-Chatterbox",
+      "commit": "b619de9e605b8477ba76bfd069f64be2ce2b7b5c",
+      "license": "Apache-2.0",
+      "requirements": true,
+      "classes": [
+        "ChatterboxMTLTTS",
+        "ChatterboxVC"
+      ],
+      "patches": [
+        {
+          "file": "docs/patches/comfyui-chatterbox-voice-isolation.patch",
+          "required": true,
+          "why": "Stops one request's voice leaking into the next. Upstream `generate(audio_prompt_path=...)` and `generate(target_voice_path=...)` overwrite the cached model's `conds` / `ref_dict` for good, so a later run without a reference voice speaks in the previous user's cloned voice; the patch restores both after every call. It also keys the voice-changer refinement cache on a digest of the source audio and the target voice instead of the source's tensor shape, which served one clip's converted audio for any other clip of the same length. Adds regression tests in tests/test_vc_iterative.py."
+        }
+      ],
+      "notes": [
+        "Commit = release 2.0.5. Adrift uses the `chatterbox_local` model pack (Dub video, Voice changer).",
+        "The upstream suite has 22 failures at this commit with or without the patch (vendor file hashes, pyproject version, example-workflow schema); none touch the nodes Adrift uses."
+      ]
+    },
+    {
+      "id": "h3-relay",
+      "dir": "h3-relay",
+      "repo": "https://github.com/akatz-ai/h3-relay",
+      "commit": "e2a7665b6eb8ea37a88c0de2c9c6b69a8f7c9220",
+      "license": "GPL-3.0-only",
+      "classes": [
+        "H3RelayApplyEditMask",
+        "H3RelayGreenMask",
+        "H3RelayPersonRemover",
+        "H3RelaySelectMask",
+        "LabsH3PrepareVideo"
+      ],
+      "notes": [
+        "README declares GPL-3.0; the extra LICENSE-Apache-2.0 covers vendored upstream code (see its NOTICE.md). Commit = Comfy registry release 2.0.1."
+      ]
+    },
+    {
+      "id": "open-h3-regenerate",
+      "dir": "ComfyUI-Open-H3-Regenerate",
+      "repo": "https://github.com/rdh9616/ComfyUI-Open-H3-Regenerate",
+      "commit": "9b686c5ffd380e9d1351f9b8beef6d20d703ca3e",
+      "license": "Apache-2.0",
+      "optional": true,
+      "classes": [
+        "OpenH3RegenPrepareDraft",
+        "OpenH3RegenRefineLatent",
+        "OpenH3RegenLora",
+        "OpenH3RegenSigmas",
+        "OpenH3RegenFinish"
+      ],
+      "notes": [
+        "Only for the opt-in 2K finish of Character swap (mannequin mode, Finish: 2K). The finish also needs the core MiniMaxH3LatentUpscaleWithModel node: ComfyUI e6354106 or newer (PR #17412), newer than the core pin above. The weights it loads (Open-H3-Regenerate-2K LoRA, Sharp curve branches, H3 latent upscaler) follow the MiniMax H3 Community License."
+      ]
+    },
+    {
+      "id": "kjnodes",
+      "dir": "ComfyUI-KJNodes",
+      "repo": "https://github.com/kijai/ComfyUI-KJNodes",
+      "commit": "0209e3091a1f4a9e112d2320c55f47572b00994f",
+      "license": "GPL-3.0-only",
+      "requirements": true,
+      "classes": [
+        "LTXVAudioVideoMask",
+        "ImageUpscaleWithModelBatched"
+      ],
+      "notes": [
+        "Upscale video, Fast engine (the default; packs/utility/video_upscale.json): ImageUpscaleWithModelBatched runs the upscaler a few frames at a time and shrinks each batch right away, so long clips never hold every 4x frame in memory. Also Video Retake with Audio: Regenerate (LTXVAudioVideoMask masks the retake span in the joint audio/video latent); Keep and Follow audio modes use core nodes only. Referenced by pin, never bundled."
+      ]
+    },
+    {
+      "id": "wanvideowrapper",
+      "dir": "ComfyUI-WanVideoWrapper",
+      "repo": "https://github.com/kijai/ComfyUI-WanVideoWrapper",
+      "commit": "e091c4a77425d6a4a7f90ab30c513d24f8cb91cf",
+      "license": "Apache-2.0",
+      "optional": true,
+      "requirements": true,
+      "classes": [
+        "WanVideoModelLoader",
+        "WanVideoExtraModelSelect",
+        "LoadWanVideoT5TextEncoder",
+        "WanVideoTextEncode",
+        "WanVideoEmptyEmbeds",
+        "WanVideoAddFlashVSRInput",
+        "WanVideoContextOptions",
+        "WanVideoSampler",
+        "WanVideoFlashVSRDecoderLoader",
+        "WanVideoDecode"
+      ],
+      "notes": [
+        "Only for Upscale video's FlashVSR engine (packs/flashvsr/flashvsr_upscale.json). Commit = Comfy registry release 1.4.7, the version installed on the reference host."
+      ]
+    },
+    {
+      "id": "krea2-controlnet",
+      "dir": "comfyui-krea2-controlnet",
+      "repo": "https://github.com/facok/comfyui-krea2-controlnet",
+      "commit": "79ebfd3bd80d2180b334dd7ce57f3c9ddaa0848f",
+      "license": null,
+      "classes": [
+        "Krea2ControlLoRALoader",
+        "Krea2ControlImageEncode",
+        "Krea2ControlApply"
+      ]
+    },
+    {
+      "id": "krea2-ostris-edit",
+      "dir": "ComfyUI-Krea2-Ostris-Edit",
+      "repo": "https://github.com/ostris/ComfyUI-Krea2-Ostris-Edit",
+      "commit": "2004bcabfb7090b6b0163f7c7bb785caa3bf1ba0",
+      "license": null,
+      "classes": [
+        "Krea2OstrisEditModelPatch",
+        "TextEncodeKrea2OstrisEdit"
+      ],
+      "notes": [
+        "Also a runtime dependency of the in-repo comfyui-krea2-anypaint and comfyui-krea2-outpaint nodes: they load this pack's nodes.py and wrap its model patch (no code copied), so install it even if you only use AnyPaint or Outpaint."
+      ]
+    },
+    {
+      "id": "krea2edit",
+      "dir": "comfyui-krea2edit",
+      "repo": "https://github.com/lbouaraba/comfyui-krea2edit",
+      "commit": "13ef60f20828949becada815d3cbc371eb5ccaab",
+      "license": "Apache-2.0",
+      "classes": [
+        "Krea2EditModelPatch",
+        "Krea2EditGroundedEncode"
+      ]
+    },
+    {
+      "id": "moss-image-ostris-edit",
+      "dir": "ComfyUI-MOSS-Image-Ostris-Edit",
+      "repo": "https://github.com/ostris/ComfyUI-MOSS-Image-Ostris-Edit",
+      "commit": "8f9b50c0d2b28248ecd48a4d4905c815e726f146",
+      "license": "MIT",
+      "classes": [
+        "MOSSImageOstrisEditModelPatch",
+        "TextEncodeMOSSImageOstrisEdit"
+      ],
+      "patches": [
+        {
+          "file": "docs/patches/comfyui-moss-image-ostris-edit-pe-embedder.patch",
+          "required": true,
+          "why": "ComfyUI #17172 removed `MOSSImage.pe_embedder`; the patch rebuilds the identical parameter-free EmbedND when it is absent. Without it the node raises AttributeError on current cores."
+        }
+      ]
+    },
+    {
+      "id": "moss-image",
+      "dir": "moss-image",
+      "repo": "https://github.com/OpenMOSS/MOSS-Image",
+      "commit": "52b87fca23acedc399d062d593bec388aee9926a",
+      "subdir": "comfyui/moss-image",
+      "license": "Apache-2.0",
+      "classes": [],
+      "patches": [
+        {
+          "file": "docs/patches/moss-image-fused-qkv.patch",
+          "required": true,
+          "why": "ComfyUI-native MOSS-Image checkpoints store fused `proj.qkv` weights; the patch splits them into q/k/v on load. Without it the attention weights stay unloaded and every sample is pure noise."
+        }
+      ],
+      "notes": [
+        "The ComfyUI nodes live in a subdirectory of the model repo: copy `comfyui/moss-image` into `custom_nodes/moss-image`. No Adrift graph calls its nodes directly; it is a runtime dependency of moss-image-toolkit (ComfyUI-MOSS-i2i)."
+      ]
+    },
+    {
+      "id": "moss-i2i",
+      "dir": "moss-image-toolkit",
+      "repo": "https://github.com/sorryhyun/ComfyUI-MOSS-Toolkit",
+      "commit": "0c0d4665d5294e803c59c75bf3ccdb79565d4361",
+      "license": "Apache-2.0",
+      "classes": [
+        "MOSSImageLoader",
+        "MOSSi2iReference",
+        "MOSSi2iTextEncode"
+      ],
+      "dependsOn": [
+        "moss-image"
+      ],
+      "patches": [
+        {
+          "file": "docs/patches/moss-i2i-mps-float64.patch",
+          "required": false,
+          "platform": "Apple Silicon (MPS)",
+          "why": "MPS has no float64; computes the timestep sinusoid on CPU and moves it back as float32. Not needed on CUDA."
+        }
+      ],
+      "notes": [
+        "Installed as `moss-image-toolkit`, the name Adrift's graph descriptions use. The directory name is cosmetic: the toolkit finds the moss-image node by module lookup at run time."
+      ]
+    },
+    {
+      "id": "realisim-enhancor",
+      "dir": "comfyui-realisim-enhancor",
+      "repo": "https://github.com/amrnidal999-tech/comfyui-realisim-enhancor",
+      "commit": "46c221ccda903e2f9ad0ec572ff6e866aa6eae0d",
+      "license": null,
+      "classes": [
+        "MoreJPEG"
+      ]
+    },
+    {
+      "id": "krea2-projector-tuner",
+      "dir": "ComfyUI-Krea2-Projector-Tuner",
+      "repo": "https://github.com/BlackSnowSkill/ComfyUI-Krea2-Projector-Tuner",
+      "commit": "1631c0fb18adbbc1b6405d3d08df6e15bc7d734b",
+      "license": null,
+      "optional": true,
+      "classes": [
+        "Krea2ProjectorTuner"
+      ],
+      "notes": [
+        "Only inserted when a Krea 2 prompt uses `--pa` (prompt adherence), see src/lib/oj/engine.ts."
+      ]
+    },
+    {
+      "id": "anima-ref-adapter",
+      "dir": "ComfyUI-Anima-Ref-Adapter",
+      "repo": "https://github.com/ElectronGirl/ComfyUI-Anima-Ref-Adapter",
+      "commit": "fb587d27c1e1e56b0a78e917040ae7c77798c2c2",
+      "license": "Apache-2.0",
+      "optional": true,
+      "classes": [
+        "AnimaRefAdapter",
+        "AnimaRefAdapterLoader",
+        "AnimaRefLatent",
+        "AnimaRefGuider"
+      ],
+      "notes": [
+        "Character from a reference image, one or two characters (Character picker, Anima). `packs/anima/anima_ref.json` uses the v2 `AnimaRefAdapter` node (installed and run on the reference box at this commit on 2026-10-29); with an older install that lacks it, Adrift falls back to the pilot graph `packs/anima/anima_ref_pilot.json` (`AnimaRefAdapterLoader` / `AnimaRefLatent` / `AnimaRefGuider`, one character only). The node auto-downloads a missing adapter file from Hugging Face on first use, so Adrift lists `anima_ref_adapter_v2_r64.safetensors` as a required weight in model status. The node code is Apache-2.0; the Anima base and adapter weights it loads are CircleStone Labs Non-Commercial."
+      ]
+    },
+    {
+      "id": "see-through",
+      "dir": "ComfyUI-See-through",
+      "repo": "https://github.com/shitagaki-lab/see-through",
+      "commit": "98d754bf04f668647919ab750eccb0e0640faa81",
+      "license": "MIT",
+      "classes": [
+        "SeeThrough_LoadLayerDiffModel",
+        "SeeThrough_LoadDepthModel",
+        "SeeThrough_GenerateLayers",
+        "SeeThrough_GenerateDepth",
+        "SeeThrough_PostProcess",
+        "SeeThrough_SavePSD"
+      ],
+      "notes": [
+        "Layer Split (`packs/image-tools/see_through.json`). Credit: Layers by see-through (shitagaki-lab, MIT node pack; weights RAIL++-M).",
+        "Weights (CreativeML Open RAIL++-M): `layerdifforg/seethroughv0.0.2_layerdiff3d` and `layerdifforg/seethroughv0.0.1_marigold` under `models/SeeThrough/<owner>/<repo>/`. Adrift graphs set `auto_download` off, so the loaders never fetch at run time.",
+        "Offline installs: upstream LayerDiff load_model fetches a scheduler config from the Hub (frankjoshua/juggernautXL); with HF_HUB_OFFLINE=1 it fails. Fix: load DPMSolverMultistepScheduler from the model repo's own scheduler/ subfolder (final_sigmas_type='zero') — same config."
+      ]
+    },
+    {
+      "id": "vosr2",
+      "dir": "ComfyUI-VOSR2",
+      "repo": "https://github.com/ylchen333/ComfyUI-VOSR2",
+      "commit": "6a21810b3f4f1a0ffc477c55330db0ac03c671f0",
+      "license": "Apache-2.0",
+      "optional": true,
+      "classes": [
+        "VOSR2ModelLoader",
+        "VOSR2Upscale"
+      ],
+      "notes": [
+        "Only for Photo upscale (VOSR2) (`packs/vosr2/vosr2_upscale.json`). Node pack Apache-2.0; weights licence: see the CSWRY/VOSR model card.",
+        "Weights: the `VOSR2` bundle folder under `models/vosr2/` (checkpoints/ema_model.safetensors, dinov2_vitl14.safetensors, Qwen-Image-vae-2d/). The loader fetches it from CSWRY/VOSR on first run if absent; Adrift gates the tool on the DiT being on disk, so it never triggers that download."
+      ]
+    },
+    {
+      "id": "matanyone",
+      "dir": "ComfyUI-MatAnyone",
+      "repo": "https://github.com/FuouM/ComfyUI-MatAnyone",
+      "commit": "87cbce38c03bb359471bd23704ebd1720e98a842",
+      "license": "MIT",
+      "optional": true,
+      "classes": [
+        "MatAnyone2"
+      ],
+      "notes": [
+        "Only for Remove video background's One named subject engine (`packs/matanyone/subject_matte.json`). Off by default.",
+        "Weights are non-commercial (S-Lab License 1.0): download https://github.com/pq-yang/MatAnyone2/releases/download/v1.0.0/matanyone2.pth into the pack's `checkpoint/` folder. Needs omegaconf."
+      ]
+    },
+    {
+      "id": "nvidia-rtx",
+      "dir": "Nvidia_RTX_Nodes_ComfyUI",
+      "repo": "https://github.com/Comfy-Org/Nvidia_RTX_Nodes_ComfyUI",
+      "commit": "38d790ded00650681fa3645362efe28c8560cf40",
+      "license": "Apache-2.0",
+      "optional": true,
+      "classes": [
+        "RTXVideoSuperResolution"
+      ],
+      "notes": [
+        "Only for Upscale video's NVIDIA RTX engine (`packs/rtx/rtx_upscale.json`). Off by default. Runs locally, not an API node.",
+        "Needs NVIDIA's proprietary nvidia-vfx SDK (LicenseRef-NvidiaProprietary): `pip install nvidia-vfx --extra-index-url https://pypi.nvidia.com` in the ComfyUI venv, an NVIDIA RTX GPU and driver 580.82 or newer. The SR models ship inside the SDK; there are no weights to download. The SDK is not open source and is never vendored here, so the engine never counts as open weights (license badge: Check license)."
+      ]
+    }
+  ],
+  "unpublished": [],
+  "inRepo": [
+    {
+      "id": "adrift_overlay",
+      "dir": "comfy_nodes/adrift_overlay",
+      "classes": [],
+      "note": "The in-ComfyUI Adrift overlay (frontend extension only, no nodes)."
+    },
+    {
+      "id": "sref_system",
+      "dir": "comfy_nodes/sref_system",
+      "requirements": true,
+      "classes": [
+        "LoRAShortcodeLookup",
+        "LoRAShortcodeRandom",
+        "LoRAShortcodeRegistry",
+        "LoRATriggerInserter"
+      ],
+      "note": "LoRA shortcode helpers."
+    },
+    {
+      "id": "cj_krea2_dual_control",
+      "dir": "comfy_nodes/cj_krea2_dual_control",
+      "classes": [
+        "Krea2DualControlApply"
+      ],
+      "note": "Loads the darask0/Krea-2-color-depth-control adapter (color + depth control for Krea 2), which comfyui-krea2-controlnet cannot load."
+    },
+    {
+      "id": "comfyui-krea2-anypaint",
+      "dir": "comfy_nodes/comfyui-krea2-anypaint",
+      "classes": [
+        "Krea2AnyPaintKnownLatent",
+        "Krea2AnyPaintModelPatch",
+        "Krea2AnyPaintPrepare",
+        "TextEncodeKrea2AnyPaint"
+      ],
+      "note": "Arbitrary-mask inpaint/outpaint for the yijunwang2/krea2-anypaint LoRA. Wraps ComfyUI-Krea2-Ostris-Edit's model patch (kv_cache mode) and only rewrites reference RoPE ids to the canvas bbox; that pack must be installed as custom_nodes/ComfyUI-Krea2-Ostris-Edit. Pipeline contract adapted from the LoRA repo's Apache-2.0 reference code (see the pack's NOTICE)."
+    },
+    {
+      "id": "comfyui-krea2-outpaint",
+      "dir": "comfy_nodes/comfyui-krea2-outpaint",
+      "classes": [
+        "Krea2OutpaintComposite",
+        "Krea2OutpaintModelPatch",
+        "TextEncodeKrea2Outpaint"
+      ],
+      "note": "Bbox-registered outpaint for the yijunwang2/krea2-outpaint LoRA plus a multiband seam composite. Wraps ComfyUI-Krea2-Ostris-Edit's model patch (install it as custom_nodes/ComfyUI-Krea2-Ostris-Edit). Optional: packs/krea2/outpaintv2.json declares a `_fallback` to the core-only packs/krea2/outpaint.json, which Adrift swaps in automatically when these nodes are missing."
+    },
+    {
+      "id": "cj_h3_cache",
+      "dir": "comfy_nodes/cj_h3_cache",
+      "classes": [
+        "MiniMaxH3TimestepCache"
+      ],
+      "note": "MiniMax H3 timestep cache. Not used by any shipped graph yet."
+    },
+    {
+      "id": "cj_h3_tools",
+      "dir": "comfy_nodes/cj_h3_tools",
+      "classes": [
+        "CJPasteBackSave",
+        "CJRegenAlign",
+        "CJImagePasteBack",
+        "CJWindowPreview",
+        "CJSubjectFaceSeed",
+        "CJMaskedFaceClamp",
+        "CJH3PrecomputeReferences",
+        "CJH3SelectReference",
+        "CJH3SourceLatent",
+        "CJH3SamplingMemory",
+        "CJChunkedAttention",
+        "CJTorchCompileBlocks",
+        "CJMaskTemporal",
+        "CJMatteGate",
+        "CJVideoBgComposite",
+        "CJPersonRemoverAuto",
+        "CJRemovalWindowGate",
+        "CJMaskBlob",
+        "CJGridVideo",
+        "CJVideoPalette",
+        "CJFollowCamTrack",
+        "CJFollowCamCrop",
+        "CJFollowCamCropMask",
+        "CJFollowCamPlate",
+        "CJFollowCamPaste",
+        "CJFindSubjectFrame",
+        "CJSampleFrames",
+        "CJExactPrepare",
+        "CJExactPasteSave",
+        "CJRefOnScene",
+        "CJRepeatAudio"
+      ],
+      "note": "Local nodes for the H3 masked character-swap pipeline on top of h3-relay, plus video mask/matte helpers: source-resolution paste-back with source audio (or upscaled to a 2K finish, aligned back to the swap frames by CJRegenAlign), per-window previews, per-subject face polish bound to each subject's mask (feeds ComfyUI-H3-FaceRefine's H3FaceTrackCrop closest_to_xy), reference/TE prefetch out of the relay loop, chunked SDPA, block-only torch.compile, temporal mask dilate/smooth (motion-aware, no ghost trails), a matte gate that keeps only a tracked subject, matte-over-background compositing, and the person remover's per-window auto-retry gate (resamples a window when green fill, a green haze or SAM3 hand / person detections survive in the mask; a few green frames are patched from the nearest clean frame), an opt-in convex-hull mask blob node, and the Grid Video renderer (CJGridVideo: beat-synced grid music video from a plan JSON, numpy + ffmpeg only) and the Video Color Palette grader (CJVideoPalette: one OKLab grade per clip baked into a 3D LUT applied to every frame, .cube export, numpy + ffmpeg only). Each module imports independently; needs opencv-python and av (both already ComfyUI deps on most installs). CJFollowCam* track a subject box over time, crop a stabilized subject window (plus its mask and clean plate) for the swap, and paste the result back into the full frame."
+    },
+    {
+      "id": "cj_image_tools",
+      "dir": "comfy_nodes/cj_image_tools",
+      "classes": [
+        "CJVectorize",
+        "CJCutouts",
+        "CJRefocus",
+        "CJRackFocus",
+        "CJLayerPreview"
+      ],
+      "note": "Local image utilities: CJVectorize traces an image into a stacked-layer SVG (built-in OpenCV tracer: k-means palette, per-colour contours with evenodd holes and cubic smoothing; uses vtracer instead when installed and engine=vtracer) and saves the .svg plus a preview PNG rasterized from it. CJCutouts turns SAM3_Detect per-instance masks into deduped, labelled RGBA cutouts and a contact sheet. CJRefocus / CJRackFocus are a depth-aware layered lens blur (per-pixel circle of confusion from a near-white depth map, per-layer disc blur composited back-to-front without halos, highlight bokeh in linear light; rack focus eases the focal plane between two clicked points over time; torch only). CJLayerPreview renders the Layer Split job image from see-through parts: the parts recomposited per pixel by their depth maps beside a labelled parts sheet. Each module imports independently; needs opencv-python, numpy and Pillow (ComfyUI deps); scipy optional."
+    },
+    {
+      "id": "cj_kokoro_tts",
+      "dir": "comfy_nodes/cj_kokoro_tts",
+      "classes": [
+        "CJKokoroTTS"
+      ],
+      "note": "Kokoro-82M text-to-speech (Voiceover tool, Kokoro engine). kokoro/misaki need Python 3.10-3.12, so the node runs a worker in a separate venv: set KOKORO_PYTHON (or put the venv at comfy_nodes/cj_kokoro_tts/venv). Setup in comfy_nodes/cj_kokoro_tts/README.md."
+    },
+    {
+      "id": "cj_whisper_asr",
+      "dir": "comfy_nodes/cj_whisper_asr",
+      "classes": [
+        "CJWhisperASR"
+      ],
+      "note": "Local Whisper speech-to-text through the transformers pipeline (first step of Dub video and Video translator). No new dependencies; needs a Whisper checkpoint in models/stt/whisper/whisper-large-v3-turbo, loaded offline only. Setup in comfy_nodes/cj_whisper_asr/README.md."
+    },
+    {
+      "id": "cj_stems",
+      "dir": "comfy_nodes/cj_stems",
+      "classes": [
+        "CJAudioStems"
+      ],
+      "note": "Hybrid Demucs stem split (drums, bass, other, vocals) for the Music Video tool's optional stems step (beat detection on drums, vocals as the lip-sync audio guide). torchaudio only, no new dependencies; needs the torchaudio HDEMUCS_HIGH_MUSDB_PLUS state dict at models/demucs/hdemucs_high_trained.pt (register a demucs folder in extra_model_paths.yaml if your models live elsewhere); it never downloads weights. Setup in comfy_nodes/cj_stems/README.md."
+    },
+    {
+      "id": "cj_sa3_audio",
+      "dir": "comfy_nodes/cj_sa3_audio",
+      "classes": [
+        "CJSA3TrainAudioLoRA",
+        "CJSA3InpaintConditioning",
+        "CJAudioPasteback"
+      ],
+      "note": "Stable Audio 3 helpers. CJSA3TrainAudioLoRA (Tools > Audio > Train Audio LoRA) runs Stability's stable-audio-3 trainer in its own venv: clone it and run its setup, then point CJ_SA3_DIR at it (default ~/projects/stable-audio-3, needs .venv). Results land in models/loras/audio/."
+    },
+    {
+      "id": "sefi_wrapper",
+      "dir": "comfy_nodes/sefi_wrapper",
+      "classes": [
+        "SeFiPipelineLoader",
+        "SeFiGenerate"
+      ],
+      "note": "Wraps the SeFi-Image pipeline (https://github.com/jmliu206/SeFi-Image). Set SEFI_PATH to your SeFi-Image checkout and SEFI_MODEL_DIR to the model directory (or edit the loader node's model_dir); the built-in defaults are developer paths."
+    },
+    {
+      "id": "cj_video_extend",
+      "dir": "comfy_nodes/cj_video_extend",
+      "classes": [
+        "CJColorMatchToReference",
+        "CJRetimeFrames"
+      ],
+      "note": "Extend video (packs/wan22/vace_extend.json) helpers: CJColorMatchToReference (one clip-wide CIELAB mean/std transfer of the continuation onto the context frames) and CJRetimeFrames (16 fps continuation resampled to the source fps). torch only, no new dependencies. Install like the other in-repo nodes (symlink or copy into custom_nodes/, then restart ComfyUI); the Docker image copies comfy_nodes/ automatically."
+    }
+  ],
+  "knownUnresolved": [
+    {
+      "class": "TripoSRModelLoader",
+      "reason": "Legacy placeholder template (t23d/i23d). No maintained pack is pinned; the app reports the template as not installed. Use the TRELLIS 2 3D pack instead."
+    },
+    {
+      "class": "TripoSRSampler",
+      "reason": "Legacy placeholder template (t23d/i23d), see TripoSRModelLoader."
+    },
+    {
+      "class": "IPAdapterFull",
+      "reason": "Referenced by the legacy Flux IP-Adapter adapter in src/lib/oj/adapters.ts; no current pack provides it."
+    },
+    {
+      "class": "SREFStyleEncode",
+      "reason": "Referenced only by a legacy test-only injector."
+    },
+    {
+      "class": "StyleCodeLookup",
+      "reason": "Referenced only by a legacy test-only injector."
+    },
+    {
+      "class": "SREFMixerMulti",
+      "reason": "Referenced only by a legacy test-only injector."
+    },
+    {
+      "class": "StyleApplyConditioning",
+      "reason": "Referenced only by a legacy test-only injector."
+    },
+    {
+      "class": "StyleApplyIPAdapter",
+      "reason": "Default applyClass of the legacy style adapters in src/lib/oj/adapters.ts, consumed only by the test-only injector in src/lib/sref/workflowInjector.ts. Removed from sref_system on 2026-07-07."
+    }
+  ],
+  "gotchas": [
+    "Verified on CUDA with Python 3.14.6, torch 2.11.0+cu130 and transformers 5.5.0. ComfyUI-VibeVoice needs its patch on transformers 5.5; the other packs needed no changes for this stack.",
+    "Apple Silicon (MPS): fp8 UNET checkpoints do not load, so use the bf16 or GGUF variants (ComfyUI-GGUF covers Krea 2 with its patch). MPS also lacks float64, which is what the optional ComfyUI-MOSS-i2i patch works around. The experimental `--spectrum` MOSS path decodes black on MPS.",
+    "ComfyUI_UltimateSDUpscale vendors its upscaler as a git submodule (`repositories/ultimate_sd_upscale`); clone with `--recursive` or the node cannot run.",
+    "moss-image is not its own repository: it is the `comfyui/moss-image` folder of OpenMOSS/MOSS-Image. Apply its patch inside the copied `custom_nodes/moss-image` folder, not the model repo.",
+    "Only install huwhitememes/comfyui-krea2-conditioning, not the original ComfyUI-Conditioning-Rebalance as well: both register ConditioningKrea2Rebalance and whichever loads last wins.",
+    "Patches are plain `git diff` output against the pinned commit; `git apply --check <patch>` inside the pack directory confirms a clean apply before you commit to it."
+  ],
+  "licensing": [
+    "Third-party packs keep their own licenses; they are fetched from upstream at install time, not redistributed by this repository. Only the `.patch` files under docs/patches/ (small diffs against those packs) ship here, under the license of the pack they modify.",
+    "GPL-3.0 / AGPL-3.0 packs: ComfyUI-Impact-Pack, ComfyUI-Inpaint-CropAndStitch, ComfyUI_UltimateSDUpscale, ComfyUI_IPAdapter_plus, ComfyUI-VideoHelperSuite, h3-relay and ComfyUI-Spectrum-MOSS are GPL-3.0; ComfyUI-krea2-negpip and ComfyUI-Impact-Subpack are AGPL-3.0. Running them on a server you expose to other people can carry source-offer obligations (AGPL in particular).",
+    "No license file upstream: comfyui-krea2-controlnet, ComfyUI-Krea2-Ostris-Edit, comfyui-realisim-enhancor and ComfyUI-Krea2-Projector-Tuner. Treat them as all rights reserved: install them from upstream for your own use and do not vendor or redistribute them.",
+    "Model weights have their own licenses, separate from the node code; check each model card before commercial use."
+  ]
+}

@@ -1,0 +1,651 @@
+{
+  "_meta": {
+    "title": "Lipsync onto an existing video (InfiniteTalk, masked face inpaint + paste-back)",
+    "description": "Core ComfyUI nodes + VideoHelperSuite + SAM 3.1 + cj_h3_tools. VHS_LoadVideo (25 fps, long edge capped) -> ImageScale to the 480p InfiniteTalk size (plain stretch) -> padded with the last frame so every 81-frame window exists -> SAM 3.1 text track (node 42, default 'face') -> GrowMask -> CJMaskTemporal (max). Each InfiniteTalk pass (Wan 2.1 I2V 480p + lightx2v, 6 steps, CFG 1, single-speaker patch, wav2vec2 on the DRIVING audio) samples from VAEEncode(that window's source frames) with SetLatentNoiseMask(face mask), so outside the face the latent stays the source and inside it the mouth/jaw are generated from noise (the source lips never leak in; only the driving audio moves them). The builder (src/lib/oj/videoLipsync.ts) chains extra passes (previous_frames, 9 motion frames, +72 new frames each, source window [72k, 72k+81)), trims to min(video, audio), CJImagePasteBack keeps the full-res source outside the mask (fit stretch, blob mode off), and CreateVideo muxes the trimmed driving audio (the source audio is dropped). Paste-back tone: region_match 1.0 fits a per-channel mean/std transfer on the face mask's inner rim (the regenerated face drifts a few levels from the source) and grow 14 / feather 10 put the seam ramp outside the regenerated area, where the round-tripped source matches."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 25.0,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 81,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": {
+      "title": "Source video (25 fps)"
+    }
+  },
+  "2": {
+    "class_type": "LoadAudio",
+    "inputs": {
+      "audio": ""
+    },
+    "_meta": {
+      "title": "Driving speech"
+    }
+  },
+  "3": {
+    "class_type": "TrimAudioDuration",
+    "inputs": {
+      "audio": [
+        "2",
+        0
+      ],
+      "start_index": 0.0,
+      "duration": 3.24
+    },
+    "_meta": {
+      "title": "Trim Speech"
+    }
+  },
+  "4": {
+    "class_type": "AudioEncoderLoader",
+    "inputs": {
+      "audio_encoder_name": "wav2vec2-chinese-base_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "wav2vec2"
+    }
+  },
+  "5": {
+    "class_type": "AudioEncoderEncode",
+    "inputs": {
+      "audio_encoder": [
+        "4",
+        0
+      ],
+      "audio": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode Speech"
+    }
+  },
+  "6": {
+    "class_type": "ModelPatchLoader",
+    "inputs": {
+      "name": "wan2.1_infiniteTalk_single_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "InfiniteTalk Patch"
+    }
+  },
+  "7": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan 2.1 I2V 480p"
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "lightx2v Speed LoRA"
+    }
+  },
+  "9": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "UMT5"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "9",
+        0
+      ],
+      "text": "A person talking with natural facial expressions, mouth and jaw moving in sync with the speech."
+    },
+    "_meta": {
+      "title": "Prompt"
+    }
+  },
+  "11": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "10",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Negative (zero)"
+    }
+  },
+  "12": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Wan 2.1 VAE"
+    }
+  },
+  "13": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": {
+      "clip_name": "clip_vision_h.safetensors"
+    },
+    "_meta": {
+      "title": "CLIP Vision"
+    }
+  },
+  "14": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "upscale_method": "area",
+      "width": 832,
+      "height": 480,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Frames to InfiniteTalk size"
+    }
+  },
+  "15": {
+    "class_type": "CLIPVisionEncode",
+    "inputs": {
+      "clip_vision": [
+        "13",
+        0
+      ],
+      "image": [
+        "31",
+        0
+      ],
+      "crop": "none"
+    },
+    "_meta": {
+      "title": "CLIP Vision (first frame)"
+    }
+  },
+  "16": {
+    "class_type": "WanInfiniteTalkToVideo",
+    "inputs": {
+      "mode": "single_speaker",
+      "model": [
+        "8",
+        0
+      ],
+      "model_patch": [
+        "6",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "11",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ],
+      "width": 832,
+      "height": 480,
+      "length": 81,
+      "clip_vision_output": [
+        "15",
+        0
+      ],
+      "start_image": [
+        "31",
+        0
+      ],
+      "audio_encoder_output_1": [
+        "5",
+        0
+      ],
+      "motion_frame_count": 9,
+      "audio_scale": 1.0
+    },
+    "_meta": {
+      "title": "InfiniteTalk (pass 1)"
+    }
+  },
+  "17": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    },
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "18": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "16",
+        0
+      ],
+      "scheduler": "normal",
+      "steps": 6,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Scheduler"
+    }
+  },
+  "19": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 0
+    },
+    "_meta": {
+      "title": "Noise"
+    }
+  },
+  "20": {
+    "class_type": "CFGGuider",
+    "inputs": {
+      "model": [
+        "16",
+        0
+      ],
+      "positive": [
+        "16",
+        1
+      ],
+      "negative": [
+        "16",
+        2
+      ],
+      "cfg": 1.0
+    },
+    "_meta": {
+      "title": "Guider"
+    }
+  },
+  "21": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "19",
+        0
+      ],
+      "guider": [
+        "20",
+        0
+      ],
+      "sampler": [
+        "17",
+        0
+      ],
+      "sigmas": [
+        "18",
+        0
+      ],
+      "latent_image": [
+        "37",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Sample"
+    }
+  },
+  "22": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "21",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "23": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ],
+      "batch_index": 0,
+      "length": 81
+    },
+    "_meta": {
+      "title": "Trim To Length"
+    }
+  },
+  "24": {
+    "class_type": "CJImagePasteBack",
+    "inputs": {
+      "original": [
+        "1",
+        0
+      ],
+      "edited": [
+        "23",
+        0
+      ],
+      "region": [
+        "46",
+        0
+      ],
+      "fit": "stretch",
+      "diff_thresh": 22.0,
+      "reach": 0.0,
+      "grow_px": 14,
+      "feather_px": 10,
+      "min_blob": 0.5,
+      "color_match": true,
+      "region_match": 1.0,
+      "match_band_px": 24
+    },
+    "_meta": {
+      "title": "Paste face back onto source"
+    }
+  },
+  "25": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "24",
+        0
+      ],
+      "fps": 25.0,
+      "audio": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mux Video + Driving Speech"
+    }
+  },
+  "26": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "25",
+        0
+      ],
+      "filename_prefix": "video/CJ_VideoLipsync",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save Video"
+    }
+  },
+  "27": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "14",
+        0
+      ],
+      "batch_index": 4095,
+      "length": 1
+    },
+    "_meta": {
+      "title": "Last frame"
+    }
+  },
+  "28": {
+    "class_type": "RepeatImageBatch",
+    "inputs": {
+      "image": [
+        "27",
+        0
+      ],
+      "amount": 81
+    },
+    "_meta": {
+      "title": "Repeat last frame"
+    }
+  },
+  "29": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "14",
+        0
+      ],
+      "image2": [
+        "28",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frames + padding"
+    }
+  },
+  "30": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "29",
+        0
+      ],
+      "batch_index": 0,
+      "length": 81
+    },
+    "_meta": {
+      "title": "Padded frames (all windows)"
+    }
+  },
+  "31": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ],
+      "batch_index": 0,
+      "length": 1
+    },
+    "_meta": {
+      "title": "Window start frame (pass 1)"
+    }
+  },
+  "32": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ],
+      "batch_index": 0,
+      "length": 81
+    },
+    "_meta": {
+      "title": "Source window (pass 1)"
+    }
+  },
+  "33": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "32",
+        0
+      ],
+      "vae": [
+        "12",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source window (pass 1)"
+    }
+  },
+  "34": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "46",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Face mask as image"
+    }
+  },
+  "35": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "34",
+        0
+      ],
+      "batch_index": 0,
+      "length": 81
+    },
+    "_meta": {
+      "title": "Mask window (pass 1)"
+    }
+  },
+  "36": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "35",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Mask window (pass 1)"
+    }
+  },
+  "37": {
+    "class_type": "SetLatentNoiseMask",
+    "inputs": {
+      "samples": [
+        "33",
+        0
+      ],
+      "mask": [
+        "36",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Regenerate only the face (pass 1)"
+    }
+  },
+  "41": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "SAM 3.1"
+    }
+  },
+  "42": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "41",
+        1
+      ],
+      "text": "face"
+    },
+    "_meta": {
+      "title": "Whose face (SAM prompt)"
+    }
+  },
+  "43": {
+    "class_type": "SAM3_VideoTrack",
+    "inputs": {
+      "images": [
+        "30",
+        0
+      ],
+      "model": [
+        "41",
+        0
+      ],
+      "conditioning": [
+        "42",
+        0
+      ],
+      "detection_threshold": 0.4,
+      "max_objects": 1,
+      "detect_interval": 2
+    },
+    "_meta": {
+      "title": "Track face"
+    }
+  },
+  "44": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "43",
+        0
+      ],
+      "object_indices": ""
+    },
+    "_meta": {
+      "title": "Track -> mask"
+    }
+  },
+  "45": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "44",
+        0
+      ],
+      "expand": 12,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Grow (jaw, chin)"
+    }
+  },
+  "46": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "45",
+        0
+      ],
+      "mode": "max",
+      "radius": 2
+    },
+    "_meta": {
+      "title": "Temporal dilate"
+    }
+  }
+}

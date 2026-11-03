@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "title": "Character from reference (Anima Ref Adapter pilot, legacy)",
+    "description": "Legacy pilot graph, the fallback of packs/anima/anima_ref.json when the installed ComfyUI-Anima-Ref-Adapter predates the v2 AnimaRefAdapter node (one character only). Anima base v1.0 + ElectronGirl Anima Ref Adapter pilot: one reference image of a character supplies identity, the prompt supplies only quality tags + gender/solo + scene/pose. LoadImage -> AnimaRefLatent (VAE-encodes the reference, letterboxed on white to the target size; also emits the empty latent) -> AnimaRefGuider (cfg 4.5, ref_guidance 4.5, APG correction) -> SamplerCustomAdvanced (euler / simple, 30 steps). Weights: diffusion_models/anima-base-v1.0.safetensors, text_encoders/qwen_3_06b_base.safetensors, vae/qwen_image_vae.safetensors (circlestone-labs/Anima), loras/anima_ref_adapter_pilot_r32.safetensors (ElectronGirl/anima-ref-adapter). CircleStone Labs Non-Commercial License. Built by src/lib/oj/animaRef.ts (reference image, prompt, negative, size, seed)."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "anima-base-v1.0.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Anima base v1.0" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_06b_base.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "_meta": { "title": "Qwen3 0.6B text encoder" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "qwen_image_vae.safetensors" },
+    "_meta": { "title": "Qwen-Image VAE" }
+  },
+  "4": {
+    "class_type": "AnimaRefAdapterLoader",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "anima_ref_adapter_pilot_r32.safetensors",
+      "strength": 1.0,
+      "ref_offset_h": 1.0
+    },
+    "_meta": { "title": "Anima Ref Adapter" }
+  },
+  "5": {
+    "class_type": "ModelComputeDtype",
+    "inputs": { "model": ["4", 0], "dtype": "bf16" },
+    "_meta": { "title": "Compute dtype bf16" }
+  },
+  "7": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Character Reference" }
+  },
+  "8": {
+    "class_type": "AnimaRefLatent",
+    "inputs": {
+      "image": ["7", 0],
+      "vae": ["3", 0],
+      "width": 896,
+      "height": 1152,
+      "fill": 255
+    },
+    "_meta": { "title": "Reference latent + empty latent" }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "masterpiece, best quality, score_7, newest, highres, absurdres, safe, 1girl, solo, standing, looking at viewer, simple background"
+    },
+    "_meta": { "title": "Positive (scene only)" }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "worst quality, low quality, score_1, score_2, score_3, blurry, jpeg artifacts, chromatic aberration, bad anatomy, bad hands, extra arms, extra fingers, missing fingers"
+    },
+    "_meta": { "title": "Negative" }
+  },
+  "11": {
+    "class_type": "AnimaRefGuider",
+    "inputs": {
+      "model": ["5", 0],
+      "positive": ["9", 0],
+      "negative": ["10", 0],
+      "ref_latent": ["8", 0],
+      "cfg": 4.5,
+      "ref_guidance": 4.5,
+      "correction": "apg",
+      "rescale_phi": 0.5
+    },
+    "_meta": { "title": "Anima Ref Guider" }
+  },
+  "12": {
+    "class_type": "KSamplerSelect",
+    "inputs": { "sampler_name": "euler" },
+    "_meta": { "title": "Sampler" }
+  },
+  "13": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": ["5", 0],
+      "scheduler": "simple",
+      "steps": 30,
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Scheduler" }
+  },
+  "14": {
+    "class_type": "RandomNoise",
+    "inputs": { "noise_seed": 0 },
+    "_meta": { "title": "Seed" }
+  },
+  "15": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": ["14", 0],
+      "guider": ["11", 0],
+      "sampler": ["12", 0],
+      "sigmas": ["13", 0],
+      "latent_image": ["8", 1]
+    },
+    "_meta": { "title": "Sample" }
+  },
+  "16": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["15", 0], "vae": ["3", 0] },
+    "_meta": { "title": "Decode" }
+  },
+  "17": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["16", 0], "filename_prefix": "anima_ref/anima_ref" },
+    "_meta": { "title": "Save" }
+  }
+}

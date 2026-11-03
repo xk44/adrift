@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "title": "Upscale video (per-frame model)",
+    "description": "Fast clip upscale: every frame through the user's video upscaler (UpscaleModelLoader is replaced at submit by Settings -> Upscaler, video row) with KJNodes ImageUpscaleWithModelBatched, which downsizes each batch right after the model so a long clip never sits in memory at 4x. LoadVideo -> GetVideoComponents -> batched model upscale (downscale_ratio = target / model factor) -> ResizeImageMaskNode (1080p / 4K targets only; dropped for 2x) -> CreateVideo (source fps + audio) -> SaveVideo. No diffusion, no new detail; SeedVR2 is the Best engine."
+  },
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "" },
+    "_meta": { "title": "Source Video" }
+  },
+  "2": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["1", 0] },
+    "_meta": { "title": "Frames + Audio + FPS" }
+  },
+  "3": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": { "model_name": "RealESRGAN_x4plus.pth" },
+    "_meta": {
+      "title": "Upscale model",
+      "upscaler": "default",
+      "upscaleContent": "video"
+    }
+  },
+  "4": {
+    "class_type": "ImageUpscaleWithModelBatched",
+    "inputs": {
+      "upscale_model": ["3", 0],
+      "images": ["2", 0],
+      "per_batch": 4,
+      "downscale_ratio": 0.5,
+      "downscale_method": "lanczos",
+      "precision": "float32"
+    },
+    "_meta": { "title": "Upscale frames" }
+  },
+  "5": {
+    "class_type": "ResizeImageMaskNode",
+    "inputs": {
+      "input": ["4", 0],
+      "resize_type": "scale shorter dimension",
+      "resize_type.shorter_size": 1080,
+      "scale_method": "lanczos"
+    },
+    "_meta": { "title": "Target Size" }
+  },
+  "6": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["5", 0], "fps": ["2", 2], "audio": ["2", 1] },
+    "_meta": { "title": "Mux Video (source fps + audio)" }
+  },
+  "7": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["6", 0],
+      "filename_prefix": "video/CJ_upscale",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Video" }
+  }
+}

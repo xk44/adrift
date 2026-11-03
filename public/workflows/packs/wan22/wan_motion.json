@@ -1,0 +1,408 @@
+{
+  "1": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Text encoder"
+    }
+  },
+  "2": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "VAE"
+    }
+  },
+  "3": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    },
+    "_meta": {
+      "title": "Source image"
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        0
+      ],
+      "text": "The video shows the main subject. The camera performs an 0rb4it 360 degree orbit."
+    },
+    "_meta": {
+      "title": "Positive prompt"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        0
+      ],
+      "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+    },
+    "_meta": {
+      "title": "Negative prompt"
+    }
+  },
+  "6": {
+    "class_type": "WanImageToVideo",
+    "inputs": {
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "vae": [
+        "2",
+        0
+      ],
+      "batch_size": 1,
+      "start_image": [
+        "3",
+        0
+      ],
+      "width": 624,
+      "height": 624,
+      "length": 81,
+      "clip_vision_output": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Image to video"
+    }
+  },
+  "10": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.1 I2V 480p"
+    }
+  },
+  "11": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "10",
+        0
+      ],
+      "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.1 lightx2v distill"
+    }
+  },
+  "12": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "lora_name": "wan_motion/360_Orbit.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.1 motion LoRA"
+    }
+  },
+  "20": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "shift": 5.0
+    },
+    "_meta": {
+      "title": "Wan2.1 shift"
+    }
+  },
+  "21": {
+    "class_type": "CLIPVisionLoader",
+    "inputs": {
+      "clip_name": "clip_vision_h.safetensors"
+    },
+    "_meta": {
+      "title": "CLIP vision"
+    }
+  },
+  "22": {
+    "class_type": "CLIPVisionEncode",
+    "inputs": {
+      "clip_vision": [
+        "21",
+        0
+      ],
+      "image": [
+        "3",
+        0
+      ],
+      "crop": "none"
+    },
+    "_meta": {
+      "title": "CLIP vision encode"
+    }
+  },
+  "24": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "6",
+        2
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.1 sampler"
+    }
+  },
+  "30": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 I2V high noise"
+    }
+  },
+  "31": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 I2V low noise"
+    }
+  },
+  "32": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 speed (high)"
+    }
+  },
+  "33": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "31",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 speed (low)"
+    }
+  },
+  "34": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "32",
+        0
+      ],
+      "lora_name": "wan_motion/wan22_14b_i2v_orbit_high_noise.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 motion LoRA (high)"
+    }
+  },
+  "35": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "33",
+        0
+      ],
+      "lora_name": "wan_motion/wan22_14b_i2v_orbit_low_noise.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Wan2.2 motion LoRA (low)"
+    }
+  },
+  "50": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "34",
+        0
+      ],
+      "shift": 5.0
+    },
+    "_meta": {
+      "title": "Shift (high)"
+    }
+  },
+  "51": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "35",
+        0
+      ],
+      "shift": 5.0
+    },
+    "_meta": {
+      "title": "Shift (low)"
+    }
+  },
+  "52": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "50",
+        0
+      ],
+      "add_noise": "enable",
+      "noise_seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "6",
+        2
+      ],
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable"
+    },
+    "_meta": {
+      "title": "High-noise sampler"
+    }
+  },
+  "53": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "51",
+        0
+      ],
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "6",
+        1
+      ],
+      "latent_image": [
+        "52",
+        0
+      ],
+      "start_at_step": 2,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    },
+    "_meta": {
+      "title": "Low-noise sampler"
+    }
+  },
+  "60": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "24",
+        0
+      ],
+      "vae": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "61": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "60",
+        0
+      ],
+      "fps": 16
+    },
+    "_meta": {
+      "title": "Create video"
+    }
+  },
+  "62": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "61",
+        0
+      ],
+      "filename_prefix": "video/CJ_wan_motion",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  }
+}

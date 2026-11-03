@@ -1,0 +1,267 @@
+{
+  "_meta": {
+    "title": "Krea2 Inpaint Edit (CropAndStitch)",
+    "description": "Mask-aware local editing: CropAndStitch crops around the mask, the masked area is blacked out and fed to the Ostris edit encoder (kv_cache on) with the v2 inpaint LoRA on Krea-2 Turbo (8 steps, cfg 1, euler_ancestral, per the LoRA card), then the result is stitched back so pixels outside the mask stay untouched. Requires ComfyUI-Inpaint-CropAndStitch, ComfyUI-Krea2-Ostris-Edit, krea2_turbo_bf16 and krea2_inpaint_edit_v2_17500.safetensors."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "edit_tools/krea2_inpaint_edit_v2_17500.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Inpaint edit LoRA"
+    }
+  },
+  "30": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "edit_tools/krea2_inpaint_edit_v2_17500.safetensors",
+      "strength_model": 0
+    },
+    "_meta": {
+      "title": "LoRA stack slot"
+    }
+  },
+  "9": {
+    "class_type": "Krea2OstrisEditModelPatch",
+    "inputs": {
+      "model": [
+        "30",
+        0
+      ],
+      "kv_cache": true
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Source Image"
+    }
+  },
+  "6": {
+    "class_type": "LoadImageMask",
+    "inputs": {
+      "image": "mask.png",
+      "channel": "red",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Inpaint Mask"
+    }
+  },
+  "7": {
+    "class_type": "InpaintCropImproved",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "mask": [
+        "6",
+        0
+      ],
+      "downscale_algorithm": "bilinear",
+      "upscale_algorithm": "lanczos",
+      "preresize": false,
+      "preresize_mode": "ensure minimum resolution",
+      "preresize_min_width": 1024,
+      "preresize_min_height": 1024,
+      "preresize_max_width": 16384,
+      "preresize_max_height": 16384,
+      "mask_fill_holes": true,
+      "mask_expand_pixels": 8,
+      "mask_invert": false,
+      "mask_blend_pixels": 16,
+      "mask_hipass_filter": 0.1,
+      "extend_for_outpainting": false,
+      "extend_up_factor": 1.0,
+      "extend_down_factor": 1.0,
+      "extend_left_factor": 1.0,
+      "extend_right_factor": 1.0,
+      "context_from_mask_extend_factor": 1.5,
+      "output_resize_to_target_size": true,
+      "output_target_width": 1024,
+      "output_target_height": 1024,
+      "output_padding": "32",
+      "device_mode": "cpu (compatible)"
+    },
+    "_meta": {
+      "title": "Crop around mask"
+    }
+  },
+  "18": {
+    "class_type": "SolidMask",
+    "inputs": {
+      "value": 0.0,
+      "width": 64,
+      "height": 64
+    }
+  },
+  "19": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "18",
+        0
+      ]
+    }
+  },
+  "8": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "7",
+        1
+      ],
+      "source": [
+        "19",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": true,
+      "mask": [
+        "7",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Black out masked area"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeKrea2OstrisEdit",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "prompt": "",
+      "vae": [
+        "4",
+        0
+      ],
+      "image1": [
+        "8",
+        0
+      ]
+    }
+  },
+  "11": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "10",
+        0
+      ]
+    }
+  },
+  "13": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "11",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    }
+  },
+  "16": {
+    "class_type": "InpaintStitchImproved",
+    "inputs": {
+      "stitcher": [
+        "7",
+        0
+      ],
+      "inpainted_image": [
+        "15",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Stitch back into original"
+    }
+  },
+  "17": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "16",
+        0
+      ],
+      "filename_prefix": "cj_inpaint_edit"
+    }
+  }
+}

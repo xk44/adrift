@@ -1,0 +1,449 @@
+{
+  "_meta": {
+    "title": "Add an object to a video (MiniMax H3 masked edit)",
+    "description": "A placement box (fractions of the frame, drawn on a 1000x1000 canvas and stretched to the prepared size) is the edit mask; H3 Ref2VA regenerates only that box with the object from <Picture 1> (optional) or the text, and no motion reference (openjutsu: showing the empty spot makes H3 return it unchanged). CJPasteBackSave pastes the box back."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "UNETLoader"
+    }
+  },
+  "2": {
+    "class_type": "MiniMaxH3SigmaShift",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift_video": 12.0,
+      "shift_audio": 3.0
+    },
+    "_meta": {
+      "title": "MiniMaxH3SigmaShift"
+    }
+  },
+  "3": {
+    "class_type": "ModelAttentionBackend",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "attention": "comfy kitchen attention"
+    },
+    "_meta": {
+      "title": "ModelAttentionBackend"
+    }
+  },
+  "8": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "lora_name": "minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "H3 Turbo 8-step"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "CLIPLoader"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "Video VAE"
+    }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "_meta": {
+      "title": "Audio VAE"
+    }
+  },
+  "7": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "29": {
+    "class_type": "LabsH3PrepareVideo",
+    "inputs": {
+      "video": [
+        "7",
+        0
+      ],
+      "resolution": "480",
+      "duration_seconds": 3.0
+    },
+    "_meta": {
+      "title": "Prepare 24 fps / 480 / 17n+5"
+    }
+  },
+  "26": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "er_sde"
+    },
+    "_meta": {
+      "title": "KSamplerSelect"
+    }
+  },
+  "27": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "scheduler": "normal",
+      "steps": 8,
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "BasicScheduler"
+    }
+  },
+  "60": {
+    "class_type": "SolidMask",
+    "inputs": {
+      "value": 0.0,
+      "width": 1000,
+      "height": 1000
+    },
+    "_meta": {
+      "title": "Canvas"
+    }
+  },
+  "61": {
+    "class_type": "SolidMask",
+    "inputs": {
+      "value": 1.0,
+      "width": 300,
+      "height": 300
+    },
+    "_meta": {
+      "title": "Box"
+    }
+  },
+  "62": {
+    "class_type": "MaskComposite",
+    "inputs": {
+      "destination": [
+        "60",
+        0
+      ],
+      "source": [
+        "61",
+        0
+      ],
+      "x": 350,
+      "y": 500,
+      "operation": "add"
+    },
+    "_meta": {
+      "title": "Place box"
+    }
+  },
+  "63": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "62",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MaskToImage"
+    }
+  },
+  "64": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "63",
+        0
+      ],
+      "upscale_method": "bilinear",
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Stretch to frame"
+    }
+  },
+  "65": {
+    "class_type": "RepeatImageBatch",
+    "inputs": {
+      "image": [
+        "64",
+        0
+      ],
+      "amount": [
+        "29",
+        4
+      ]
+    },
+    "_meta": {
+      "title": "RepeatImageBatch"
+    }
+  },
+  "66": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "65",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Placement mask"
+    }
+  },
+  "40": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Object photo"
+    }
+  },
+  "41": {
+    "class_type": "MiniMaxH3ReferenceToVideo",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "prompt": "",
+      "width": [
+        "29",
+        2
+      ],
+      "height": [
+        "29",
+        3
+      ],
+      "length": [
+        "29",
+        4
+      ],
+      "ref_image_size": "match",
+      "vae": [
+        "5",
+        0
+      ],
+      "audio_vae": [
+        "6",
+        0
+      ],
+      "ref_images.ref_image_0": [
+        "40",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MiniMaxH3ReferenceToVideo"
+    }
+  },
+  "42": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "29",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "43": {
+    "class_type": "H3RelayApplyEditMask",
+    "inputs": {
+      "latent": [
+        "41",
+        1
+      ],
+      "source_latent": [
+        "42",
+        0
+      ],
+      "mask": [
+        "66",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Edit only inside mask"
+    }
+  },
+  "44": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 42
+    },
+    "_meta": {
+      "title": "RandomNoise"
+    }
+  },
+  "45": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "conditioning": [
+        "41",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "BasicGuider"
+    }
+  },
+  "46": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "44",
+        0
+      ],
+      "guider": [
+        "45",
+        0
+      ],
+      "sampler": [
+        "26",
+        0
+      ],
+      "sigmas": [
+        "27",
+        0
+      ],
+      "latent_image": [
+        "43",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "47": {
+    "class_type": "LTXVSeparateAVLatent",
+    "inputs": {
+      "av_latent": [
+        "46",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "LTXVSeparateAVLatent"
+    }
+  },
+  "48": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "47",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "51": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "48",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "29",
+        5
+      ]
+    },
+    "_meta": {
+      "title": "Trim to source frames"
+    }
+  },
+  "52": {
+    "class_type": "CJPasteBackSave",
+    "inputs": {
+      "frames": [
+        "51",
+        0
+      ],
+      "source": [
+        "7",
+        0
+      ],
+      "raw_mask": [
+        "66",
+        0
+      ],
+      "expanded_mask": [
+        "66",
+        0
+      ],
+      "filename_prefix": "video/CJ_H3_ObjectAdd",
+      "crf": 17,
+      "diff_thresh": 6.0,
+      "grow_px": 8,
+      "feather_px": 6,
+      "t_radius": 2,
+      "protect_text": false
+    },
+    "_meta": {
+      "title": "Paste back inside mask (source res, source audio)"
+    }
+  }
+}

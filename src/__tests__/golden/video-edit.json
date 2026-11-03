@@ -1,0 +1,211 @@
+{
+  "name": "video_edit",
+  "tool": "video_edit",
+  "action": "video_edit",
+  "workflow": "packs/wan22/video_edit.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "Lucy Edit Dev",
+      "inputs": {
+        "unet_name": "lucy-edit-dev-cui-fp16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "umt5 xxl",
+      "inputs": {
+        "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "device": "default",
+        "type": "wan"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "Wan 2.2 VAE",
+      "inputs": {
+        "vae_name": "wan2.2_vae.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "ModelSamplingSD3",
+      "title": "Shift",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift": 5
+      }
+    },
+    "5": {
+      "class_type": "CLIPTextEncode",
+      "title": "Edit instruction",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": ""
+      }
+    },
+    "7": {
+      "class_type": "InstructPixToPixConditioning",
+      "title": "Source latent concat",
+      "inputs": {
+        "negative": [
+          "6",
+          0
+        ],
+        "pixels": [
+          "24",
+          0
+        ],
+        "positive": [
+          "5",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "KSampler",
+      "title": "Sampler",
+      "inputs": {
+        "cfg": 5,
+        "denoise": 1,
+        "latent_image": [
+          "7",
+          2
+        ],
+        "model": [
+          "4",
+          0
+        ],
+        "negative": [
+          "7",
+          1
+        ],
+        "positive": [
+          "7",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 314799534,
+        "steps": 30
+      }
+    },
+    "9": {
+      "class_type": "VAEDecode",
+      "title": "Decode",
+      "inputs": {
+        "samples": [
+          "8",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "CreateVideo",
+      "title": "Video 16 fps",
+      "inputs": {
+        "fps": 16,
+        "images": [
+          "9",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "SaveVideo",
+      "title": "Save video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_VideoEdit",
+        "format": "auto",
+        "video": [
+          "10",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LoadVideo",
+      "title": "Source video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "21": {
+      "class_type": "Video Slice",
+      "title": "Trim to window",
+      "inputs": {
+        "duration": 5.0625,
+        "start_time": 0,
+        "strict_duration": false,
+        "video": [
+          "20",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "VideoFrameSample",
+      "title": "Resample to 16 fps",
+      "inputs": {
+        "num_frames": 81,
+        "seed": 0,
+        "strategy": "uniform",
+        "video": [
+          "21",
+          0
+        ]
+      }
+    },
+    "23": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames",
+      "inputs": {
+        "video": [
+          "22",
+          0
+        ]
+      }
+    },
+    "24": {
+      "class_type": "ImageScale",
+      "title": "Fit frames",
+      "inputs": {
+        "crop": "center",
+        "height": 480,
+        "image": [
+          "23",
+          0
+        ],
+        "upscale_method": "area",
+        "width": 832
+      }
+    }
+  }
+}

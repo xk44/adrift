@@ -1,0 +1,2823 @@
+{
+  "version": "1.0.0",
+  "defaults": {
+    "template": "t2i",
+    "width": 1024,
+    "height": 1024,
+    "grid": 4,
+    "repeat": 1,
+    "batch": 1,
+    "steps": 25,
+    "cfg": 7.0,
+    "sampler": "euler",
+    "scheduler": "normal",
+    "denoise": 1.0,
+    "negative": "nsfw, text, watermark, bad anatomy, bad hands, cropped, worst quality, low quality, blurry"
+  },
+  "templates": {
+    "t2i": {
+      "file": "t2i.json",
+      "kind": "t2i",
+      "name": "Text to Image"
+    },
+    "i2i": {
+      "file": "i2i.json",
+      "kind": "i2i",
+      "name": "Image to Image"
+    },
+    "vary_subtle": {
+      "file": "vary_subtle.json",
+      "kind": "i2i",
+      "name": "Vary Subtle",
+      "denoise": 0.25
+    },
+    "vary_strong": {
+      "file": "vary_strong.json",
+      "kind": "i2i",
+      "name": "Vary Strong",
+      "denoise": 0.65
+    },
+    "upscale_subtle": {
+      "file": "upscale_subtle.json",
+      "kind": "upscale",
+      "name": "Upscale Subtle"
+    },
+    "upscale_creative": {
+      "file": "upscale_creative.json",
+      "kind": "upscale",
+      "name": "Upscale Creative"
+    },
+    "inpaint": {
+      "file": "inpaint.json",
+      "kind": "inpaint",
+      "name": "Inpaint"
+    },
+    "edit_instruct": {
+      "file": "packs/krea2-edit/edit.json",
+      "kind": "edit_instruct",
+      "name": "Instruct Edit"
+    },
+    "edit_instruct_dual": {
+      "file": "packs/krea2-edit/edit_v2_dual.json",
+      "kind": "edit_instruct_dual",
+      "name": "Instruct Edit (2 images)"
+    },
+    "character_swap": {
+      "file": "packs/minimax/character_swap.json",
+      "kind": "character_swap",
+      "name": "Replace Person in Video"
+    },
+    "face_swap": {
+      "file": "packs/minimax/face_swap.json",
+      "kind": "face_swap",
+      "name": "Swap Face in Video"
+    },
+    "person_remove": {
+      "file": "packs/minimax/person_remove.json",
+      "kind": "person_remove",
+      "name": "Remove Person from Video"
+    },
+    "music_video": {
+      "file": "packs/minimax/music_video.json",
+      "kind": "music_video",
+      "name": "Music Video Segment (MiniMax H3)"
+    },
+    "music_video_assemble": {
+      "file": "packs/minimax/music_video_assemble.json",
+      "kind": "music_video_assemble",
+      "name": "Music Video Assemble"
+    },
+    "music_video_stems": {
+      "file": "packs/minimax/music_video_stems.json",
+      "kind": "music_video_stems",
+      "name": "Music Video Stems (Demucs)"
+    },
+    "character_swap_masked": {
+      "file": "packs/minimax/character_swap_masked.json",
+      "kind": "character_swap_masked",
+      "name": "Replace Person in Video (Mannequin)"
+    },
+    "cast_swap": {
+      "file": "packs/minimax/cast_swap.json",
+      "kind": "cast_swap",
+      "name": "Recast Several People in Video"
+    },
+    "video_bg_swap": {
+      "file": "packs/minimax/video_bg_swap.json",
+      "kind": "video_bg_swap",
+      "name": "Swap Video Background (H3)"
+    },
+    "video_object_add": {
+      "file": "packs/minimax/video_object_add.json",
+      "kind": "video_object_add",
+      "name": "Add Object to Video (H3)"
+    },
+    "video_object_remove": {
+      "file": "packs/wan22/video_object_remove.json",
+      "kind": "video_object_remove",
+      "name": "Remove Object from Video (SAM 3.1 + VACE)"
+    },
+    "video_remove_text": {
+      "file": "packs/wan22/video_object_remove.json",
+      "kind": "video_remove_text",
+      "name": "Remove Text from Video (SAM 3.1 + VACE)"
+    },
+    "video_object_swap": {
+      "file": "packs/wan22/video_object_swap.json",
+      "kind": "video_object_swap",
+      "name": "Swap Object in Video from a Reference (SAM 3.1 + VACE)"
+    },
+    "video_bg_change": {
+      "file": "packs/utility/video_bg_change.json",
+      "kind": "video_bg_change",
+      "name": "Change Video Background"
+    },
+    "video_palette": {
+      "file": "packs/utility/video_palette.json",
+      "kind": "video_palette",
+      "name": "Video Color Palette (one-fit LUT regrade, CJVideoPalette)"
+    },
+    "wan_animate": {
+      "file": "packs/wan-animate/wan_animate.json",
+      "kind": "wan_animate",
+      "name": "Animate Character"
+    },
+    "lipsync": {
+      "file": "packs/wan-animate/lipsync.json",
+      "kind": "lipsync",
+      "name": "Lipsync / Talking Photo"
+    },
+    "video_lipsync": {
+      "file": "packs/wan-animate/video_lipsync.json",
+      "kind": "video_lipsync",
+      "name": "Lipsync onto Video"
+    },
+    "talking_avatar": {
+      "file": "packs/wan-animate/talking_avatar.json",
+      "kind": "talking_avatar",
+      "name": "Talking Avatar"
+    },
+    "orbit_360": {
+      "file": "packs/minimax/orbit_360.json",
+      "kind": "orbit_360",
+      "name": "360 Orbit Video"
+    },
+    "camera_move": {
+      "file": "packs/minimax/camera_move.json",
+      "kind": "camera_move",
+      "name": "Camera Move Video"
+    },
+    "transition": {
+      "file": "packs/minimax/transition.json",
+      "kind": "transition",
+      "name": "Start/End Frame Transition"
+    },
+    "ref_video": {
+      "file": "packs/minimax/r2v.json",
+      "kind": "ref_video",
+      "name": "Reference to Video"
+    },
+    "multiframe_ref": {
+      "file": "packs/minimax/multiframe_ref.json",
+      "kind": "multiframe_ref",
+      "name": "Multiframe Reference"
+    },
+    "h3_charsheet": {
+      "file": "packs/minimax/charsheet.json",
+      "kind": "h3_charsheet",
+      "name": "H3 Character Sheet"
+    },
+    "wan_motion": {
+      "file": "packs/wan22/wan_motion.json",
+      "kind": "wan_motion",
+      "name": "Wan Motion Presets"
+    },
+    "wan_camera": {
+      "file": "packs/wan22/wan_camera.json",
+      "kind": "wan_camera",
+      "name": "Wan Fun Camera Control"
+    },
+    "wan_move": {
+      "file": "packs/wan22/wan_move.json",
+      "kind": "wan_move",
+      "name": "Wan-Move Trajectory Motion"
+    },
+    "video_bg_remove": {
+      "file": "packs/utility/video_bg_remove.json",
+      "kind": "video_bg_remove",
+      "name": "Remove Video Background"
+    },
+    "seedvr2_upscale": {
+      "file": "packs/seedvr2/seedvr2_upscale.json",
+      "kind": "seedvr2_upscale",
+      "name": "Upscale (SeedVR2)"
+    },
+    "upscale_vosr2": {
+      "file": "packs/vosr2/vosr2_upscale.json",
+      "kind": "upscale_vosr2",
+      "name": "Photo upscale (VOSR2)"
+    },
+    "flashvsr_upscale": {
+      "file": "packs/flashvsr/flashvsr_upscale.json",
+      "kind": "flashvsr_upscale",
+      "name": "Upscale video (FlashVSR)"
+    },
+    "subject_matte": {
+      "file": "packs/matanyone/subject_matte.json",
+      "kind": "subject_matte",
+      "name": "Remove video background (MatAnyone2)"
+    },
+    "rtx_upscale": {
+      "file": "packs/rtx/rtx_upscale.json",
+      "kind": "rtx_upscale",
+      "name": "Upscale video (NVIDIA RTX)"
+    },
+    "ltx_upscale_x2": {
+      "file": "packs/ltx25/upscale_x2.json",
+      "kind": "ltx_upscale_x2",
+      "name": "Upscale video (LTX x2)"
+    },
+    "video_upscale": {
+      "file": "packs/utility/video_upscale.json",
+      "kind": "video_upscale",
+      "name": "Upscale video (per-frame model)"
+    },
+    "interpolate": {
+      "file": "packs/interp/interpolate.json",
+      "kind": "interpolate",
+      "name": "Smooth motion / slow-mo"
+    },
+    "relight": {
+      "file": "packs/qwen-edit-2509/relight.json",
+      "kind": "relight",
+      "name": "Relight"
+    },
+    "material_maps": {
+      "file": "packs/qwen-edit-2509/material_maps.json",
+      "kind": "material_maps",
+      "name": "Material maps (Marigold V2)"
+    },
+    "light_migration": {
+      "file": "packs/qwen-edit-2509/light_migration.json",
+      "kind": "light_migration",
+      "name": "Relight: match a reference"
+    },
+    "anima_ref": {
+      "file": "packs/anima/anima_ref.json",
+      "kind": "anima_ref",
+      "name": "Character from reference (Anima)"
+    },
+    "make_3d_trellis": {
+      "file": "packs/trellis2/make_3d_trellis.json",
+      "kind": "make_3d_trellis",
+      "name": "Image to 3D (TRELLIS.2)"
+    },
+    "image_to_splat": {
+      "file": "packs/triposplat/image_to_splat.json",
+      "kind": "image_to_splat",
+      "name": "Image to 3D (TripoSplat)"
+    },
+    "body_3d": {
+      "file": "packs/sam3d-body/body_3d.json",
+      "kind": "body_3d",
+      "name": "Body 3D (SAM 3D Body)"
+    },
+    "music": {
+      "file": "packs/audio/music.json",
+      "kind": "music",
+      "name": "Music (ACE-Step 1.5)"
+    },
+    "sfx": {
+      "file": "packs/audio/sfx.json",
+      "kind": "sfx",
+      "name": "Sound Effects (Stable Audio 3)"
+    },
+    "sa3_t2a": {
+      "file": "packs/audio/sa3_t2a.json",
+      "kind": "sa3_t2a",
+      "name": "Music & Sound (Stable Audio 3 Medium)"
+    },
+    "sa3_a2a": {
+      "file": "packs/audio/sa3_a2a.json",
+      "kind": "sa3_a2a",
+      "name": "Restyle Audio (Stable Audio 3 Medium)"
+    },
+    "sa3_inpaint": {
+      "file": "packs/audio/sa3_inpaint.json",
+      "kind": "sa3_inpaint",
+      "name": "Fix Audio Section (Stable Audio 3 Medium)"
+    },
+    "sa3_extend": {
+      "file": "packs/audio/sa3_extend.json",
+      "kind": "sa3_extend",
+      "name": "Extend Audio (Stable Audio 3 Medium)"
+    },
+    "vace_restyle": {
+      "file": "packs/wan22/vace_restyle.json",
+      "kind": "vace_restyle",
+      "name": "Restyle Video (Wan2.2 VACE)"
+    },
+    "vace_reframe": {
+      "file": "packs/wan22/vace_reframe.json",
+      "kind": "vace_reframe",
+      "name": "Reframe Video (Wan2.2 VACE)"
+    },
+    "video_expand": {
+      "file": "packs/ltx25/video_expand.json",
+      "kind": "video_expand",
+      "name": "Expand Video (LTX-2.5 IC-LoRA Outpaint)"
+    },
+    "video_expand_wan": {
+      "file": "packs/wan22/video_expand.json",
+      "kind": "video_expand",
+      "name": "Expand Video (Wan2.2 VACE, experimental)"
+    },
+    "video_retake": {
+      "file": "packs/ltx25/video_retake.json",
+      "kind": "video_retake",
+      "name": "Retake Video (LTX-2.5)"
+    },
+    "vace_extend": {
+      "file": "packs/wan22/vace_extend.json",
+      "kind": "vace_extend",
+      "name": "Extend Video (Wan2.2 VACE)"
+    },
+    "edit_structural": {
+      "file": "packs/krea2-edit/edit_depth.json",
+      "kind": "edit_structural",
+      "name": "Style Edit (structure-locked)"
+    },
+    "edit_pose": {
+      "file": "packs/krea2-edit/pose_character.json",
+      "kind": "edit_pose",
+      "name": "Pose Character (depth pose transfer)"
+    },
+    "edit_ostris": {
+      "file": "packs/krea2-edit/edit_ostris.json",
+      "kind": "edit_ostris",
+      "name": "Ostris Multi-Ref Edit"
+    },
+    "edit_inpaint": {
+      "file": "packs/krea2-edit/edit_inpaint.json",
+      "kind": "edit_inpaint",
+      "name": "Inpaint (masked edit)"
+    },
+    "outpaint": {
+      "file": "outpaint.json",
+      "kind": "outpaint",
+      "name": "Outpaint",
+      "seamHarmonize": {
+        "enabled": true,
+        "denoise": 0.3,
+        "bandPx": 48,
+        "featherPx": 16
+      }
+    },
+    "remix_subtle": {
+      "file": "remix_subtle.json",
+      "kind": "i2i",
+      "name": "Remix Subtle",
+      "denoise": 0.35
+    },
+    "remix_strong": {
+      "file": "remix_strong.json",
+      "kind": "i2i",
+      "name": "Remix Strong",
+      "denoise": 0.75
+    },
+    "controlnet": {
+      "file": "controlnet.json",
+      "kind": "i2i",
+      "name": "ControlNet"
+    },
+    "t2v": {
+      "file": "packs/ltx25/t2v.json",
+      "kind": "t2v",
+      "name": "Text to Video"
+    },
+    "i2v": {
+      "file": "packs/ltx25/i2v.json",
+      "kind": "i2v",
+      "name": "Image to Video"
+    },
+    "ltxv_t2v": {
+      "file": "packs/ltxv/t2v.json",
+      "kind": "t2v",
+      "name": "LTX-Video Text to Video"
+    },
+    "ltxv_i2v": {
+      "file": "packs/ltxv/i2v.json",
+      "kind": "i2v",
+      "name": "LTX-Video Image to Video"
+    },
+    "wan_t2v": {
+      "file": "packs/wan/t2v.json",
+      "kind": "t2v",
+      "name": "Wan Text to Video"
+    },
+    "wan_i2v": {
+      "file": "packs/wan/i2v.json",
+      "kind": "i2v",
+      "name": "Wan Image to Video"
+    },
+    "minimax_t2i": {
+      "file": "packs/minimax/t2i.json",
+      "kind": "t2i",
+      "name": "MiniMax H3 Text to Image"
+    },
+    "minimax_t2v": {
+      "file": "packs/minimax/t2v.json",
+      "kind": "t2v",
+      "name": "MiniMax H3 Text to Video (audio)"
+    },
+    "minimax_i2v": {
+      "file": "packs/minimax/i2v.json",
+      "kind": "i2v",
+      "name": "MiniMax H3 Image to Video (audio)"
+    },
+    "minimax_r2v": {
+      "file": "packs/minimax/r2v.json",
+      "kind": "r2v",
+      "name": "MiniMax H3 Reference to Video (character/style lock)"
+    },
+    "ltx25_t2v": {
+      "file": "packs/ltx25/t2v.json",
+      "kind": "t2v",
+      "name": "LTX-2.5 Text to Video + Audio (distilled, two-stage)"
+    },
+    "ltx25_i2v": {
+      "file": "packs/ltx25/i2v.json",
+      "kind": "i2v",
+      "name": "LTX-2.5 Image to Video + Audio (distilled, two-stage)"
+    },
+    "ltx25_flf2v": {
+      "file": "packs/ltx25/flf2v.json",
+      "kind": "transition",
+      "name": "LTX-2.5 First/Last Frame to Video + Audio (distilled)"
+    },
+    "ltx25_animate": {
+      "file": "packs/ltx25/i2v.json",
+      "kind": "i2v",
+      "name": "LTX-2.5 Animate Image"
+    },
+    "ltx25_transition": {
+      "file": "packs/ltx25/flf2v.json",
+      "kind": "transition",
+      "name": "LTX-2.5 Start/End Frame Transition"
+    },
+    "t23d": {
+      "file": "t23d.json",
+      "kind": "t23d",
+      "name": "Text to 3D"
+    },
+    "i23d": {
+      "file": "i23d.json",
+      "kind": "i23d",
+      "name": "Image to 3D"
+    },
+    "t2a": {
+      "file": "packs/audio/sfx.json",
+      "kind": "t2a",
+      "name": "Text to Audio"
+    },
+    "ideogram4_t2i": {
+      "file": "ideogram4_t2i.json",
+      "kind": "t2i",
+      "name": "Ideogram 4"
+    },
+    "krea2_t2i": {
+      "file": "krea2_t2i.json",
+      "kind": "t2i",
+      "name": "Krea 2"
+    },
+    "detail": {
+      "file": "packs/krea2/detail_edit.json",
+      "kind": "i2i",
+      "name": "Detail (Edit LoRA)"
+    },
+    "upscale_detail": {
+      "file": "packs/krea2/upscale_detail.json",
+      "kind": "upscale",
+      "name": "Upscale + Detail"
+    },
+    "adetailer": {
+      "file": "packs/krea2/adetailer.json",
+      "kind": "i2i",
+      "name": "ADetailer"
+    },
+    "adetailer_auto": {
+      "file": "packs/krea2/adetailer.json",
+      "kind": "i2i",
+      "name": "Auto Refine"
+    },
+    "realism_lite": {
+      "file": "packs/krea2/realism_enhance.json",
+      "kind": "i2i",
+      "name": "Realism (Lite)"
+    },
+    "realism_pro": {
+      "file": "packs/krea2/realism_enhance_pro.json",
+      "kind": "i2i",
+      "name": "Realism (Pro+)"
+    },
+    "edit_qwen": {
+      "file": "packs/qwen-image-edit/edit.json",
+      "kind": "edit_qwen",
+      "name": "Qwen-Image-Edit"
+    },
+    "bg_remove": {
+      "file": "packs/utility/bg_remove.json",
+      "kind": "i2i",
+      "name": "Remove Background"
+    },
+    "edit_qwen21": {
+      "file": "packs/qwen-image-21/edit.json",
+      "kind": "edit_qwen21",
+      "name": "Qwen-Image 2.1 Edit"
+    },
+    "edit_qwen21_fast": {
+      "file": "packs/qwen-image-21/edit_turbo.json",
+      "kind": "edit_qwen21_fast",
+      "name": "Qwen-Image 2.1 Edit (Turbo)"
+    },
+    "edit_flux3": {
+      "file": "packs/flux3/edit.json",
+      "kind": "edit_flux3",
+      "name": "FLUX.3 Klein Edit"
+    },
+    "edit_flux3_fast": {
+      "file": "packs/flux3/edit_fast.json",
+      "kind": "edit_flux3_fast",
+      "name": "FLUX.3 Klein Edit (Distilled)"
+    },
+    "edit_fibo": {
+      "file": "packs/fibo2/edit.json",
+      "kind": "edit_fibo",
+      "name": "FIBO 2.0 Edit (Turbo)"
+    },
+    "edit_fibo_dev": {
+      "file": "packs/fibo2/edit_dev.json",
+      "kind": "edit_fibo_dev",
+      "name": "FIBO 2.0 Edit (Dev)"
+    },
+    "shots": {
+      "file": "packs/qwen-edit-2509/multi_shot.json",
+      "kind": "shots",
+      "name": "Shots (9 camera views)"
+    },
+    "zooms": {
+      "file": "packs/qwen-edit-2509/multi_shot.json",
+      "kind": "zooms",
+      "name": "Zooms (9-step zoom ladder)"
+    },
+    "layers": {
+      "file": "packs/qwen-layered/layers.json",
+      "kind": "layers",
+      "name": "Layers (Qwen-Image-Layered)"
+    },
+    "vectorize": {
+      "file": "packs/image-tools/vectorize.json",
+      "kind": "vectorize",
+      "name": "Vectorize (SVG)"
+    },
+    "see_through": {
+      "file": "packs/image-tools/see_through.json",
+      "kind": "see_through",
+      "name": "Layer Split (see-through)"
+    },
+    "breakdown": {
+      "file": "packs/image-tools/breakdown.json",
+      "kind": "breakdown",
+      "name": "Breakdown (SAM3 cutouts)"
+    },
+    "refocus": {
+      "file": "packs/image-tools/refocus.json",
+      "kind": "refocus",
+      "name": "Refocus (depth lens blur)"
+    },
+    "moge_geometry": {
+      "file": "packs/image-tools/moge_geometry.json",
+      "kind": "moge_geometry",
+      "name": "Depth, normals & 3D (MoGe)"
+    },
+    "rack_focus": {
+      "file": "packs/image-tools/rack_focus.json",
+      "kind": "rack_focus",
+      "name": "Rack focus (depth lens blur)"
+    },
+    "sdr_to_hdr": {
+      "file": "packs/image-tools/sdr_to_hdr.json",
+      "kind": "sdr_to_hdr",
+      "name": "SDR to HDR (HLG AVIF + EXR)"
+    },
+    "video_edit": {
+      "file": "packs/wan22/video_edit.json",
+      "kind": "video_edit",
+      "name": "Edit video (Lucy Edit Dev)"
+    },
+    "voiceover": {
+      "file": "packs/audio/voiceover.json",
+      "kind": "voiceover",
+      "name": "Voiceover (VibeVoice TTS: Realtime-0.5B stock voices, 1.5B clone)"
+    },
+    "add_sound": {
+      "file": "packs/audio/add_sound.json",
+      "kind": "add_sound",
+      "name": "Add Sound (MMAudio video-to-audio)"
+    },
+    "pipeline_script": {
+      "file": "packs/pipeline/script.json",
+      "kind": "pipeline_script",
+      "name": "Pipeline script (Qwen3-VL TextGenerate scene list)"
+    },
+    "pipeline_assemble": {
+      "file": "packs/pipeline/assemble.json",
+      "kind": "pipeline_assemble",
+      "name": "Pipeline assemble (captions + narration + music concat)"
+    },
+    "stitch_clips": {
+      "file": "packs/utility/stitch_clips.json",
+      "kind": "stitch_clips",
+      "name": "Stitch clips (concat + crossfade, stock video nodes)"
+    },
+    "grid_video": {
+      "file": "packs/utility/grid_video.json",
+      "kind": "grid_video",
+      "name": "Grid video (beat-synced grid music video, CJGridVideo)"
+    },
+    "motion_script": {
+      "file": "packs/pipeline/script.json",
+      "kind": "motion_script",
+      "name": "Motion Designer outline (Qwen3-VL TextGenerate)"
+    },
+    "dub_transcribe": {
+      "file": "packs/audio/dub_transcribe.json",
+      "kind": "dub_transcribe",
+      "name": "Dub video transcribe (Whisper ASR)"
+    },
+    "dub_translate": {
+      "file": "packs/pipeline/script.json",
+      "kind": "dub_translate",
+      "name": "Dub video translate (Qwen3-VL TextGenerate)"
+    },
+    "dub_voice": {
+      "file": "packs/audio/dub_voice.json",
+      "kind": "dub_voice",
+      "name": "Dub video cloned voice (VibeVoice-1.5B)"
+    },
+    "dub_mux": {
+      "file": "packs/audio/dub_mux.json",
+      "kind": "dub_mux",
+      "name": "Dub video soundtrack swap (audio only)"
+    },
+    "ltx_alpha_matte": {
+      "file": "packs/ltx25/vfx_alpha.json",
+      "kind": "ltx_alpha_matte",
+      "name": "LTX VFX alpha matte (LTX-2.5 IC-LoRA Alpha-Gen 0.9)"
+    },
+    "ltx_clean_plate": {
+      "file": "packs/ltx25/vfx_clean_plate.json",
+      "kind": "ltx_clean_plate",
+      "name": "LTX VFX clean plate (LTX-2.5 IC-LoRA Clean-Plate 1.0)"
+    },
+    "ltx_restore": {
+      "file": "packs/ltx25/vfx_restore.json",
+      "kind": "ltx_restore",
+      "name": "LTX restore (LTX-2.5 IC-LoRA Restore 1.0)"
+    },
+    "ltx_restore_deblur": {
+      "file": "packs/ltx25/vfx_restore_deblur.json",
+      "kind": "ltx_restore_deblur",
+      "name": "LTX restore deblur (LTX-2.5 IC-LoRA Deblur 0.9)"
+    },
+    "ltx_restore_decompress": {
+      "file": "packs/ltx25/vfx_restore_decompress.json",
+      "kind": "ltx_restore_decompress",
+      "name": "LTX restore decompress (LTX-2.5 IC-LoRA Decompression 0.9)"
+    },
+    "ltx_restore_colorize": {
+      "file": "packs/ltx25/vfx_restore_colorize.json",
+      "kind": "ltx_restore_colorize",
+      "name": "LTX restore colorize (LTX-2.5 IC-LoRA Colorization 0.9)"
+    },
+    "ltx_restore_refine": {
+      "file": "packs/ltx25/vfx_restore_refine.json",
+      "kind": "ltx_restore_refine",
+      "name": "LTX restore refine details (LTX-2.5 IC-LoRA Refine-Details 1.0)"
+    },
+    "ltx_day_to_night": {
+      "file": "packs/ltx25/vfx_day_to_night.json",
+      "kind": "ltx_day_to_night",
+      "name": "LTX VFX day to night (LTX-2.5 IC-LoRA Day-To-Night 0.9)"
+    },
+    "ltx_add_water": {
+      "file": "packs/ltx25/vfx_water.json",
+      "kind": "ltx_add_water",
+      "name": "LTX VFX add water (LTX-2.5 IC-LoRA Water-Simulation 0.9)"
+    },
+    "ltx_cinemagraph": {
+      "file": "packs/ltx25/vfx_cinemagraph.json",
+      "kind": "ltx_cinemagraph",
+      "name": "LTX VFX cinemagraph (LTX-2.5 LoRA Cinemagraph 0.9)"
+    },
+    "ltx_slow_motion": {
+      "file": "packs/ltx25/vfx_slowmo.json",
+      "kind": "ltx_slow_motion",
+      "name": "LTX VFX slow motion (LTX-2.5 LoRA Slow-Motion-Control 1.0)"
+    },
+    "ltx_ripple": {
+      "file": "packs/ltx25/vfx_ripple.json",
+      "kind": "ltx_ripple",
+      "name": "LTX VFX ripple edit (LTX-2.5 IC-LoRA LTX Ripple v1.1)"
+    },
+    "ltx_edge_control": {
+      "file": "packs/ltx25/vfx_union_control.json",
+      "kind": "ltx_edge_control",
+      "name": "LTX VFX edge control (LTX-2.3 IC-LoRA Union Control)"
+    },
+    "ltx_blockout_render": {
+      "file": "packs/ltx25/vfx_blockout.json",
+      "kind": "ltx_blockout_render",
+      "name": "LTX VFX blockout to render (LTX-2.3 IC-LoRA Union Control, Depth Anything 3 depth)"
+    },
+    "ltx_sdr_to_hdr": {
+      "file": "packs/ltx25/vfx_sdr_to_hdr.json",
+      "kind": "ltx_sdr_to_hdr",
+      "name": "LTX VFX SDR to HDR (LTX-2.5 IC-LoRA SDR-To-HDR 1.0, HLG video + ACEScg EXR)"
+    },
+    "ltx_reshoot": {
+      "file": "packs/ltx25/vfx_reshoot.json",
+      "kind": "ltx_reshoot",
+      "name": "LTX VFX re-shoot from a new angle (Qwen-Image 2.1 camera angles + LTX-2.5 i2v)"
+    },
+    "ltx_exploded_view": {
+      "file": "packs/ltx25/vfx_exploded_view.json",
+      "kind": "ltx_exploded_view",
+      "name": "LTX VFX exploded view (LTX-2.5 LoRA XPLDV v5)"
+    },
+    "ltx_paint_fluid": {
+      "file": "packs/ltx25/vfx_fluid.json",
+      "kind": "ltx_paint_fluid",
+      "name": "LTX VFX paint fluid (LTX-2.5 IC-LoRA ainvfx-fluid)"
+    },
+    "dub_transcribe_speakers": {
+      "file": "packs/audio/dub_transcribe_speakers.json",
+      "kind": "dub_transcribe_speakers",
+      "name": "Dub video transcribe with speakers (VibeVoice-ASR)"
+    },
+    "dub_voice_chatterbox": {
+      "file": "packs/audio/dub_voice_chatterbox.json",
+      "kind": "dub_voice_chatterbox",
+      "name": "Dub video voice (Chatterbox multilingual)"
+    },
+    "voice_change": {
+      "file": "packs/audio/voice_change.json",
+      "kind": "voice_change",
+      "name": "Voice changer (Chatterbox VC)"
+    },
+    "voice_change_video": {
+      "file": "packs/audio/voice_change_video.json",
+      "kind": "voice_change_video",
+      "name": "Voice changer on a clip (Chatterbox VC + remux)"
+    },
+    "overlay_composite": {
+      "file": "packs/utility/overlay_composite.json",
+      "kind": "overlay_composite",
+      "name": "Overlay Composite (RGBA stickers over video)"
+    },
+    "ltx_layout_render": {
+      "file": "packs/ltx25/vfx_layout_render.json",
+      "kind": "ltx_layout_render",
+      "name": "LTX VFX layout to render (LTX-2.5 IC-LoRA Layout-To-Render 1.0, two-stage)"
+    },
+    "ltx_ingredients": {
+      "file": "packs/ltx25/vfx_ingredients.json",
+      "kind": "ltx_ingredients",
+      "name": "LTX VFX ingredients to video (LTX-2.5 IC-LoRA Ingredients 0.9)"
+    }
+  },
+  "actions": {
+    "vary_subtle": {
+      "id": "vary_subtle",
+      "name": "Vary Subtle",
+      "icon": "wand-2",
+      "template": "vary_subtle",
+      "requiresImage": true,
+      "group": "vary"
+    },
+    "vary_strong": {
+      "id": "vary_strong",
+      "name": "Vary Strong",
+      "icon": "wand-2",
+      "template": "vary_strong",
+      "requiresImage": true,
+      "group": "vary"
+    },
+    "upscale_subtle": {
+      "id": "upscale_subtle",
+      "name": "Upscale Subtle",
+      "icon": "maximize-2",
+      "template": "upscale_subtle",
+      "requiresImage": true,
+      "group": "upscale"
+    },
+    "upscale_creative": {
+      "id": "upscale_creative",
+      "name": "Upscale Creative",
+      "icon": "sparkles",
+      "template": "upscale_creative",
+      "requiresImage": true,
+      "group": "upscale"
+    },
+    "upscale_redetail": {
+      "id": "upscale_redetail",
+      "name": "Upscale Re-detail",
+      "icon": "sparkles",
+      "template": "i2i",
+      "requiresImage": true,
+      "group": "upscale"
+    },
+    "remix_subtle": {
+      "id": "remix_subtle",
+      "name": "Remix Subtle",
+      "icon": "shuffle",
+      "template": "remix_subtle",
+      "requiresImage": true,
+      "requiresPrompt": true,
+      "group": "remix"
+    },
+    "remix_strong": {
+      "id": "remix_strong",
+      "name": "Remix Strong",
+      "icon": "shuffle",
+      "template": "remix_strong",
+      "requiresImage": true,
+      "requiresPrompt": true,
+      "group": "remix"
+    },
+    "pan_up": {
+      "id": "pan_up",
+      "name": "Pan Up",
+      "icon": "arrow-up",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "direction": "up"
+      },
+      "group": "pan"
+    },
+    "pan_down": {
+      "id": "pan_down",
+      "name": "Pan Down",
+      "icon": "arrow-down",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "direction": "down"
+      },
+      "group": "pan"
+    },
+    "pan_left": {
+      "id": "pan_left",
+      "name": "Pan Left",
+      "icon": "arrow-left",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "direction": "left"
+      },
+      "group": "pan"
+    },
+    "pan_right": {
+      "id": "pan_right",
+      "name": "Pan Right",
+      "icon": "arrow-right",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "direction": "right"
+      },
+      "group": "pan"
+    },
+    "zoom_1_5x": {
+      "id": "zoom_1_5x",
+      "name": "Zoom 1.5x",
+      "icon": "zoom-out",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "zoom": 1.5
+      },
+      "group": "zoom"
+    },
+    "zoom_2x": {
+      "id": "zoom_2x",
+      "name": "Zoom 2x",
+      "icon": "zoom-out",
+      "template": "outpaint",
+      "requiresImage": true,
+      "params": {
+        "zoom": 2.0
+      },
+      "group": "zoom"
+    },
+    "rerun": {
+      "id": "rerun",
+      "name": "Rerun",
+      "icon": "refresh-cw",
+      "template": "t2i",
+      "requiresPrompt": true,
+      "group": "more"
+    },
+    "edit": {
+      "id": "edit",
+      "name": "Edit",
+      "icon": "pencil",
+      "template": "inpaint",
+      "requiresImage": true,
+      "requiresMask": true,
+      "group": "more"
+    },
+    "animate_low": {
+      "id": "animate_low",
+      "name": "Animate Low Motion",
+      "icon": "play",
+      "template": "i2v",
+      "requiresImage": true,
+      "params": {
+        "motion": "low"
+      },
+      "group": "animate"
+    },
+    "animate_high": {
+      "id": "animate_high",
+      "name": "Animate High Motion",
+      "icon": "play",
+      "template": "i2v",
+      "requiresImage": true,
+      "params": {
+        "motion": "high"
+      },
+      "group": "animate"
+    },
+    "make_3d": {
+      "id": "make_3d",
+      "name": "Make 3D",
+      "icon": "box",
+      "template": "make_3d_trellis",
+      "requiresImage": true,
+      "group": "make3d"
+    },
+    "detail": {
+      "id": "detail",
+      "name": "Detail",
+      "icon": "sparkles",
+      "template": "detail",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_instruct": {
+      "id": "edit_instruct",
+      "name": "Instruct Edit",
+      "icon": "pencil",
+      "template": "edit_instruct",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_instruct_dual": {
+      "id": "edit_instruct_dual",
+      "name": "Instruct Edit (2 images)",
+      "icon": "pencil",
+      "template": "edit_instruct_dual",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "character_swap": {
+      "id": "character_swap",
+      "name": "Replace Person in Video",
+      "icon": "users",
+      "template": "character_swap",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "face_swap": {
+      "id": "face_swap",
+      "name": "Swap Face in Video",
+      "icon": "smile",
+      "template": "face_swap",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "person_remove": {
+      "id": "person_remove",
+      "name": "Remove Person from Video",
+      "icon": "eraser",
+      "template": "person_remove",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "music_video": {
+      "id": "music_video",
+      "name": "Music Video Segment",
+      "icon": "music",
+      "template": "music_video",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "music_video_assemble": {
+      "id": "music_video_assemble",
+      "name": "Music Video Assemble",
+      "icon": "music",
+      "template": "music_video_assemble",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "music_video_stems": {
+      "id": "music_video_stems",
+      "name": "Music Video Stems",
+      "icon": "music",
+      "template": "music_video_stems",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "character_swap_masked": {
+      "id": "character_swap_masked",
+      "name": "Replace Person in Video (Mannequin)",
+      "icon": "users",
+      "template": "character_swap_masked",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "cast_swap": {
+      "id": "cast_swap",
+      "name": "Recast Several People in Video",
+      "icon": "users",
+      "template": "cast_swap",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_bg_swap": {
+      "id": "video_bg_swap",
+      "name": "Swap Video Background (H3)",
+      "icon": "layers",
+      "template": "video_bg_swap",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_object_add": {
+      "id": "video_object_add",
+      "name": "Add Object to Video (H3)",
+      "icon": "box",
+      "template": "video_object_add",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_object_remove": {
+      "id": "video_object_remove",
+      "name": "Remove Object from Video",
+      "icon": "eraser",
+      "template": "video_object_remove",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_remove_text": {
+      "id": "video_remove_text",
+      "name": "Remove Text from Video",
+      "icon": "eraser",
+      "template": "video_remove_text",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_object_swap": {
+      "id": "video_object_swap",
+      "name": "Swap Object in Video",
+      "icon": "shuffle",
+      "template": "video_object_swap",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_bg_change": {
+      "id": "video_bg_change",
+      "name": "Change Video Background",
+      "icon": "video",
+      "template": "video_bg_change",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_palette": {
+      "id": "video_palette",
+      "name": "Video Color Palette",
+      "icon": "palette",
+      "template": "video_palette",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "wan_animate": {
+      "id": "wan_animate",
+      "name": "Animate Character",
+      "icon": "person-standing",
+      "template": "wan_animate",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "lipsync": {
+      "id": "lipsync",
+      "name": "Lipsync / Talking Photo",
+      "icon": "mic",
+      "template": "lipsync",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "video_lipsync": {
+      "id": "video_lipsync",
+      "name": "Lipsync onto Video",
+      "icon": "mic",
+      "template": "video_lipsync",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "talking_avatar": {
+      "id": "talking_avatar",
+      "name": "Talking Avatar",
+      "icon": "mic",
+      "template": "talking_avatar",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "orbit_360": {
+      "id": "orbit_360",
+      "name": "360 Orbit Video",
+      "icon": "rotate-3d",
+      "template": "orbit_360",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "camera_move": {
+      "id": "camera_move",
+      "name": "Camera Move Video",
+      "icon": "video",
+      "template": "camera_move",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "transition": {
+      "id": "transition",
+      "name": "Transition Video",
+      "icon": "video",
+      "template": "transition",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "ref_video": {
+      "id": "ref_video",
+      "name": "Reference to Video",
+      "icon": "video",
+      "template": "ref_video",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "multiframe_ref": {
+      "id": "multiframe_ref",
+      "name": "Multiframe Reference",
+      "icon": "video",
+      "template": "multiframe_ref",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "h3_charsheet": {
+      "id": "h3_charsheet",
+      "name": "H3 Character Sheet",
+      "icon": "layout-grid",
+      "template": "h3_charsheet",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "ltx25_animate": {
+      "id": "ltx25_animate",
+      "name": "Animate Image (LTX-2.5)",
+      "icon": "video",
+      "template": "ltx25_animate",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "ltx25_transition": {
+      "id": "ltx25_transition",
+      "name": "Transition Video (LTX-2.5)",
+      "icon": "video",
+      "template": "ltx25_transition",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "wan_motion": {
+      "id": "wan_motion",
+      "name": "Motion Presets Video",
+      "icon": "video",
+      "template": "wan_motion",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "wan_camera": {
+      "id": "wan_camera",
+      "name": "Camera Control Video",
+      "icon": "video",
+      "template": "wan_camera",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "wan_move": {
+      "id": "wan_move",
+      "name": "Trajectory Motion",
+      "icon": "video",
+      "template": "wan_move",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "video_bg_remove": {
+      "id": "video_bg_remove",
+      "name": "Remove Video Background",
+      "icon": "video",
+      "template": "video_bg_remove",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "seedvr2_upscale": {
+      "id": "seedvr2_upscale",
+      "name": "Upscale (SeedVR2)",
+      "icon": "maximize-2",
+      "template": "seedvr2_upscale",
+      "requiresImage": false,
+      "group": "upscale"
+    },
+    "upscale_vosr2": {
+      "id": "upscale_vosr2",
+      "name": "Photo upscale (VOSR2)",
+      "icon": "maximize-2",
+      "template": "upscale_vosr2",
+      "requiresImage": true,
+      "group": "upscale"
+    },
+    "flashvsr_upscale": {
+      "id": "flashvsr_upscale",
+      "name": "Upscale video (FlashVSR)",
+      "icon": "maximize-2",
+      "template": "flashvsr_upscale",
+      "requiresImage": false,
+      "group": "upscale"
+    },
+    "subject_matte": {
+      "id": "subject_matte",
+      "name": "Remove video background (MatAnyone2)",
+      "icon": "video",
+      "template": "subject_matte",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "rtx_upscale": {
+      "id": "rtx_upscale",
+      "name": "Upscale video (NVIDIA RTX)",
+      "icon": "maximize-2",
+      "template": "rtx_upscale",
+      "requiresImage": false,
+      "group": "upscale"
+    },
+    "ltx_upscale_x2": {
+      "id": "ltx_upscale_x2",
+      "name": "Upscale video (LTX x2)",
+      "icon": "maximize-2",
+      "template": "ltx_upscale_x2",
+      "requiresImage": false,
+      "group": "upscale"
+    },
+    "video_upscale": {
+      "id": "video_upscale",
+      "name": "Upscale video",
+      "icon": "maximize-2",
+      "template": "video_upscale",
+      "requiresImage": false,
+      "group": "upscale"
+    },
+    "interpolate": {
+      "id": "interpolate",
+      "name": "Smooth motion / slow-mo",
+      "icon": "video",
+      "template": "interpolate",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "relight": {
+      "id": "relight",
+      "name": "Relight",
+      "icon": "sun",
+      "template": "relight",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "material_maps": {
+      "id": "material_maps",
+      "name": "Material Maps",
+      "icon": "layers",
+      "template": "material_maps",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "light_migration": {
+      "id": "light_migration",
+      "name": "Relight: match a reference",
+      "icon": "sun",
+      "template": "light_migration",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "anima_ref": {
+      "id": "anima_ref",
+      "name": "Character from reference (Anima)",
+      "icon": "user-round",
+      "template": "anima_ref",
+      "requiresImage": true,
+      "requiresPrompt": true,
+      "group": "refine"
+    },
+    "make_3d_trellis": {
+      "id": "make_3d_trellis",
+      "name": "Make 3D (TRELLIS.2)",
+      "icon": "box",
+      "template": "make_3d_trellis",
+      "requiresImage": true,
+      "group": "make3d"
+    },
+    "image_to_splat": {
+      "id": "image_to_splat",
+      "name": "Image to 3D (TripoSplat)",
+      "icon": "box",
+      "template": "image_to_splat",
+      "requiresImage": true,
+      "group": "make3d"
+    },
+    "body_3d": {
+      "id": "body_3d",
+      "name": "Body 3D (SAM 3D Body)",
+      "icon": "box",
+      "template": "body_3d",
+      "requiresImage": false,
+      "group": "make3d"
+    },
+    "music": {
+      "id": "music",
+      "name": "Music",
+      "icon": "music",
+      "template": "music",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "sfx": {
+      "id": "sfx",
+      "name": "Sound Effects",
+      "icon": "music",
+      "template": "sfx",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "sa3_t2a": {
+      "id": "sa3_t2a",
+      "name": "Music & Sound",
+      "icon": "music",
+      "template": "sa3_t2a",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "sa3_a2a": {
+      "id": "sa3_a2a",
+      "name": "Restyle Audio",
+      "icon": "music",
+      "template": "sa3_a2a",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "sa3_inpaint": {
+      "id": "sa3_inpaint",
+      "name": "Fix Audio Section",
+      "icon": "music",
+      "template": "sa3_inpaint",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "sa3_extend": {
+      "id": "sa3_extend",
+      "name": "Extend Audio",
+      "icon": "music",
+      "template": "sa3_extend",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "vace_restyle": {
+      "id": "vace_restyle",
+      "name": "Restyle Video",
+      "icon": "video",
+      "template": "vace_restyle",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "vace_reframe": {
+      "id": "vace_reframe",
+      "name": "Reframe Video",
+      "icon": "video",
+      "template": "vace_reframe",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_expand": {
+      "id": "video_expand",
+      "name": "Expand Video",
+      "icon": "video",
+      "template": "video_expand",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "video_retake": {
+      "id": "video_retake",
+      "name": "Retake Video",
+      "icon": "video",
+      "template": "video_retake",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "vace_extend": {
+      "id": "vace_extend",
+      "name": "Extend Video",
+      "icon": "video",
+      "template": "vace_extend",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "edit_structural": {
+      "id": "edit_structural",
+      "name": "Style Edit (locked)",
+      "icon": "pencil",
+      "template": "edit_structural",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_pose": {
+      "id": "edit_pose",
+      "name": "Pose Character",
+      "icon": "pencil",
+      "template": "edit_pose",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_ostris": {
+      "id": "edit_ostris",
+      "name": "Ostris Edit",
+      "icon": "pencil",
+      "template": "edit_ostris",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_inpaint": {
+      "id": "edit_inpaint",
+      "name": "Inpaint",
+      "icon": "paintbrush",
+      "template": "edit_inpaint",
+      "requiresImage": true,
+      "requiresMask": true,
+      "params": {
+        "steps": 8,
+        "cfg": 1
+      },
+      "group": "refine"
+    },
+    "upscale_detail": {
+      "id": "upscale_detail",
+      "name": "Upscale + Detail",
+      "icon": "maximize-2",
+      "template": "upscale_detail",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "adetailer": {
+      "id": "adetailer",
+      "name": "ADetailer",
+      "icon": "scan-face",
+      "template": "adetailer",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "adetailer_auto": {
+      "id": "adetailer_auto",
+      "name": "Auto Refine",
+      "icon": "wand-sparkles",
+      "template": "adetailer_auto",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "realism_lite": {
+      "id": "realism_lite",
+      "name": "Realism (Lite)",
+      "icon": "camera",
+      "template": "realism_lite",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "realism_pro": {
+      "id": "realism_pro",
+      "name": "Realism (Pro+)",
+      "icon": "camera",
+      "template": "realism_pro",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_qwen": {
+      "id": "edit_qwen",
+      "name": "Qwen Edit",
+      "icon": "pencil",
+      "template": "edit_qwen",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "bg_remove": {
+      "id": "bg_remove",
+      "name": "Remove Background",
+      "icon": "eraser",
+      "template": "bg_remove",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_qwen21": {
+      "id": "edit_qwen21",
+      "name": "Qwen 2.1 Edit",
+      "icon": "pencil",
+      "template": "edit_qwen21",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_qwen21_fast": {
+      "id": "edit_qwen21_fast",
+      "name": "Qwen 2.1 Edit (Turbo)",
+      "icon": "pencil",
+      "template": "edit_qwen21_fast",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_flux3": {
+      "id": "edit_flux3",
+      "name": "FLUX.3 Edit",
+      "icon": "pencil",
+      "template": "edit_flux3",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_flux3_fast": {
+      "id": "edit_flux3_fast",
+      "name": "FLUX.3 Edit (Distilled)",
+      "icon": "pencil",
+      "template": "edit_flux3_fast",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_fibo": {
+      "id": "edit_fibo",
+      "name": "FIBO 2.0 Edit",
+      "icon": "pencil",
+      "template": "edit_fibo",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "edit_fibo_dev": {
+      "id": "edit_fibo_dev",
+      "name": "FIBO 2.0 Edit (Dev)",
+      "icon": "pencil",
+      "template": "edit_fibo_dev",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "shots": {
+      "id": "shots",
+      "name": "Shots",
+      "icon": "camera",
+      "template": "shots",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "zooms": {
+      "id": "zooms",
+      "name": "Zooms",
+      "icon": "zoom-in",
+      "template": "zooms",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "layers": {
+      "id": "layers",
+      "name": "Layers",
+      "icon": "layers",
+      "template": "layers",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "vectorize": {
+      "id": "vectorize",
+      "name": "Vectorize",
+      "icon": "pen-tool",
+      "template": "vectorize",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "see_through": {
+      "id": "see_through",
+      "name": "Layer Split",
+      "icon": "layers",
+      "template": "see_through",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "breakdown": {
+      "id": "breakdown",
+      "name": "Breakdown",
+      "icon": "scissors",
+      "template": "breakdown",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "refocus": {
+      "id": "refocus",
+      "name": "Refocus",
+      "icon": "aperture",
+      "template": "refocus",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "moge_geometry": {
+      "id": "moge_geometry",
+      "name": "Depth & Normals",
+      "icon": "box",
+      "template": "moge_geometry",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "rack_focus": {
+      "id": "rack_focus",
+      "name": "Rack focus",
+      "icon": "aperture",
+      "template": "rack_focus",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "sdr_to_hdr": {
+      "id": "sdr_to_hdr",
+      "name": "SDR to HDR",
+      "icon": "sun",
+      "template": "sdr_to_hdr",
+      "requiresImage": true,
+      "group": "refine"
+    },
+    "video_edit": {
+      "id": "video_edit",
+      "name": "Edit video",
+      "icon": "wand-2",
+      "template": "video_edit",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "voiceover": {
+      "id": "voiceover",
+      "name": "Voiceover",
+      "icon": "music",
+      "template": "voiceover",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "add_sound": {
+      "id": "add_sound",
+      "name": "Add Sound",
+      "icon": "music",
+      "template": "add_sound",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "pipeline_script": {
+      "id": "pipeline_script",
+      "name": "Pipeline Script",
+      "icon": "wand-2",
+      "template": "pipeline_script",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "pipeline_assemble": {
+      "id": "pipeline_assemble",
+      "name": "Pipeline Assemble",
+      "icon": "wand-2",
+      "template": "pipeline_assemble",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "stitch_clips": {
+      "id": "stitch_clips",
+      "name": "Stitch Clips",
+      "icon": "video",
+      "template": "stitch_clips",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "grid_video": {
+      "id": "grid_video",
+      "name": "Grid Video",
+      "icon": "layout-grid",
+      "template": "grid_video",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "motion_script": {
+      "id": "motion_script",
+      "name": "Motion Script",
+      "icon": "wand-2",
+      "template": "motion_script",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "dub_transcribe_speakers": {
+      "id": "dub_transcribe_speakers",
+      "name": "Dub Transcribe Speakers",
+      "icon": "wand-2",
+      "template": "dub_transcribe_speakers",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "dub_transcribe": {
+      "id": "dub_transcribe",
+      "name": "Dub Transcribe",
+      "icon": "wand-2",
+      "template": "dub_transcribe",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "dub_translate": {
+      "id": "dub_translate",
+      "name": "Dub Translate",
+      "icon": "wand-2",
+      "template": "dub_translate",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "dub_voice": {
+      "id": "dub_voice",
+      "name": "Dub Voice",
+      "icon": "wand-2",
+      "template": "dub_voice",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "dub_mux": {
+      "id": "dub_mux",
+      "name": "Dub Mux",
+      "icon": "wand-2",
+      "template": "dub_mux",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "ltx_alpha_matte": {
+      "id": "ltx_alpha_matte",
+      "name": "Alpha Matte",
+      "icon": "video",
+      "template": "ltx_alpha_matte",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_clean_plate": {
+      "id": "ltx_clean_plate",
+      "name": "Clean Plate",
+      "icon": "video",
+      "template": "ltx_clean_plate",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_restore": {
+      "id": "ltx_restore",
+      "name": "Restore video",
+      "icon": "video",
+      "template": "ltx_restore",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_restore_deblur": {
+      "id": "ltx_restore_deblur",
+      "name": "Restore video · Deblur",
+      "icon": "video",
+      "template": "ltx_restore_deblur",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_restore_decompress": {
+      "id": "ltx_restore_decompress",
+      "name": "Restore video · Decompress",
+      "icon": "video",
+      "template": "ltx_restore_decompress",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_restore_colorize": {
+      "id": "ltx_restore_colorize",
+      "name": "Restore video · Colorize",
+      "icon": "video",
+      "template": "ltx_restore_colorize",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_restore_refine": {
+      "id": "ltx_restore_refine",
+      "name": "Restore video · Refine details",
+      "icon": "video",
+      "template": "ltx_restore_refine",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_day_to_night": {
+      "id": "ltx_day_to_night",
+      "name": "Day to Night",
+      "icon": "video",
+      "template": "ltx_day_to_night",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_add_water": {
+      "id": "ltx_add_water",
+      "name": "Add Water",
+      "icon": "video",
+      "template": "ltx_add_water",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_cinemagraph": {
+      "id": "ltx_cinemagraph",
+      "name": "Cinemagraph",
+      "icon": "video",
+      "template": "ltx_cinemagraph",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "ltx_slow_motion": {
+      "id": "ltx_slow_motion",
+      "name": "Slow Motion",
+      "icon": "video",
+      "template": "ltx_slow_motion",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "ltx_ripple": {
+      "id": "ltx_ripple",
+      "name": "Ripple Edit",
+      "icon": "video",
+      "template": "ltx_ripple",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_edge_control": {
+      "id": "ltx_edge_control",
+      "name": "Edge Control",
+      "icon": "video",
+      "template": "ltx_edge_control",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_blockout_render": {
+      "id": "ltx_blockout_render",
+      "name": "Blockout to Render",
+      "icon": "video",
+      "template": "ltx_blockout_render",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_sdr_to_hdr": {
+      "id": "ltx_sdr_to_hdr",
+      "name": "SDR to HDR (video)",
+      "icon": "video",
+      "template": "ltx_sdr_to_hdr",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_reshoot": {
+      "id": "ltx_reshoot",
+      "name": "Re-shoot",
+      "icon": "video",
+      "template": "ltx_reshoot",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_exploded_view": {
+      "id": "ltx_exploded_view",
+      "name": "Exploded View",
+      "icon": "video",
+      "template": "ltx_exploded_view",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "ltx_paint_fluid": {
+      "id": "ltx_paint_fluid",
+      "name": "Paint Fluid",
+      "icon": "video",
+      "template": "ltx_paint_fluid",
+      "requiresImage": true,
+      "group": "animate"
+    },
+    "dub_voice_chatterbox": {
+      "id": "dub_voice_chatterbox",
+      "name": "Dub Voice (Chatterbox)",
+      "icon": "wand-2",
+      "template": "dub_voice_chatterbox",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "voice_change": {
+      "id": "voice_change",
+      "name": "Voice Changer",
+      "icon": "wand-2",
+      "template": "voice_change",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "voice_change_video": {
+      "id": "voice_change_video",
+      "name": "Voice Changer (Clip)",
+      "icon": "wand-2",
+      "template": "voice_change_video",
+      "requiresImage": false,
+      "group": "audio"
+    },
+    "overlay_composite": {
+      "id": "overlay_composite",
+      "name": "Overlay Composite",
+      "icon": "layers",
+      "template": "overlay_composite",
+      "requiresImage": false,
+      "group": "animate"
+    },
+    "ltx_layout_render": {
+      "id": "ltx_layout_render",
+      "name": "Layout to Render",
+      "icon": "video",
+      "template": "ltx_layout_render",
+      "requiresImage": false,
+      "group": "refine"
+    },
+    "ltx_ingredients": {
+      "id": "ltx_ingredients",
+      "name": "Ingredients",
+      "icon": "video",
+      "template": "ltx_ingredients",
+      "requiresImage": true,
+      "group": "animate"
+    }
+  },
+  "actionGroups": {
+    "vary": {
+      "name": "Vary",
+      "order": 1
+    },
+    "upscale": {
+      "name": "Upscale",
+      "order": 2
+    },
+    "remix": {
+      "name": "Remix",
+      "order": 3
+    },
+    "pan": {
+      "name": "Pan",
+      "order": 4
+    },
+    "zoom": {
+      "name": "Zoom",
+      "order": 5
+    },
+    "more": {
+      "name": "More",
+      "order": 6
+    },
+    "animate": {
+      "name": "Animate",
+      "order": 7
+    },
+    "make3d": {
+      "name": "Make 3D",
+      "order": 8
+    }
+  },
+  "params": {
+    "ar": {
+      "flags": [
+        "--ar",
+        "--aspect"
+      ],
+      "kind": "aspect",
+      "description": "Aspect ratio (e.g., 16:9, 4:3, 1:1)",
+      "nodeMapping": {
+        "node": "EmptyLatentImage",
+        "params": [
+          "width",
+          "height"
+        ]
+      }
+    },
+    "seed": {
+      "flags": [
+        "--seed"
+      ],
+      "kind": "int",
+      "description": "Random seed for reproducibility",
+      "min": 0,
+      "max": 2147483647,
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "seed"
+      }
+    },
+    "steps": {
+      "flags": [
+        "--steps"
+      ],
+      "kind": "int",
+      "min": 1,
+      "max": 150,
+      "description": "Number of sampling steps",
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "steps"
+      }
+    },
+    "cfg": {
+      "flags": [
+        "--cfg"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 30,
+      "description": "Classifier-free guidance scale",
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "cfg"
+      }
+    },
+    "no": {
+      "flags": [
+        "--no"
+      ],
+      "kind": "string",
+      "multi": true,
+      "description": "Negative prompt terms",
+      "nodeMapping": {
+        "node": "CLIPTextEncode",
+        "param": "text",
+        "target": "negative"
+      }
+    },
+    "region": {
+      "flags": [
+        "--region"
+      ],
+      "kind": "string",
+      "multi": true,
+      "description": "Regional prompt: --region <area>[::strength] <prompt>. Area = left/right/top/bottom/center/top-left/top-right/bottom-left/bottom-right/left-third/middle-third/right-third/top-third/bottom-third or x,y,w,h fractions. Repeat up to 8. SDXL/SD1.5 + Krea2/FLUX.3/Qwen-Image 2.1 t2i/i2i",
+      "nodeMapping": {
+        "node": "ConditioningSetAreaPercentage",
+        "params": [
+          "width",
+          "height",
+          "x",
+          "y",
+          "strength"
+        ]
+      }
+    },
+    "stylize": {
+      "flags": [
+        "--stylize",
+        "--s"
+      ],
+      "kind": "int",
+      "min": 0,
+      "max": 1000,
+      "default": 100,
+      "description": "Stylization strength (0-1000) · slider LoRAs coming soon",
+      "comfyMapping": {
+        "type": "cfg_scale",
+        "formula": "5 + (value / 1000) * 10"
+      }
+    },
+    "chaos": {
+      "flags": [
+        "--chaos",
+        "--c"
+      ],
+      "kind": "int",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "description": "Variation in results (0-100)",
+      "comfyMapping": {
+        "type": "seed_variance",
+        "formula": "value"
+      }
+    },
+    "weird": {
+      "flags": [
+        "--weird",
+        "--w"
+      ],
+      "kind": "int",
+      "min": 0,
+      "max": 3000,
+      "default": 0,
+      "hidden": true,
+      "description": "Reserved: parsed so old prompts still work, no effect yet"
+    },
+    "repeat": {
+      "flags": [
+        "--repeat",
+        "--r"
+      ],
+      "kind": "int",
+      "min": 1,
+      "max": 40,
+      "description": "Number of job sets to create"
+    },
+    "tile": {
+      "flags": [
+        "--tile"
+      ],
+      "kind": "flag",
+      "description": "Generate seamlessly tileable images"
+    },
+    "speedTier": {
+      "flags": [
+        "--tier"
+      ],
+      "kind": "string",
+      "description": "Speed: draft | standard | quality. Draft uses fewer steps or a distilled variant, quality adds steps where the model benefits. Standard keeps the model's defaults. --steps wins."
+    },
+    "draft": {
+      "flags": [
+        "--draft"
+      ],
+      "kind": "flag",
+      "description": "Draft-then-upscale: generate at reduced resolution fast, then auto-upscale the result. Use --draft_scale to control the reduction factor (default 0.5)."
+    },
+    "draft_scale": {
+      "flags": [
+        "--draft_scale"
+      ],
+      "kind": "float",
+      "min": 0.25,
+      "max": 1.0,
+      "default": 0.5,
+      "description": "Resolution scale factor for --draft mode (0.25-1.0, default 0.5)"
+    },
+    "refiner": {
+      "flags": [
+        "--refiner"
+      ],
+      "kind": "string",
+      "description": "Refiner slot. Any action id (e.g. upscale_subtle, upscale_detail) auto-fires after --draft; x2_detail swaps the H3 video decode VAE to X2-Detail at generation time; sol_refiner reserved (CUDA box)"
+    },
+    "raw": {
+      "flags": [
+        "--raw"
+      ],
+      "kind": "flag",
+      "description": "Less stylized, more literal interpretation"
+    },
+    "quality": {
+      "flags": [
+        "--quality",
+        "--q"
+      ],
+      "kind": "float",
+      "min": 0.25,
+      "max": 2,
+      "default": 1,
+      "description": "Quality/time tradeoff multiplier",
+      "comfyMapping": {
+        "type": "steps_multiplier"
+      }
+    },
+    "version": {
+      "flags": [
+        "--version",
+        "--v"
+      ],
+      "kind": "string",
+      "description": "Model version to use"
+    },
+    "niji": {
+      "flags": [
+        "--niji"
+      ],
+      "kind": "flag",
+      "description": "Use anime-focused model"
+    },
+    "sref": {
+      "flags": [
+        "--sref"
+      ],
+      "kind": "string",
+      "multi": true,
+      "description": "Style reference image URL",
+      "comfyMapping": {
+        "type": "ipadapter_style"
+      }
+    },
+    "sw": {
+      "flags": [
+        "--sw"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 1000,
+      "default": 100,
+      "description": "Style reference weight (0-1000, default 100)"
+    },
+    "sv": {
+      "flags": [
+        "--sv"
+      ],
+      "kind": "string",
+      "description": "Style engine: 2 = image style reference (chosen automatically for an image --sref)"
+    },
+    "cref": {
+      "flags": [
+        "--cref"
+      ],
+      "kind": "string",
+      "description": "Character reference image URL or ID",
+      "comfyMapping": {
+        "type": "ipadapter_character"
+      }
+    },
+    "cw": {
+      "flags": [
+        "--cw"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "description": "Character reference weight (0=face only, 100=full)"
+    },
+    "oref": {
+      "flags": [
+        "--oref"
+      ],
+      "kind": "string",
+      "description": "Object reference image"
+    },
+    "iw": {
+      "flags": [
+        "--iw"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 3,
+      "default": 1,
+      "description": "Image prompt weight"
+    },
+    "profile": {
+      "flags": [
+        "--profile",
+        "--p"
+      ],
+      "kind": "string",
+      "hidden": true,
+      "unsupported": true,
+      "description": "Not supported: reported as an ignored flag so the value stays out of the prompt"
+    },
+    "video": {
+      "flags": [
+        "--video"
+      ],
+      "kind": "flag",
+      "description": "Generate video output"
+    },
+    "vb": {
+      "flags": [
+        "--vb",
+        "--vbatch"
+      ],
+      "kind": "int",
+      "min": 1,
+      "max": 4,
+      "description": "Video variants per run (1-4). Renders one after another with different seeds, each as its own tile. Video ignores the image batch size."
+    },
+    "motion": {
+      "flags": [
+        "--motion"
+      ],
+      "kind": "string",
+      "description": "Video motion type"
+    },
+    "loop": {
+      "flags": [
+        "--loop"
+      ],
+      "kind": "int",
+      "description": "Video loop count"
+    },
+    "end": {
+      "flags": [
+        "--end"
+      ],
+      "kind": "int",
+      "description": "Video fps / frame rate"
+    },
+    "bs": {
+      "flags": [
+        "--bs"
+      ],
+      "kind": "int",
+      "description": "Video frame count"
+    },
+    "packId": {
+      "flags": [
+        "--packId",
+        "--pack"
+      ],
+      "kind": "string",
+      "description": "Workflow pack override (e.g. minimax, ltxv, ltx25, wan)"
+    },
+    "vmodel": {
+      "flags": [
+        "--vmodel"
+      ],
+      "kind": "string",
+      "description": "Video engine for --video (ltxv | ltx25 | wan | minimax)"
+    },
+    "mossSpeed": {
+      "flags": [
+        "--speed"
+      ],
+      "kind": "string",
+      "description": "MOSS-Image speed preset (partial-strength speed LoRA + banding fix, CFG 3, ER-SDE): off (50 steps) | balanced (14 steps) | fast (10 steps) | fast4 (10 steps, 4-step adapter) | turbo (MOSS-Image Base + full 8-step DMD LoRA, 8 steps, CFG 1, no negative prompt). Legacy 8 = balanced, 4 = fast4. Default balanced when the LoRAs are installed."
+    },
+    "mossKrea2": {
+      "flags": [
+        "--krea2look",
+        "--krea2-look"
+      ],
+      "kind": "flag",
+      "description": "MOSS-Image: Krea 2 graft LoRA (WAS r64, TenStrip's MOSSkr2 Krea 2 weights grafted into SFT) for a Krea-2 look with more fine texture. SFT presets only (ignored with --speed turbo). Krea 2 Community License."
+    },
+    "mossPhotoreal": {
+      "flags": [
+        "--photoreal"
+      ],
+      "kind": "flag",
+      "description": "MOSS-Image: Photographic Realism LoRA (Civitai model 3021669, r128) for camera-like light, colour and skin texture. SFT presets only (ignored with --speed turbo)."
+    },
+    "deband": {
+      "flags": [
+        "--deband"
+      ],
+      "kind": "flag",
+      "description": "MOSS-Image: load the banding-fix LoRA (removes vertical colour stripes in smooth areas). Implied by every --speed preset."
+    },
+    "motionRepair": {
+      "flags": [
+        "--motion-repair"
+      ],
+      "kind": "flag",
+      "description": "MiniMax H3: add the Motion Continuity Repair V2 LoRA (flips, spins, fast action)"
+    },
+    "handheld": {
+      "flags": [
+        "--handheld"
+      ],
+      "kind": "flag",
+      "description": "MiniMax H3: add the handheld shaky-camera LoRA"
+    },
+    "h3Flex": {
+      "flags": ["--h3-flex", "--h3flex"],
+      "kind": "flag",
+      "description": "MiniMax H3: add the Pika H3 Flex fine-tune LoRA (Mellis, Inc.; MiniMax H3 Community License). Picks pika_h3_flex_fl2va_v1 or pika_h3_flex_ref2va_v1 from the graph family; strength 1 unless --h3-flex-strength is set. Default off."
+    },
+    "h3FlexStrength": {
+      "flags": ["--h3-flex-strength"],
+      "kind": "float",
+      "min": 0,
+      "max": 1.5,
+      "description": "MiniMax H3: Pika H3 Flex LoRA strength (0-1.5, default 1; needs --h3-flex)"
+    },
+    "h3Speed": {
+      "flags": [
+        "--h3speed",
+        "--h3-speed"
+      ],
+      "kind": "string",
+      "description": "MiniMax H3 video: lightx2v Turbo step-distilled LoRA (strength 1, MiniMaxH3SigmaShift video 6 / audio 3, euler / simple, CFG 1): off | turbo8 (8 steps) | turbo4 (4 steps). Aliases 8 / 4; --speed 8 / 4 also works on H3 graphs. Picks the fl2v or ref2v LoRA from the graph. fast8 (aliases fasth3 / fast-8): FastVideo FastH3 distilled DiT instead of a LoRA (UNET swap, CUDA int8; fl2v = fastvideo_fasth3_8step_v2, ref2v = fasth3_omniref_8step; core-template recipe: SigmaShift 10 or 12 / 3, comfy kitchen attention + VSA 10%, res_multistep or euler, simple 8 steps). No-op on graphs that already load a speed LoRA (character / face swap). Default off."
+    },
+    "turbo": {
+      "flags": [
+        "--turbo"
+      ],
+      "kind": "flag",
+      "description": "Use turbo mode (faster, costs more)"
+    },
+    "relax": {
+      "flags": [
+        "--relax"
+      ],
+      "kind": "flag",
+      "description": "Use relaxed mode (slower, costs less)"
+    },
+    "stop": {
+      "flags": [
+        "--stop"
+      ],
+      "kind": "int",
+      "min": 10,
+      "max": 100,
+      "description": "Stop generation at percentage"
+    },
+    "model": {
+      "flags": [
+        "--model"
+      ],
+      "kind": "string",
+      "description": "Checkpoint model alias or filename",
+      "nodeMapping": {
+        "node": "CheckpointLoaderSimple",
+        "param": "ckpt_name"
+      }
+    },
+    "lora": {
+      "flags": [
+        "--lora"
+      ],
+      "kind": "string",
+      "multi": true,
+      "description": "LoRA with weight (format: alias::weight, e.g. anime::0.55)",
+      "nodeMapping": {
+        "node": "LoraLoader",
+        "params": [
+          "lora_name",
+          "strength_model",
+          "strength_clip"
+        ]
+      }
+    },
+    "vae": {
+      "flags": [
+        "--vae"
+      ],
+      "kind": "string",
+      "description": "VAE model alias or filename",
+      "nodeMapping": {
+        "node": "VAELoader",
+        "param": "vae_name"
+      }
+    },
+    "sampler": {
+      "flags": [
+        "--sampler"
+      ],
+      "kind": "string",
+      "description": "Sampler name (euler, dpmpp_2m, etc.)",
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "sampler_name"
+      }
+    },
+    "scheduler": {
+      "flags": [
+        "--scheduler"
+      ],
+      "kind": "string",
+      "description": "Scheduler name (normal, karras, sgm_uniform, etc.)",
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "scheduler"
+      }
+    },
+    "denoise": {
+      "flags": [
+        "--denoise"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "description": "Denoising strength for img2img",
+      "nodeMapping": {
+        "node": "KSampler",
+        "param": "denoise"
+      }
+    },
+    "stylization": {
+      "flags": [
+        "--stylization",
+        "--krea-stylization"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 1.5,
+      "default": 0.1,
+      "description": "Krea 2 stylization strength"
+    },
+    "minimalism_maximalism": {
+      "flags": [
+        "--minimalism-maximalism",
+        "--krea-mm"
+      ],
+      "kind": "float",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "description": "Krea 2 tap weighting tilt from minimalism to maximalism"
+    },
+    "moodboard_strength": {
+      "flags": [
+        "--moodboard-strength",
+        "--krea-moodboard-strength"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "description": "Krea 2 direct backend moodboard strength"
+    },
+    "controlnet": {
+      "flags": [
+        "--controlnet",
+        "--cn"
+      ],
+      "kind": "string",
+      "description": "ControlNet type (canny, depth, pose, lineart, scribble, tile) or model filename",
+      "comfyMapping": {
+        "type": "controlnet_apply",
+        "target": "control_net_name"
+      }
+    },
+    "cn-strength": {
+      "flags": [
+        "--cn-strength",
+        "--cns"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 2,
+      "default": 1,
+      "description": "ControlNet strength (0-2, default 1)"
+    },
+    "cn-image": {
+      "flags": [
+        "--cn-image"
+      ],
+      "kind": "string",
+      "description": "ControlNet source image URL (or use --control in attachment mode)"
+    },
+    "cn-depthmap": {
+      "flags": [
+        "--cn-depthmap"
+      ],
+      "kind": "flag",
+      "description": "The control image is already a depth map (near = white): skip Krea 2 auto depth estimation. Grayscale images are detected automatically."
+    },
+    "cn-start": {
+      "flags": [
+        "--cn-start"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 1,
+      "description": "ControlNet start percentile (0-1)"
+    },
+    "cn-end": {
+      "flags": [
+        "--cn-end"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 1,
+      "description": "ControlNet end percentile (0-1)"
+    },
+    "3d": {
+      "flags": [
+        "--3d"
+      ],
+      "kind": "flag",
+      "description": "Generate 3D model output"
+    },
+    "audio": {
+      "flags": [
+        "--audio"
+      ],
+      "kind": "flag",
+      "description": "Generate audio output"
+    },
+    "duration": {
+      "flags": [
+        "--duration"
+      ],
+      "kind": "float",
+      "min": 1,
+      "max": 380,
+      "default": 10,
+      "description": "Audio duration in seconds",
+      "nodeMapping": {
+        "node": "EmptyLatentAudio",
+        "param": "seconds"
+      }
+    },
+    "hd": {
+      "flags": [
+        "--hd"
+      ],
+      "kind": "flag",
+      "description": "2048-class render (krea2: 1280-class, its training ceiling)"
+    },
+    "sd": {
+      "flags": [
+        "--sd"
+      ],
+      "kind": "flag",
+      "description": "standard 1024 render (default)"
+    },
+    "pa": {
+      "flags": [
+        "--pa",
+        "--adherence"
+      ],
+      "kind": "float",
+      "min": 0,
+      "max": 300,
+      "default": 100,
+      "description": "krea2 prompt adherence via text-projector gain (100 = neutral; turbo-safe CFG alternative)"
+    },
+    "grid": {
+      "flags": [
+        "--grid"
+      ],
+      "kind": "flag",
+      "description": "XYZ-plot: render one image per {a|b|c} wildcard combination (a grid)"
+    },
+    "dose": {
+      "flags": [
+        "--dose"
+      ],
+      "kind": "int",
+      "min": 16,
+      "max": 4096,
+      "description": "Not used in this build"
+    },
+    "clipskip": {
+      "flags": [
+        "--clipskip",
+        "--clip-skip"
+      ],
+      "kind": "int",
+      "min": 1,
+      "max": 12,
+      "description": "CLIP skip (CLIPSetLastLayer -N). SD1.5/SDXL/Pony/Illustrious only; 1 = off, 2 = common for anime/Pony models",
+      "nodeMapping": {
+        "node": "CLIPSetLastLayer",
+        "param": "stop_at_clip_layer"
+      }
+    },
+    "tiledvae": {
+      "flags": [
+        "--tiledvae",
+        "--tiled-vae"
+      ],
+      "kind": "flag",
+      "description": "Force tiled VAE decode (VAEDecodeTiled). Auto-on at >=2048x2048 or with --lowvram",
+      "nodeMapping": {
+        "node": "VAEDecodeTiled"
+      }
+    },
+    "notiledvae": {
+      "flags": [
+        "--tiledvae-off",
+        "--untiledvae"
+      ],
+      "kind": "flag",
+      "description": "Never auto-tile the VAE decode (named to avoid the --no/--vae prefixes)"
+    },
+    "vaetile": {
+      "flags": [
+        "--tilesize",
+        "--tile-size"
+      ],
+      "kind": "int",
+      "min": 256,
+      "max": 4096,
+      "description": "Tiled VAE decode tile size in px (implies --tiledvae; default 512)",
+      "nodeMapping": {
+        "node": "VAEDecodeTiled",
+        "param": "tile_size"
+      }
+    },
+    "lowvram": {
+      "flags": [
+        "--lowvram"
+      ],
+      "kind": "flag",
+      "description": "Low-memory hint: auto-enables tiled VAE decode (added by the memory preflight when free memory is tight)"
+    }
+  },
+  "aspectPresets": {
+    "1:1": {
+      "width": 1024,
+      "height": 1024,
+      "label": "Square"
+    },
+    "4:3": {
+      "width": 1152,
+      "height": 896,
+      "label": "Landscape 4:3"
+    },
+    "3:2": {
+      "width": 1216,
+      "height": 832,
+      "label": "Landscape 3:2"
+    },
+    "16:9": {
+      "width": 1344,
+      "height": 768,
+      "label": "Landscape 16:9"
+    },
+    "21:9": {
+      "width": 1536,
+      "height": 640,
+      "label": "Ultrawide"
+    },
+    "3:4": {
+      "width": 896,
+      "height": 1152,
+      "label": "Portrait 3:4"
+    },
+    "2:3": {
+      "width": 832,
+      "height": 1216,
+      "label": "Portrait 2:3"
+    },
+    "9:16": {
+      "width": 768,
+      "height": 1344,
+      "label": "Portrait 9:16"
+    },
+    "4:5": {
+      "width": 896,
+      "height": 1088,
+      "label": "Portrait 4:5"
+    },
+    "5:4": {
+      "width": 1088,
+      "height": 896,
+      "label": "Landscape 5:4"
+    }
+  },
+  "models": {
+    "sd15": {
+      "name": "Stable Diffusion 1.5",
+      "type": "SD1.5",
+      "baseRes": 512
+    },
+    "sdxl": {
+      "name": "Stable Diffusion XL",
+      "type": "SDXL",
+      "baseRes": 1024
+    },
+    "flux": {
+      "name": "Flux",
+      "type": "Flux",
+      "baseRes": 1024
+    },
+    "pony": {
+      "name": "Pony Diffusion",
+      "type": "Pony",
+      "baseRes": 1024
+    },
+    "illustrious": {
+      "name": "Illustrious XL",
+      "type": "Illustrious",
+      "baseRes": 1024
+    },
+    "zimage_turbo": {
+      "name": "Z-Image Turbo",
+      "type": "ZImage",
+      "baseRes": 1024
+    },
+    "ideogram4": {
+      "name": "Ideogram 4",
+      "type": "Ideogram4",
+      "baseRes": 1024
+    },
+    "krea2": {
+      "name": "Krea 2",
+      "type": "Krea2",
+      "baseRes": 1024,
+      "remote": true
+    },
+    "sefi": {
+      "name": "SeFi-Image",
+      "type": "SeFi",
+      "baseRes": 1024
+    }
+  }
+}

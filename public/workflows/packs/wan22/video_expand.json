@@ -1,0 +1,658 @@
+{
+  "_meta": {
+    "title": "Expand / zoom out video (Wan2.2 Fun VACE)",
+    "description": "Core nodes only. Video outpainting: the first 81 source frames (VideoTemporalCrop, native fps) are scaled into the centre of a ~480p VACE canvas and padded with neutral grey (ImagePadForOutpaint); the pad mask, repeated per frame, is the only area WanVaceToVideo generates. Two-stage Wan2.2 sampling as vace_reframe (balanced: high-noise without LoRA cfg 3.5 steps 0-4, low-noise + lightx2v cfg 1; fast: LoRA both, 4 steps). The decode is trimmed back to the source frame count, upscaled to the expanded output size, and the ORIGINAL frames are composited back over the centre (ImageCompositeMasked) with a mask that is 1.0 everywhere except a few-px FeatherMask ramp along the padded edges only, so source pixels are unchanged. Source fps and audio (GetVideoComponents) are passed to CreateVideo. The builder (src/lib/oj/videoExpand.ts) sets canvas, pads, feather and the size expressions; everything that depends on the real decoded frame size is computed in-graph from GetImageSize (ComfyMathExpression): node 23 fits the source (even size, expanded frame <= 2560 px; identity for normal clips), nodes 48 (fitted size), 42/43 give the output size and 44/45 the paste-back offsets, so a run with a wrong recorded width/height still pastes back in place."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE high noise"
+    }
+  },
+  "2": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE low noise"
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "umt5 xxl"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Wan 2.1 VAE"
+    }
+  },
+  "5": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "High-noise lightx2v LoRA (fast mode only)"
+    }
+  },
+  "6": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Low-noise lightx2v LoRA"
+    }
+  },
+  "7": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift high"
+    }
+  },
+  "8": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift low"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "Continue the scene naturally beyond the frame edges, seamless extension of the same environment, consistent lighting, cinematic."
+    },
+    "_meta": {
+      "title": "Positive"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "borders, frame, letterbox, black bars, split screen, blurry, low quality, static, distorted, text, watermark, worst quality, jpeg artifacts"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "11": {
+    "class_type": "WanVaceToVideo",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "width": 848,
+      "height": 480,
+      "length": [
+        "41",
+        1
+      ],
+      "batch_size": 1,
+      "strength": 1.0,
+      "control_video": [
+        "31",
+        0
+      ],
+      "control_masks": [
+        "34",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VACE conditioning"
+    }
+  },
+  "12": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "add_noise": "enable",
+      "noise_seed": 4242,
+      "steps": 8,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "11",
+        2
+      ],
+      "start_at_step": 0,
+      "end_at_step": 4,
+      "return_with_leftover_noise": "enable"
+    },
+    "_meta": {
+      "title": "Sampler high noise"
+    }
+  },
+  "13": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "start_at_step": 4,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    },
+    "_meta": {
+      "title": "Sampler low noise"
+    }
+  },
+  "14": {
+    "class_type": "TrimVideoLatent",
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "trim_amount": [
+        "11",
+        3
+      ]
+    },
+    "_meta": {
+      "title": "Trim reference latent"
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "16": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "15",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "24",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "Trim decode to source frame count"
+    }
+  },
+  "20": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "21": {
+    "class_type": "VideoTemporalCrop",
+    "inputs": {
+      "video": [
+        "20",
+        0
+      ],
+      "start_frame": 0,
+      "length": 81
+    },
+    "_meta": {
+      "title": "First 81 frames (native fps, audio trimmed with it)"
+    }
+  },
+  "22": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source frames / audio / fps"
+    }
+  },
+  "23": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ],
+      "upscale_method": "area",
+      "width": [
+        "46",
+        1
+      ],
+      "height": [
+        "47",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Fit source (even size, expanded frame ≤ 2560 px)"
+    }
+  },
+  "24": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source size + frame count"
+    }
+  },
+  "30": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "23",
+        0
+      ],
+      "upscale_method": "area",
+      "width": 560,
+      "height": 320,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Source into VACE canvas"
+    }
+  },
+  "31": {
+    "class_type": "ImagePadForOutpaint",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ],
+      "left": 144,
+      "top": 80,
+      "right": 144,
+      "bottom": 80,
+      "feathering": 0
+    },
+    "_meta": {
+      "title": "Grey pad = area to generate"
+    }
+  },
+  "32": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "31",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Mask to image"
+    }
+  },
+  "33": {
+    "class_type": "RepeatImageBatch",
+    "inputs": {
+      "image": [
+        "32",
+        0
+      ],
+      "amount": [
+        "41",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Mask per frame"
+    }
+  },
+  "34": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "33",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Frame masks"
+    }
+  },
+  "41": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "4 * ((a + 2) // 4) + 1",
+      "values.a": [
+        "24",
+        2
+      ]
+    },
+    "_meta": {
+      "title": "VACE length (frames up to 4n+1)"
+    }
+  },
+  "42": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * ((a * 848 + 560) // 1120)",
+      "values.a": [
+        "48",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Output width"
+    }
+  },
+  "43": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * ((a * 480 + 320) // 640)",
+      "values.a": [
+        "48",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Output height"
+    }
+  },
+  "44": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "(288 * b + 848) // 1696",
+      "values.a": [
+        "48",
+        0
+      ],
+      "values.b": [
+        "42",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Paste-back x"
+    }
+  },
+  "45": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "(160 * b + 480) // 960",
+      "values.a": [
+        "48",
+        1
+      ],
+      "values.b": [
+        "43",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Paste-back y"
+    }
+  },
+  "46": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * int(a * min(1, 2560 * 560 / (a * 848), 2560 * 320 / (b * 480)) / 2)",
+      "values.a": [
+        "24",
+        0
+      ],
+      "values.b": [
+        "24",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Fit width"
+    }
+  },
+  "47": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "2 * int(b * min(1, 2560 * 560 / (a * 848), 2560 * 320 / (b * 480)) / 2)",
+      "values.a": [
+        "24",
+        0
+      ],
+      "values.b": [
+        "24",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Fit height"
+    }
+  },
+  "48": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "23",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Fitted source size"
+    }
+  },
+  "50": {
+    "class_type": "SolidMask",
+    "inputs": {
+      "value": 1,
+      "width": [
+        "48",
+        0
+      ],
+      "height": [
+        "48",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Keep-original mask"
+    }
+  },
+  "51": {
+    "class_type": "FeatherMask",
+    "inputs": {
+      "mask": [
+        "50",
+        0
+      ],
+      "left": 8,
+      "top": 8,
+      "right": 8,
+      "bottom": 8
+    },
+    "_meta": {
+      "title": "Feather seam (inside original edge, padded sides only)"
+    }
+  },
+  "52": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "16",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": [
+        "42",
+        1
+      ],
+      "height": [
+        "43",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Generated canvas to output size"
+    }
+  },
+  "53": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "52",
+        0
+      ],
+      "source": [
+        "23",
+        0
+      ],
+      "x": [
+        "44",
+        1
+      ],
+      "y": [
+        "45",
+        1
+      ],
+      "resize_source": false,
+      "mask": [
+        "51",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Original frames back over the centre"
+    }
+  },
+  "54": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "53",
+        0
+      ],
+      "fps": [
+        "22",
+        2
+      ],
+      "audio": [
+        "22",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Video (source fps + audio)"
+    }
+  },
+  "55": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "54",
+        0
+      ],
+      "filename_prefix": "video/CJ_VideoExpand",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  }
+}

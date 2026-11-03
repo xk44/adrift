@@ -1,0 +1,284 @@
+{
+  "_meta": {
+    "source": "Generated from INPUT_TYPES of comfy_nodes/cj_image_tools/cj_lens_blur.py (in-repo node, not yet installed on the reference box). Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-30"
+  },
+  "CJRefocus": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE"
+        ],
+        "depth": [
+          "IMAGE",
+          {
+            "tooltip": "Depth map, near = white (DA3Render depth)"
+          }
+        ],
+        "focus_x": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "focus_y": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "blur_amount": [
+          "FLOAT",
+          {
+            "default": 2.5,
+            "min": 0.0,
+            "max": 10.0,
+            "step": 0.05,
+            "tooltip": "Aperture: blur radius in % of the long side between the nearest and farthest depth"
+          }
+        ],
+        "focus_range": [
+          "FLOAT",
+          {
+            "default": 0.03,
+            "min": 0.0,
+            "max": 0.5,
+            "step": 0.005,
+            "tooltip": "Depth band around the focal plane that stays fully sharp (0..1 depth units)"
+          }
+        ],
+        "highlights": [
+          "FLOAT",
+          {
+            "default": 0.3,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "tooltip": "Bokeh highlight boost: bright out-of-focus points bloom into discs"
+          }
+        ],
+        "depth_smoothing": [
+          "FLOAT",
+          {
+            "default": 0.25,
+            "min": 0.0,
+            "max": 0.95,
+            "step": 0.05,
+            "tooltip": "Video: temporal smoothing of the depth maps (reduces focus flicker)"
+          }
+        ],
+        "invert_depth": [
+          "BOOLEAN",
+          {
+            "default": false,
+            "tooltip": "Set when the depth map is far = white"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image",
+        "depth",
+        "focus_x",
+        "focus_y",
+        "blur_amount",
+        "focus_range",
+        "highlights",
+        "depth_smoothing",
+        "invert_depth"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "image"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJRefocus",
+    "display_name": "Refocus (depth lens blur)",
+    "category": "image/postprocessing",
+    "python_module": "custom_nodes.cj_image_tools",
+    "output_node": false
+  },
+  "CJRackFocus": {
+    "input": {
+      "required": {
+        "images": [
+          "IMAGE"
+        ],
+        "depth": [
+          "IMAGE",
+          {
+            "tooltip": "Per-frame depth maps, near = white (DA3Render depth)"
+          }
+        ],
+        "fps": [
+          "FLOAT",
+          {
+            "default": 24.0,
+            "min": 1.0,
+            "max": 240.0,
+            "step": 0.001
+          }
+        ],
+        "a_x": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "a_y": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "a_time": [
+          "FLOAT",
+          {
+            "default": 0.0,
+            "min": 0.0,
+            "max": 100000.0,
+            "step": 0.01,
+            "tooltip": "Seconds: focus holds on A until here"
+          }
+        ],
+        "b_x": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "b_y": [
+          "FLOAT",
+          {
+            "default": 0.5,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.001
+          }
+        ],
+        "b_time": [
+          "FLOAT",
+          {
+            "default": 2.0,
+            "min": 0.0,
+            "max": 100000.0,
+            "step": 0.01,
+            "tooltip": "Seconds: focus has landed on B here"
+          }
+        ],
+        "ease": [
+          [
+            "smooth",
+            "linear",
+            "ease_in",
+            "ease_out"
+          ],
+          {
+            "default": "smooth"
+          }
+        ],
+        "blur_amount": [
+          "FLOAT",
+          {
+            "default": 2.5,
+            "min": 0.0,
+            "max": 10.0,
+            "step": 0.05,
+            "tooltip": "Aperture: blur radius in % of the long side between the nearest and farthest depth"
+          }
+        ],
+        "focus_range": [
+          "FLOAT",
+          {
+            "default": 0.03,
+            "min": 0.0,
+            "max": 0.5,
+            "step": 0.005,
+            "tooltip": "Depth band around the focal plane that stays fully sharp (0..1 depth units)"
+          }
+        ],
+        "highlights": [
+          "FLOAT",
+          {
+            "default": 0.3,
+            "min": 0.0,
+            "max": 1.0,
+            "step": 0.05,
+            "tooltip": "Bokeh highlight boost: bright out-of-focus points bloom into discs"
+          }
+        ],
+        "depth_smoothing": [
+          "FLOAT",
+          {
+            "default": 0.25,
+            "min": 0.0,
+            "max": 0.95,
+            "step": 0.05,
+            "tooltip": "Video: temporal smoothing of the depth maps (reduces focus flicker)"
+          }
+        ],
+        "invert_depth": [
+          "BOOLEAN",
+          {
+            "default": false,
+            "tooltip": "Set when the depth map is far = white"
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "images",
+        "depth",
+        "fps",
+        "a_x",
+        "a_y",
+        "a_time",
+        "b_x",
+        "b_y",
+        "b_time",
+        "ease",
+        "blur_amount",
+        "focus_range",
+        "highlights",
+        "depth_smoothing",
+        "invert_depth"
+      ]
+    },
+    "output": [
+      "IMAGE"
+    ],
+    "output_name": [
+      "images"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "name": "CJRackFocus",
+    "display_name": "Rack Focus (depth lens blur)",
+    "category": "image/postprocessing",
+    "python_module": "custom_nodes.cj_image_tools",
+    "output_node": false
+  }
+}

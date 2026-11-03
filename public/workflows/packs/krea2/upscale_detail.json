@@ -1,0 +1,156 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "input.png", "upload": "image" }
+  },
+  "2": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": ["1", 0],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 16
+    },
+    "_meta": {
+      "title": "~1 MP, aspect kept (Kontext buckets center-crop the edges)"
+    }
+  },
+  "3": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "krea2_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "krea2",
+      "device": "default"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "qwen_image_vae.safetensors" }
+  },
+  "6": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["3", 0],
+      "lora_name": "krea2_detail_enhancer_edit.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": { "title": "Detail Enhancer LoRA" }
+  },
+  "7": {
+    "class_type": "Krea2OstrisEditModelPatch",
+    "inputs": { "model": ["6", 0], "kv_cache": false }
+  },
+  "8": {
+    "class_type": "TextEncodeKrea2OstrisEdit",
+    "inputs": {
+      "clip": ["4", 0],
+      "prompt": "Enhance this image to high resolution with rich fine details. Sharpen all textures and surfaces, add microdetails and natural grain. Increase clarity and definition across all elements while preserving the original composition, lighting, and atmosphere. Image can be illustration or real photo, keep the original input style.",
+      "vae": ["5", 0],
+      "image1": ["2", 0]
+    },
+    "_meta": { "title": "Positive Prompt" }
+  },
+  "9": {
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "inputs": {
+      "conditioning": ["8", 0],
+      "reference_latents_method": "index_timestep_zero"
+    }
+  },
+  "10": {
+    "class_type": "TextEncodeKrea2OstrisEdit",
+    "inputs": { "clip": ["4", 0], "prompt": "" },
+    "_meta": { "title": "Negative Prompt" }
+  },
+  "11": {
+    "class_type": "FluxKontextMultiReferenceLatentMethod",
+    "inputs": {
+      "conditioning": ["10", 0],
+      "reference_latents_method": "index_timestep_zero"
+    }
+  },
+  "12": {
+    "class_type": "GetImageSize",
+    "inputs": { "image": ["2", 0] }
+  },
+  "13": {
+    "class_type": "EmptySD3LatentImage",
+    "inputs": { "width": ["12", 0], "height": ["12", 1], "batch_size": 1 }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["7", 0],
+      "positive": ["9", 0],
+      "negative": ["11", 0],
+      "latent_image": ["13", 0],
+      "seed": 0,
+      "steps": 10,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "Detail pass" }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["14", 0], "vae": ["5", 0] }
+  },
+  "20": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "", "clip": ["4", 0] },
+    "_meta": { "title": "Tile Prompt" }
+  },
+  "21": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": { "conditioning": ["20", 0] }
+  },
+  "22": {
+    "class_type": "UpscaleModelLoader",
+    "inputs": { "model_name": "RealESRGAN_x2plus.pth" }
+  },
+  "23": {
+    "class_type": "UltimateSDUpscale",
+    "inputs": {
+      "image": ["15", 0],
+      "model": ["3", 0],
+      "positive": ["20", 0],
+      "negative": ["21", 0],
+      "vae": ["5", 0],
+      "upscale_by": 2.0,
+      "seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.2,
+      "upscale_model": ["22", 0],
+      "mode_type": "Chess",
+      "tile_width": 1024,
+      "tile_height": 1024,
+      "mask_blur": 12,
+      "tile_padding": 32,
+      "seam_fix_mode": "None",
+      "seam_fix_denoise": 0.2,
+      "seam_fix_width": 64,
+      "seam_fix_mask_blur": 8,
+      "seam_fix_padding": 16,
+      "force_uniform_tiles": true,
+      "tiled_decode": false,
+      "batch_size": 1
+    },
+    "_meta": { "title": "Tiled upscale pass (plain turbo, no edit LoRA)" }
+  },
+  "24": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["23", 0], "filename_prefix": "krea2_upscale_detail" }
+  }
+}

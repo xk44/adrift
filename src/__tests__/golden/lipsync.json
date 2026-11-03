@@ -1,0 +1,476 @@
+{
+  "name": "lipsync",
+  "tool": "lipsync",
+  "action": "lipsync",
+  "workflow": "packs/wan-animate/lipsync.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Photo",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "LoadAudio",
+      "title": "Speech",
+      "inputs": {
+        "audio": "golden_audio.wav [input]"
+      }
+    },
+    "3": {
+      "class_type": "TrimAudioDuration",
+      "title": "Trim Speech",
+      "inputs": {
+        "audio": [
+          "2",
+          0
+        ],
+        "duration": 4,
+        "start_index": 0
+      }
+    },
+    "4": {
+      "class_type": "AudioEncoderLoader",
+      "title": "wav2vec2",
+      "inputs": {
+        "audio_encoder_name": "wav2vec2-chinese-base_fp16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "AudioEncoderEncode",
+      "title": "Encode Speech",
+      "inputs": {
+        "audio": [
+          "3",
+          0
+        ],
+        "audio_encoder": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ModelPatchLoader",
+      "title": "InfiniteTalk Patch",
+      "inputs": {
+        "name": "wan2.1_infiniteTalk_single_fp16.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "UNETLoader",
+      "title": "Wan 2.1 I2V 480p",
+      "inputs": {
+        "unet_name": "wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "8": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "lightx2v Speed LoRA",
+      "inputs": {
+        "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "model": [
+          "7",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "9": {
+      "class_type": "CLIPLoader",
+      "title": "UMT5",
+      "inputs": {
+        "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "device": "default",
+        "type": "wan"
+      }
+    },
+    "10": {
+      "class_type": "CLIPTextEncode",
+      "title": "Prompt",
+      "inputs": {
+        "clip": [
+          "9",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "11": {
+      "class_type": "ConditioningZeroOut",
+      "title": "Negative (zero)",
+      "inputs": {
+        "conditioning": [
+          "10",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "VAELoader",
+      "title": "Wan 2.1 VAE",
+      "inputs": {
+        "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+      }
+    },
+    "13": {
+      "class_type": "CLIPVisionLoader",
+      "title": "CLIP Vision",
+      "inputs": {
+        "clip_name": "clip_vision_h.safetensors"
+      }
+    },
+    "14": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize Photo",
+      "inputs": {
+        "input": [
+          "1",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.crop": "center",
+        "resize_type.height": 480,
+        "resize_type.width": 832,
+        "scale_method": "area"
+      }
+    },
+    "15": {
+      "class_type": "CLIPVisionEncode",
+      "title": "CLIP Vision (photo)",
+      "inputs": {
+        "clip_vision": [
+          "13",
+          0
+        ],
+        "crop": "none",
+        "image": [
+          "14",
+          0
+        ]
+      }
+    },
+    "16": {
+      "class_type": "WanInfiniteTalkToVideo",
+      "title": "InfiniteTalk (pass 1)",
+      "inputs": {
+        "audio_encoder_output_1": [
+          "5",
+          0
+        ],
+        "audio_scale": 1,
+        "clip_vision_output": [
+          "15",
+          0
+        ],
+        "height": 480,
+        "length": 81,
+        "mode": "single_speaker",
+        "model": [
+          "8",
+          0
+        ],
+        "model_patch": [
+          "6",
+          0
+        ],
+        "motion_frame_count": 9,
+        "negative": [
+          "11",
+          0
+        ],
+        "positive": [
+          "10",
+          0
+        ],
+        "start_image": [
+          "14",
+          0
+        ],
+        "vae": [
+          "12",
+          0
+        ],
+        "width": 832
+      }
+    },
+    "17": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "18": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "16",
+          0
+        ],
+        "scheduler": "normal",
+        "steps": 6
+      }
+    },
+    "19": {
+      "class_type": "RandomNoise",
+      "title": "Noise",
+      "inputs": {
+        "noise_seed": 314799534
+      }
+    },
+    "20": {
+      "class_type": "CFGGuider",
+      "title": "Guider",
+      "inputs": {
+        "cfg": 1,
+        "model": [
+          "16",
+          0
+        ],
+        "negative": [
+          "16",
+          2
+        ],
+        "positive": [
+          "16",
+          1
+        ]
+      }
+    },
+    "21": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "20",
+          0
+        ],
+        "latent_image": [
+          "16",
+          3
+        ],
+        "noise": [
+          "19",
+          0
+        ],
+        "sampler": [
+          "17",
+          0
+        ],
+        "sigmas": [
+          "18",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "VAEDecode",
+      "title": "Decode",
+      "inputs": {
+        "samples": [
+          "21",
+          0
+        ],
+        "vae": [
+          "12",
+          0
+        ]
+      }
+    },
+    "23": {
+      "class_type": "ImageFromBatch",
+      "title": "Trim To Speech",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "32",
+          0
+        ],
+        "length": 100
+      }
+    },
+    "24": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video + Speech",
+      "inputs": {
+        "audio": [
+          "3",
+          0
+        ],
+        "fps": 25,
+        "images": [
+          "23",
+          0
+        ]
+      }
+    },
+    "25": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_Lipsync",
+        "format": "auto",
+        "video": [
+          "24",
+          0
+        ]
+      }
+    },
+    "26": {
+      "class_type": "WanInfiniteTalkToVideo",
+      "title": "InfiniteTalk (pass 2)",
+      "inputs": {
+        "audio_encoder_output_1": [
+          "5",
+          0
+        ],
+        "audio_scale": 1,
+        "clip_vision_output": [
+          "15",
+          0
+        ],
+        "height": 480,
+        "length": 81,
+        "mode": "single_speaker",
+        "model": [
+          "8",
+          0
+        ],
+        "model_patch": [
+          "6",
+          0
+        ],
+        "motion_frame_count": 9,
+        "negative": [
+          "11",
+          0
+        ],
+        "positive": [
+          "10",
+          0
+        ],
+        "previous_frames": [
+          "22",
+          0
+        ],
+        "start_image": [
+          "14",
+          0
+        ],
+        "vae": [
+          "12",
+          0
+        ],
+        "width": 832
+      }
+    },
+    "27": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler (pass 2)",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "26",
+          0
+        ],
+        "scheduler": "normal",
+        "steps": 6
+      }
+    },
+    "28": {
+      "class_type": "CFGGuider",
+      "title": "Guider (pass 2)",
+      "inputs": {
+        "cfg": 1,
+        "model": [
+          "26",
+          0
+        ],
+        "negative": [
+          "26",
+          2
+        ],
+        "positive": [
+          "26",
+          1
+        ]
+      }
+    },
+    "29": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample (pass 2)",
+      "inputs": {
+        "guider": [
+          "28",
+          0
+        ],
+        "latent_image": [
+          "26",
+          3
+        ],
+        "noise": [
+          "19",
+          0
+        ],
+        "sampler": [
+          "17",
+          0
+        ],
+        "sigmas": [
+          "27",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "VAEDecode",
+      "title": "Decode (pass 2)",
+      "inputs": {
+        "samples": [
+          "29",
+          0
+        ],
+        "vae": [
+          "12",
+          0
+        ]
+      }
+    },
+    "31": {
+      "class_type": "ImageFromBatch",
+      "title": "Drop Motion Frames (pass 2)",
+      "inputs": {
+        "batch_index": [
+          "26",
+          4
+        ],
+        "image": [
+          "30",
+          0
+        ],
+        "length": 4096
+      }
+    },
+    "32": {
+      "class_type": "ImageBatch",
+      "title": "Append (pass 2)",
+      "inputs": {
+        "image1": [
+          "22",
+          0
+        ],
+        "image2": [
+          "31",
+          0
+        ]
+      }
+    }
+  }
+}

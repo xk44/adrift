@@ -1,0 +1,113 @@
+{
+  "name": "sa3_a2a",
+  "tool": "sa3_a2a",
+  "action": "sa3_a2a",
+  "workflow": "packs/audio/sa3_a2a.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "stable_audio_3_medium.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "t5gemma_b_b_ul2.safetensors",
+        "device": "default",
+        "type": "stable_audio"
+      }
+    },
+    "3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden second text"
+      }
+    },
+    "6": {
+      "class_type": "KSampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 0.6,
+        "latent_image": [
+          "10",
+          0
+        ],
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "4",
+          0
+        ],
+        "positive": [
+          "3",
+          0
+        ],
+        "sampler_name": "lcm",
+        "scheduler": "simple",
+        "seed": 1234,
+        "steps": 8
+      }
+    },
+    "7": {
+      "class_type": "VAEDecodeAudio",
+      "inputs": {
+        "samples": [
+          "6",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "8": {
+      "class_type": "SaveAudioMP3",
+      "inputs": {
+        "audio": [
+          "7",
+          0
+        ],
+        "filename_prefix": "audio/adrift_sa3_restyle",
+        "quality": "V0"
+      }
+    },
+    "9": {
+      "class_type": "LoadAudio",
+      "inputs": {
+        "audio": "golden_audio.wav [input]"
+      }
+    },
+    "10": {
+      "class_type": "VAEEncodeAudio",
+      "inputs": {
+        "audio": [
+          "9",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    }
+  }
+}

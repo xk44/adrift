@@ -1,0 +1,56 @@
+{
+  "name": "upscale_vosr2",
+  "tool": "upscale_vosr2",
+  "action": "upscale_vosr2",
+  "workflow": "packs/vosr2/vosr2_upscale.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "VOSR2ModelLoader",
+      "title": "VOSR2 Model",
+      "inputs": {
+        "dtype": "default",
+        "model": "VOSR2"
+      }
+    },
+    "3": {
+      "class_type": "VOSR2Upscale",
+      "title": "VOSR2 One-step Upscale",
+      "inputs": {
+        "color_alignment": "wavelet",
+        "image": [
+          "1",
+          0
+        ],
+        "model": [
+          "2",
+          0
+        ],
+        "seed": 7,
+        "tile_overlap": 64,
+        "tile_size": 512,
+        "upscale": 4,
+        "vae_tile_overlap": 32,
+        "vae_tile_size": 1024
+      }
+    },
+    "4": {
+      "class_type": "SaveImage",
+      "title": "Save Image",
+      "inputs": {
+        "filename_prefix": "CJ_VOSR2",
+        "images": [
+          "3",
+          0
+        ]
+      }
+    }
+  }
+}

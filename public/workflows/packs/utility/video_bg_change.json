@@ -1,0 +1,249 @@
+{
+  "_meta": {
+    "title": "Change video background (BiRefNet matte + composite)",
+    "description": "Pure compositing, no diffusion. LoadVideo -> Video Slice (first 10 s) -> GetVideoComponents (frames, audio, fps) -> BiRefNet RemoveBackground per frame (foreground matte) -> CJMatteGate with a SAM 3.1 text track of the subject (default \"person\"; BiRefNet alone keeps salient props like a potted plant on empty frames and leaves small far figures half transparent) -> CJMaskTemporal (stable, radius 1: smooths edge flicker only where nothing moved; a plain mean ghosts fast movers) -> CJVideoBgComposite: subject over the new background (LoadImage, or a clip via the optional LoadVideo branch, scaled to cover the frame), matte choke 1 px + feather, light wrap and a clip-wide colour match of the subject toward the background -> CreateVideo with the source fps + audio -> SaveVideo. No background = the original background blurred (portrait mode). The builder (src/lib/oj/videoBgChange.ts) keeps one background branch. Models: birefnet.safetensors (models/background_removal), sam3.1_multiplex_fp16.safetensors (checkpoints). Frames are held in memory at source res: keep clips short."
+  },
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "2": {
+    "class_type": "Video Slice",
+    "inputs": {
+      "video": [
+        "1",
+        0
+      ],
+      "start_time": 0.0,
+      "duration": 10.0,
+      "strict_duration": false
+    },
+    "_meta": {
+      "title": "First 10 s"
+    }
+  },
+  "3": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frames / audio / fps"
+    }
+  },
+  "4": {
+    "class_type": "LoadBackgroundRemovalModel",
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "_meta": {
+      "title": "BiRefNet"
+    }
+  },
+  "5": {
+    "class_type": "RemoveBackground",
+    "inputs": {
+      "bg_removal_model": [
+        "4",
+        0
+      ],
+      "image": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Subject matte"
+    }
+  },
+  "6": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "24",
+        0
+      ],
+      "mode": "stable",
+      "radius": 1
+    },
+    "_meta": {
+      "title": "Temporal smooth"
+    }
+  },
+  "7": {
+    "class_type": "CJVideoBgComposite",
+    "inputs": {
+      "frames": [
+        "3",
+        0
+      ],
+      "matte": [
+        "6",
+        0
+      ],
+      "fit": "cover",
+      "choke_px": 1,
+      "feather_px": 1.5,
+      "light_wrap": 0.25,
+      "wrap_px": 12.0,
+      "color_match": 0.3,
+      "blur_px": 24.0,
+      "background": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Composite over background"
+    }
+  },
+  "8": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "example.png"
+    },
+    "_meta": {
+      "title": "Background image"
+    }
+  },
+  "9": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ],
+      "fps": [
+        "3",
+        2
+      ],
+      "audio": [
+        "3",
+        1
+      ]
+    },
+    "_meta": {
+      "title": "Video (source fps + audio)"
+    }
+  },
+  "10": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "9",
+        0
+      ],
+      "filename_prefix": "video/CJ_VideoBgChange",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  },
+  "11": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Background video (optional)"
+    }
+  },
+  "12": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "11",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Background frames"
+    }
+  },
+  "20": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "SAM 3.1"
+    }
+  },
+  "21": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "person"
+    },
+    "_meta": {
+      "title": "Who to keep"
+    }
+  },
+  "22": {
+    "class_type": "SAM3_VideoTrack",
+    "inputs": {
+      "images": [
+        "3",
+        0
+      ],
+      "model": [
+        "20",
+        0
+      ],
+      "conditioning": [
+        "21",
+        0
+      ],
+      "detection_threshold": 0.5,
+      "max_objects": 4,
+      "detect_interval": 6
+    },
+    "_meta": {
+      "title": "Track subject"
+    }
+  },
+  "23": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "22",
+        0
+      ],
+      "object_indices": ""
+    },
+    "_meta": {
+      "title": "Track mask"
+    }
+  },
+  "24": {
+    "class_type": "CJMatteGate",
+    "inputs": {
+      "matte": [
+        "5",
+        0
+      ],
+      "subject": [
+        "23",
+        0
+      ],
+      "grow_px": 16,
+      "core_px": 6
+    },
+    "_meta": {
+      "title": "Gate matte to subject"
+    }
+  }
+}

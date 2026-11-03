@@ -1,0 +1,26 @@
+{
+  "CJGridVideo": {
+    "input": {
+      "required": {
+        "source": ["STRING", { "default": "" }],
+        "audio": ["STRING", { "default": "" }],
+        "plan": ["STRING", { "default": "", "multiline": true }],
+        "filename_prefix": ["STRING", { "default": "video/adrift_grid" }]
+      },
+      "optional": {
+        "crf": ["INT", { "default": 18, "min": 0, "max": 51 }]
+      }
+    },
+    "input_order": {
+      "required": ["source", "audio", "plan", "filename_prefix"],
+      "optional": ["crf"]
+    },
+    "output": ["STRING"],
+    "output_name": ["path"],
+    "output_is_list": [false],
+    "output_node": true,
+    "name": "CJGridVideo",
+    "display_name": "Grid Video (beat-synced grid, music soundtrack)",
+    "category": "image/video"
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "_meta": {
+    "title": "Relight (Qwen-Image-Edit-2509)",
+    "description": "Core ComfyUI Qwen-Image-Edit-2509 relight (Comfy-Org image_qwen_image_edit_2509_relight template, flattened): LoadImage -> ImageScaleToTotalPixels (1MP, multiple of 16) -> TextEncodeQwenImageEditPlus without VAE (positive = LoRA trigger '重新照明,' + 'relight the image using <light>', negative empty) -> ReferenceLatent (VAEEncode of the same scaled image, so the reference and sampled latents match exactly; the encoder's own 1MP/8 rescale left an edge strip) -> UNETLoader -> Lightning 4-step LoRA -> Relight LoRA -> ModelSamplingAuraFlow (shift 3) -> CFGNorm -> KSampler (4 steps, cfg 1, euler/simple) -> VAEDecode -> SaveImage. The builder (src/lib/oj/relight.ts) sets the image, the lighting prompt and the seed. Models: diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors, loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors + loras/Qwen-Image-Edit-2509-Relight.safetensors (dx8152), text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors (CLIP type qwen_image), vae/qwen_image_vae.safetensors."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source Image" }
+  },
+  "2": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": ["1", 0],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 16
+    },
+    "_meta": { "title": "Scale to 1MP (multiple of 16)" }
+  },
+  "3": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Qwen-Image-Edit-2509" }
+  },
+  "4": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["3", 0],
+      "lora_name": "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1
+    },
+    "_meta": { "title": "Lightning 4-step LoRA" }
+  },
+  "5": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["4", 0],
+      "lora_name": "Qwen-Image-Edit-2509-Relight.safetensors",
+      "strength_model": 1
+    },
+    "_meta": { "title": "Relight LoRA" }
+  },
+  "6": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": { "model": ["5", 0], "shift": 3 },
+    "_meta": { "title": "Model Sampling (shift 3)" }
+  },
+  "7": {
+    "class_type": "CFGNorm",
+    "inputs": { "model": ["6", 0], "strength": 1 },
+    "_meta": { "title": "CFG Norm" }
+  },
+  "8": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "_meta": { "title": "Qwen2.5-VL Text Encoder" }
+  },
+  "9": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "qwen_image_vae.safetensors" },
+    "_meta": { "title": "Qwen Image VAE" }
+  },
+  "10": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": ["8", 0],
+      "image1": ["2", 0],
+      "prompt": "重新照明, relight the image using twilight light (with a warm color temperature, soft light, and blurred shadows)"
+    },
+    "_meta": { "title": "Positive (relight prompt)" }
+  },
+  "11": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": { "clip": ["8", 0], "image1": ["2", 0], "prompt": "" },
+    "_meta": { "title": "Negative" }
+  },
+  "12": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["2", 0], "vae": ["9", 0] },
+    "_meta": { "title": "Encode Source" }
+  },
+  "13": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["7", 0],
+      "positive": ["16", 0],
+      "negative": ["17", 0],
+      "latent_image": ["12", 0],
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    },
+    "_meta": { "title": "KSampler (Lightning 4 steps)" }
+  },
+  "14": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["13", 0], "vae": ["9", 0] },
+    "_meta": { "title": "Decode" }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["14", 0], "filename_prefix": "CJ_Relight" },
+    "_meta": { "title": "Save Image" }
+  },
+  "16": {
+    "class_type": "ReferenceLatent",
+    "inputs": { "conditioning": ["10", 0], "latent": ["12", 0] },
+    "_meta": { "title": "Reference latent (positive)" }
+  },
+  "17": {
+    "class_type": "ReferenceLatent",
+    "inputs": { "conditioning": ["11", 0], "latent": ["12", 0] },
+    "_meta": { "title": "Reference latent (negative)" }
+  }
+}

@@ -1,0 +1,168 @@
+{
+    "_meta": {
+        "title": "Remove Video Background (BiRefNet)",
+        "description": "Core ComfyUI nodes only: LoadVideo -> GetVideoComponents splits frames/audio/fps, BiRefNet (RemoveBackground) predicts a per-frame foreground mask, InvertMask turns it into a background mask, ImageCompositeMasked paints a solid chroma colour (EmptyImage, resized to the frame) over the background, CreateVideo re-muxes with the source audio and fps, SaveVideo writes an mp4. H.264 has no alpha channel, so the default output is a chroma clip (params.background: green/blue/black/white); background=alpha instead keeps the JoinImageWithAlpha -> SaveAnimatedPNG branch (RGBA APNG, no audio). The builder (src/lib/oj/videoBgRemove.ts) drops the unused branch. Model: Comfy-Org/BiRefNet background_removal/birefnet.safetensors in models/background_removal. All frames are held in memory: keep clips short."
+    },
+    "1": {
+        "class_type": "LoadVideo",
+        "inputs": {
+            "file": ""
+        },
+        "_meta": {
+            "title": "Source Video"
+        }
+    },
+    "2": {
+        "class_type": "GetVideoComponents",
+        "inputs": {
+            "video": [
+                "1",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Frames + Audio + FPS"
+        }
+    },
+    "3": {
+        "class_type": "LoadBackgroundRemovalModel",
+        "inputs": {
+            "bg_removal_name": "birefnet.safetensors"
+        },
+        "_meta": {
+            "title": "BiRefNet"
+        }
+    },
+    "4": {
+        "class_type": "RemoveBackground",
+        "inputs": {
+            "bg_removal_model": [
+                "3",
+                0
+            ],
+            "image": [
+                "2",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Foreground Mask (per frame)"
+        }
+    },
+    "5": {
+        "class_type": "InvertMask",
+        "inputs": {
+            "mask": [
+                "4",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Background Mask"
+        }
+    },
+    "6": {
+        "class_type": "EmptyImage",
+        "inputs": {
+            "width": 64,
+            "height": 64,
+            "batch_size": 1,
+            "color": 65280
+        },
+        "_meta": {
+            "title": "Chroma Colour"
+        }
+    },
+    "7": {
+        "class_type": "ImageCompositeMasked",
+        "inputs": {
+            "destination": [
+                "2",
+                0
+            ],
+            "source": [
+                "6",
+                0
+            ],
+            "x": 0,
+            "y": 0,
+            "resize_source": true,
+            "mask": [
+                "5",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Fill Background"
+        }
+    },
+    "8": {
+        "class_type": "CreateVideo",
+        "inputs": {
+            "images": [
+                "7",
+                0
+            ],
+            "fps": [
+                "2",
+                2
+            ],
+            "audio": [
+                "2",
+                1
+            ]
+        },
+        "_meta": {
+            "title": "Mux Video"
+        }
+    },
+    "9": {
+        "class_type": "SaveVideo",
+        "inputs": {
+            "video": [
+                "8",
+                0
+            ],
+            "filename_prefix": "video/CJ_VideoBgRemove",
+            "format": "auto",
+            "codec": "auto"
+        },
+        "_meta": {
+            "title": "Save Video"
+        }
+    },
+    "10": {
+        "class_type": "JoinImageWithAlpha",
+        "inputs": {
+            "image": [
+                "2",
+                0
+            ],
+            "alpha": [
+                "5",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Frames + alpha (RGBA; node inverts the mask it gets)"
+        }
+    },
+    "11": {
+        "class_type": "SaveAnimatedPNG",
+        "inputs": {
+            "images": [
+                "10",
+                0
+            ],
+            "fps": [
+                "2",
+                2
+            ],
+            "compress_level": 4,
+            "filename_prefix": "video/CJ_VideoBgRemove_alpha"
+        },
+        "_meta": {
+            "title": "Save transparent APNG (background=alpha)"
+        }
+    }
+}

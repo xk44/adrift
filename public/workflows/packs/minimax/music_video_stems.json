@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "title": "Music video stems (Hybrid Demucs)",
+    "description": "Optional: splits the song window into stems with CJAudioStems (comfy_nodes/cj_stems, local torchaudio Hybrid Demucs HDEMUCS_HIGH weights in models/demucs, never downloaded). The drum stem feeds the browser beat detector, the vocal stem is the frozen audio guide of lip-sync segments. Bass and other are not saved."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Song" }
+  },
+  "2": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["1", 0], "start_index": 0, "duration": 15.0 },
+    "_meta": { "title": "Song Window" }
+  },
+  "3": {
+    "class_type": "CJAudioStems",
+    "inputs": {
+      "audio": ["2", 0],
+      "weights": "hdemucs_high_trained.pt",
+      "segment_seconds": 10.0,
+      "overlap": 0.25,
+      "keep_loaded": false
+    },
+    "_meta": { "title": "Split Stems" }
+  },
+  "4": {
+    "class_type": "SaveAudio",
+    "inputs": { "audio": ["3", 0], "filename_prefix": "audio/adrift_mtv/CJ_MTV_drums" },
+    "_meta": { "title": "Drums" }
+  },
+  "5": {
+    "class_type": "SaveAudio",
+    "inputs": { "audio": ["3", 3], "filename_prefix": "audio/adrift_mtv/CJ_MTV_vocals" },
+    "_meta": { "title": "Vocals" }
+  }
+}

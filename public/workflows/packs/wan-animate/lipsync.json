@@ -1,0 +1,374 @@
+{
+    "_meta": {
+        "title": "Lipsync / Talking Photo (InfiniteTalk)",
+        "description": "Core ComfyUI nodes only. Wan 2.1 I2V 480p fp8 + lightx2v cfg/step-distill LoRA (6 steps, euler/normal, CFG 1) patched with the InfiniteTalk single-speaker model patch; wav2vec2 encodes the speech, which drives the mouth/head. The photo is the start image + CLIP-vision reference. One WanInfiniteTalkToVideo pass = 81 frames @ 25 fps; the builder (src/lib/oj/lipsync.ts) chains extra passes (previous_frames, 9 motion frames, +72 new frames each) until the audio is covered (capped), trims frames to the audio length and trims the audio to match, then CreateVideo muxes the speech into the mp4."
+    },
+    "1": {
+        "class_type": "LoadImage",
+        "inputs": {
+            "image": ""
+        },
+        "_meta": {
+            "title": "Photo"
+        }
+    },
+    "2": {
+        "class_type": "LoadAudio",
+        "inputs": {
+            "audio": ""
+        },
+        "_meta": {
+            "title": "Speech"
+        }
+    },
+    "3": {
+        "class_type": "TrimAudioDuration",
+        "inputs": {
+            "audio": [
+                "2",
+                0
+            ],
+            "start_index": 0.0,
+            "duration": 3.24
+        },
+        "_meta": {
+            "title": "Trim Speech"
+        }
+    },
+    "4": {
+        "class_type": "AudioEncoderLoader",
+        "inputs": {
+            "audio_encoder_name": "wav2vec2-chinese-base_fp16.safetensors"
+        },
+        "_meta": {
+            "title": "wav2vec2"
+        }
+    },
+    "5": {
+        "class_type": "AudioEncoderEncode",
+        "inputs": {
+            "audio_encoder": [
+                "4",
+                0
+            ],
+            "audio": [
+                "3",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Encode Speech"
+        }
+    },
+    "6": {
+        "class_type": "ModelPatchLoader",
+        "inputs": {
+            "name": "wan2.1_infiniteTalk_single_fp16.safetensors"
+        },
+        "_meta": {
+            "title": "InfiniteTalk Patch"
+        }
+    },
+    "7": {
+        "class_type": "UNETLoader",
+        "inputs": {
+            "unet_name": "wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+            "weight_dtype": "default"
+        },
+        "_meta": {
+            "title": "Wan 2.1 I2V 480p"
+        }
+    },
+    "8": {
+        "class_type": "LoraLoaderModelOnly",
+        "inputs": {
+            "model": [
+                "7",
+                0
+            ],
+            "lora_name": "lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+            "strength_model": 1.0
+        },
+        "_meta": {
+            "title": "lightx2v Speed LoRA"
+        }
+    },
+    "9": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+            "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+            "type": "wan",
+            "device": "default"
+        },
+        "_meta": {
+            "title": "UMT5"
+        }
+    },
+    "10": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+            "clip": [
+                "9",
+                0
+            ],
+            "text": "A person talking to the camera with natural head movement and facial expressions, lips moving in sync with the speech."
+        },
+        "_meta": {
+            "title": "Prompt"
+        }
+    },
+    "11": {
+        "class_type": "ConditioningZeroOut",
+        "inputs": {
+            "conditioning": [
+                "10",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Negative (zero)"
+        }
+    },
+    "12": {
+        "class_type": "VAELoader",
+        "inputs": {
+            "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+        },
+        "_meta": {
+            "title": "Wan 2.1 VAE"
+        }
+    },
+    "13": {
+        "class_type": "CLIPVisionLoader",
+        "inputs": {
+            "clip_name": "clip_vision_h.safetensors"
+        },
+        "_meta": {
+            "title": "CLIP Vision"
+        }
+    },
+    "14": {
+        "class_type": "ResizeImageMaskNode",
+        "inputs": {
+            "input": [
+                "1",
+                0
+            ],
+            "resize_type": "scale dimensions",
+            "resize_type.width": 480,
+            "resize_type.height": 640,
+            "resize_type.crop": "center",
+            "scale_method": "area"
+        },
+        "_meta": {
+            "title": "Resize Photo"
+        }
+    },
+    "15": {
+        "class_type": "CLIPVisionEncode",
+        "inputs": {
+            "clip_vision": [
+                "13",
+                0
+            ],
+            "image": [
+                "14",
+                0
+            ],
+            "crop": "none"
+        },
+        "_meta": {
+            "title": "CLIP Vision (photo)"
+        }
+    },
+    "16": {
+        "class_type": "WanInfiniteTalkToVideo",
+        "inputs": {
+            "mode": "single_speaker",
+            "model": [
+                "8",
+                0
+            ],
+            "model_patch": [
+                "6",
+                0
+            ],
+            "positive": [
+                "10",
+                0
+            ],
+            "negative": [
+                "11",
+                0
+            ],
+            "vae": [
+                "12",
+                0
+            ],
+            "width": 480,
+            "height": 640,
+            "length": 81,
+            "clip_vision_output": [
+                "15",
+                0
+            ],
+            "start_image": [
+                "14",
+                0
+            ],
+            "audio_encoder_output_1": [
+                "5",
+                0
+            ],
+            "motion_frame_count": 9,
+            "audio_scale": 1.0
+        },
+        "_meta": {
+            "title": "InfiniteTalk (pass 1)"
+        }
+    },
+    "17": {
+        "class_type": "KSamplerSelect",
+        "inputs": {
+            "sampler_name": "euler"
+        },
+        "_meta": {
+            "title": "Sampler"
+        }
+    },
+    "18": {
+        "class_type": "BasicScheduler",
+        "inputs": {
+            "model": [
+                "16",
+                0
+            ],
+            "scheduler": "normal",
+            "steps": 6,
+            "denoise": 1.0
+        },
+        "_meta": {
+            "title": "Scheduler"
+        }
+    },
+    "19": {
+        "class_type": "RandomNoise",
+        "inputs": {
+            "noise_seed": 0
+        },
+        "_meta": {
+            "title": "Noise"
+        }
+    },
+    "20": {
+        "class_type": "CFGGuider",
+        "inputs": {
+            "model": [
+                "16",
+                0
+            ],
+            "positive": [
+                "16",
+                1
+            ],
+            "negative": [
+                "16",
+                2
+            ],
+            "cfg": 1.0
+        },
+        "_meta": {
+            "title": "Guider"
+        }
+    },
+    "21": {
+        "class_type": "SamplerCustomAdvanced",
+        "inputs": {
+            "noise": [
+                "19",
+                0
+            ],
+            "guider": [
+                "20",
+                0
+            ],
+            "sampler": [
+                "17",
+                0
+            ],
+            "sigmas": [
+                "18",
+                0
+            ],
+            "latent_image": [
+                "16",
+                3
+            ]
+        },
+        "_meta": {
+            "title": "Sample"
+        }
+    },
+    "22": {
+        "class_type": "VAEDecode",
+        "inputs": {
+            "samples": [
+                "21",
+                0
+            ],
+            "vae": [
+                "12",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Decode"
+        }
+    },
+    "23": {
+        "class_type": "ImageFromBatch",
+        "inputs": {
+            "image": [
+                "22",
+                0
+            ],
+            "batch_index": 0,
+            "length": 81
+        },
+        "_meta": {
+            "title": "Trim To Speech"
+        }
+    },
+    "24": {
+        "class_type": "CreateVideo",
+        "inputs": {
+            "images": [
+                "23",
+                0
+            ],
+            "fps": 25.0,
+            "audio": [
+                "3",
+                0
+            ]
+        },
+        "_meta": {
+            "title": "Mux Video + Speech"
+        }
+    },
+    "25": {
+        "class_type": "SaveVideo",
+        "inputs": {
+            "video": [
+                "24",
+                0
+            ],
+            "filename_prefix": "video/CJ_Lipsync",
+            "format": "auto",
+            "codec": "auto"
+        },
+        "_meta": {
+            "title": "Save Video"
+        }
+    }
+}

@@ -1,0 +1,394 @@
+{
+  "name": "video_object_add",
+  "tool": "video_object_add",
+  "action": "video_object_add",
+  "workflow": "packs/minimax/video_object_add.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "UNETLoader",
+      "inputs": {
+        "unet_name": "minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "MiniMaxH3SigmaShift",
+      "title": "MiniMaxH3SigmaShift",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "shift_audio": 3,
+        "shift_video": 12
+      }
+    },
+    "3": {
+      "class_type": "ModelAttentionBackend",
+      "title": "ModelAttentionBackend",
+      "inputs": {
+        "attention": "comfy kitchen attention",
+        "model": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "CLIPLoader",
+      "title": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "device": "default",
+        "type": "minimax"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+      }
+    },
+    "7": {
+      "class_type": "LoadVideo",
+      "title": "Source video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "8": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "H3 Turbo 8-step",
+      "inputs": {
+        "lora_name": "minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "model": [
+          "3",
+          0
+        ],
+        "strength_model": 1
+      }
+    },
+    "26": {
+      "class_type": "KSamplerSelect",
+      "title": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "er_sde"
+      }
+    },
+    "27": {
+      "class_type": "BasicScheduler",
+      "title": "BasicScheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "8",
+          0
+        ],
+        "scheduler": "normal",
+        "steps": 8
+      }
+    },
+    "29": {
+      "class_type": "LabsH3PrepareVideo",
+      "title": "Prepare 24 fps / 480 / 17n+5",
+      "inputs": {
+        "duration_seconds": 5.2,
+        "resolution": "480",
+        "video": [
+          "7",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "LoadImage",
+      "title": "Object photo",
+      "inputs": {
+        "image": "golden_ref2.png [input]"
+      }
+    },
+    "41": {
+      "class_type": "MiniMaxH3ReferenceToVideo",
+      "title": "MiniMaxH3ReferenceToVideo",
+      "inputs": {
+        "audio_vae": [
+          "6",
+          0
+        ],
+        "clip": [
+          "4",
+          0
+        ],
+        "height": [
+          "29",
+          3
+        ],
+        "length": [
+          "29",
+          4
+        ],
+        "prompt": "subject_definitions:\n<Subject 1> is golden test subject, from <Picture 1>.\nThe source footage is a 5.200-second section at 24 fps. It supplies the exact camera framing, camera movement, people, performance timing, setting and hard cuts, and its original soundtrack is reused unchanged.\n\nsummary:\n[video editing + reference generation + audio reuse] The target video is an edited version of the source footage in which <Subject 1> (golden test subject) is golden second text, in the lower centre of the frame, a real object with contact shadows that match the source light and perspective. Everything else keeps its source look, timing and layout.\n\nretention_analysis:\n<Subject 1> (all shots): fully_preserved - its shape, colours, materials and details stay consistent in every frame.\nThe source footage (edited source): partially_preserved - the only change is <Subject 1> (golden test subject) golden second text; the people, actions, camera movement, shot composition, cuts and timing are retained.\nThe soundtrack: fully_copy - the original synchronized soundtrack is the complete final audio, without additional generated vocals or sound effects.\n\ndetailed_description:\nLive-action footage with the source lighting and lens perspective.\nThroughout all shots, <Subject 1> (golden test subject) is clearly visible golden second text, in the lower centre of the frame, with the same size, identity and materials in every frame; people who move in front of it pass in front of it.\nContinue the original camera movement and performance through the last frame without adding transitions or changing speed.\n\noverall_soundscape:\nAny ambience and physical sounds already present in the source soundtrack remain part of its unchanged mix. Add no new room noise, footsteps, voices or impacts.\n\nnon_diegetic_music:\nReuse the original music and vocals in the source soundtrack at their original tempo, pitch, mix and synchronization. Do not generate a new performance or additional score.",
+        "ref_image_size": "match",
+        "ref_images.ref_image_0": [
+          "40",
+          0
+        ],
+        "vae": [
+          "5",
+          0
+        ],
+        "width": [
+          "29",
+          2
+        ]
+      }
+    },
+    "42": {
+      "class_type": "VAEEncode",
+      "title": "Encode source",
+      "inputs": {
+        "pixels": [
+          "29",
+          0
+        ],
+        "vae": [
+          "5",
+          0
+        ]
+      }
+    },
+    "43": {
+      "class_type": "H3RelayApplyEditMask",
+      "title": "Edit only inside mask",
+      "inputs": {
+        "latent": [
+          "41",
+          1
+        ],
+        "mask": [
+          "66",
+          0
+        ],
+        "source_latent": [
+          "42",
+          0
+        ]
+      }
+    },
+    "44": {
+      "class_type": "RandomNoise",
+      "title": "RandomNoise",
+      "inputs": {
+        "noise_seed": 1234
+      }
+    },
+    "45": {
+      "class_type": "BasicGuider",
+      "title": "BasicGuider",
+      "inputs": {
+        "conditioning": [
+          "41",
+          0
+        ],
+        "model": [
+          "8",
+          0
+        ]
+      }
+    },
+    "46": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "SamplerCustomAdvanced",
+      "inputs": {
+        "guider": [
+          "45",
+          0
+        ],
+        "latent_image": [
+          "43",
+          0
+        ],
+        "noise": [
+          "44",
+          0
+        ],
+        "sampler": [
+          "26",
+          0
+        ],
+        "sigmas": [
+          "27",
+          0
+        ]
+      }
+    },
+    "47": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "LTXVSeparateAVLatent",
+      "inputs": {
+        "av_latent": [
+          "46",
+          0
+        ]
+      }
+    },
+    "48": {
+      "class_type": "VAEDecode",
+      "title": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "47",
+          0
+        ],
+        "vae": [
+          "5",
+          0
+        ]
+      }
+    },
+    "51": {
+      "class_type": "ImageFromBatch",
+      "title": "Trim to source frames",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "48",
+          0
+        ],
+        "length": [
+          "29",
+          5
+        ]
+      }
+    },
+    "52": {
+      "class_type": "CJPasteBackSave",
+      "title": "Paste back inside mask (source res, source audio)",
+      "inputs": {
+        "crf": 17,
+        "diff_thresh": 6,
+        "expanded_mask": [
+          "66",
+          0
+        ],
+        "feather_px": 6,
+        "filename_prefix": "video/CJ_H3_ObjectAdd",
+        "frames": [
+          "51",
+          0
+        ],
+        "grow_px": 8,
+        "protect_text": false,
+        "raw_mask": [
+          "66",
+          0
+        ],
+        "source": [
+          "7",
+          0
+        ],
+        "t_radius": 2
+      }
+    },
+    "60": {
+      "class_type": "SolidMask",
+      "title": "Canvas",
+      "inputs": {
+        "height": 1000,
+        "value": 0,
+        "width": 1000
+      }
+    },
+    "61": {
+      "class_type": "SolidMask",
+      "title": "Box",
+      "inputs": {
+        "height": 320,
+        "value": 1,
+        "width": 320
+      }
+    },
+    "62": {
+      "class_type": "MaskComposite",
+      "title": "Place box",
+      "inputs": {
+        "destination": [
+          "60",
+          0
+        ],
+        "operation": "add",
+        "source": [
+          "61",
+          0
+        ],
+        "x": 340,
+        "y": 560
+      }
+    },
+    "63": {
+      "class_type": "MaskToImage",
+      "title": "MaskToImage",
+      "inputs": {
+        "mask": [
+          "62",
+          0
+        ]
+      }
+    },
+    "64": {
+      "class_type": "ImageScale",
+      "title": "Stretch to frame",
+      "inputs": {
+        "crop": "disabled",
+        "height": [
+          "29",
+          3
+        ],
+        "image": [
+          "63",
+          0
+        ],
+        "upscale_method": "bilinear",
+        "width": [
+          "29",
+          2
+        ]
+      }
+    },
+    "65": {
+      "class_type": "RepeatImageBatch",
+      "title": "RepeatImageBatch",
+      "inputs": {
+        "amount": [
+          "29",
+          4
+        ],
+        "image": [
+          "64",
+          0
+        ]
+      }
+    },
+    "66": {
+      "class_type": "ImageToMask",
+      "title": "Placement mask",
+      "inputs": {
+        "channel": "red",
+        "image": [
+          "65",
+          0
+        ]
+      }
+    }
+  }
+}

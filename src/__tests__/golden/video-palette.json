@@ -1,0 +1,24 @@
+{
+  "name": "video_palette",
+  "tool": "video_palette",
+  "action": "video_palette",
+  "workflow": "packs/utility/video_palette.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "CJVideoPalette",
+      "title": "Video Color Palette",
+      "inputs": {
+        "crf": 18,
+        "filename_prefix": "video/adrift_palette",
+        "palette": "#0b3c49, #1f7a8c, #e07a2f, #f2c48d",
+        "preserve_luminance": false,
+        "reference": "",
+        "sample_frames": 24,
+        "skin_protect": 0,
+        "strength": 0.8,
+        "video": "golden_clip.mp4 [input]"
+      }
+    }
+  }
+}

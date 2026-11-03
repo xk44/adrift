@@ -1,0 +1,35 @@
+{
+ "1": {
+  "class_type": "SeFiPipelineLoader",
+  "inputs": {
+   "model_dir": "~/models/sefi/SeFi-Image-1B-turbo",
+   "device": "mps",
+   "dtype": "bf16"
+  }
+ },
+ "2": {
+  "class_type": "SeFiGenerate",
+  "inputs": {
+   "pipe": [
+    "1",
+    0
+   ],
+   "prompt": "",
+   "steps": 4,
+   "guidance": 1.0,
+   "width": 1024,
+   "height": 1024,
+   "seed": 0
+  }
+ },
+ "3": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "2",
+    0
+   ],
+   "filename_prefix": "CJ_sefi"
+  }
+ }
+}

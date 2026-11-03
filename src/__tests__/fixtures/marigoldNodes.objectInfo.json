@@ -1,0 +1,149 @@
+{
+  "_meta": {
+    "source": "Copied from a live ComfyUI /object_info (core comfy_extras/nodes_marigold.py, nodes_cond.py, nodes_custom_sampler.py) for nodes absent from graphLint.objectInfo.json. Re-record graphLint.objectInfo.json to supersede.",
+    "transcribed_at": "2026-10-31"
+  },
+  "ConditioningLoader": {
+    "input": {
+      "required": {
+        "conditioning_name": [
+          "COMBO",
+          {
+            "multiselect": false,
+            "options": [
+              "marigold_v2_albedo_conditioning.safetensors",
+              "marigold_v2_depth_conditioning.safetensors",
+              "marigold_v2_normals_conditioning.safetensors"
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "conditioning_name"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "CONDITIONING"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "CONDITIONING"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "ConditioningLoader",
+    "display_name": "Load Conditioning",
+    "description": "Loads a conditioning saved with Save Conditioning, or any safetensors file with a 'conditioning' tensor, from the embeddings folder.",
+    "python_module": "comfy_extras.nodes_cond",
+    "category": "model/loaders",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "DisableNoise": {
+    "input": {
+      "required": {}
+    },
+    "input_order": {
+      "required": []
+    },
+    "is_input_list": false,
+    "output": [
+      "NOISE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "NOISE"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "DisableNoise",
+    "display_name": null,
+    "description": "",
+    "python_module": "comfy_extras.nodes_custom_sampler",
+    "category": "model/sampling/noise",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": [
+      "zero noise"
+    ],
+    "essentials_category": null,
+    "has_intermediate_output": false
+  },
+  "MarigoldV2PostProcess": {
+    "input": {
+      "required": {
+        "image": [
+          "IMAGE",
+          {}
+        ],
+        "prediction": [
+          "COMBO",
+          {
+            "multiselect": false,
+            "options": [
+              "depth",
+              "normals",
+              "albedo"
+            ]
+          }
+        ]
+      }
+    },
+    "input_order": {
+      "required": [
+        "image",
+        "prediction"
+      ]
+    },
+    "is_input_list": false,
+    "output": [
+      "IMAGE"
+    ],
+    "output_is_list": [
+      false
+    ],
+    "output_name": [
+      "IMAGE"
+    ],
+    "output_tooltips": [
+      null
+    ],
+    "output_matchtypes": null,
+    "name": "MarigoldV2PostProcess",
+    "display_name": "Marigold V2 Post-Process",
+    "description": "Turns a decoded Marigold V2 prediction into an image: normalized depth with near as bright, unit surface normals, or sRGB albedo.",
+    "python_module": "comfy_extras.nodes_marigold",
+    "category": "image/geometry estimation",
+    "output_node": false,
+    "deprecated": false,
+    "experimental": false,
+    "dev_only": false,
+    "api_node": false,
+    "price_badge": null,
+    "search_aliases": null,
+    "essentials_category": null,
+    "has_intermediate_output": false
+  }
+}

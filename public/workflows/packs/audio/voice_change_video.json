@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "title": "Voice changer on a clip (Chatterbox VC + remux)",
+    "description": "Voice changer tool, video in. LoadAudio reads the clip's own audio track and TrimAudioDuration caps it at 30 s. A second LoadAudio + TrimAudioDuration takes up to 15 s of the target voice sample (removed by the builder when none is given: the pack's built-in voice). ChatterboxVC (wildminder/ComfyUI-Chatterbox, Resemble AI Chatterbox, MIT) re-voices the speech, keeping words and timing. SaveAudioMP3 keeps the converted speech; VHS_LoadVideo reads the same span of frames at 25 fps (long edge capped at 1280) and CreateVideo + SaveVideo remux the converted speech over them, replacing the original soundtrack. Builder: src/lib/oj/voiceChange.ts."
+  },
+  "1": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Source Clip (audio track)" }
+  },
+  "2": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["1", 0], "start_index": 0.0, "duration": 30.0 },
+    "_meta": { "title": "Converted Span" }
+  },
+  "3": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Target Voice Sample" }
+  },
+  "4": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["3", 0], "start_index": 0.0, "duration": 15.0 },
+    "_meta": { "title": "Target Voice Reference" }
+  },
+  "5": {
+    "class_type": "ChatterboxVC",
+    "inputs": {
+      "model_pack_name": "chatterbox_local",
+      "source_audio": ["2", 0],
+      "n_timesteps": 10,
+      "temperature": 1.0,
+      "flow_cfg_scale": 0.7,
+      "use_watermark": false,
+      "device": "auto",
+      "dtype": "auto",
+      "attention_mode": "sdpa",
+      "refinement_passes": 1,
+      "max_chunk_duration": 30.0,
+      "chunk_method": "smart",
+      "target_voice_audio": ["4", 0]
+    },
+    "_meta": { "title": "Chatterbox Voice Conversion" }
+  },
+  "6": {
+    "class_type": "SaveAudioMP3",
+    "inputs": {
+      "audio": ["5", 0],
+      "filename_prefix": "audio/adrift_vc",
+      "quality": "V0"
+    },
+    "_meta": { "title": "Save Converted Speech" }
+  },
+  "7": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 25.0,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 750,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Source Clip Frames" }
+  },
+  "8": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["7", 0], "fps": 25.0, "audio": ["5", 0] },
+    "_meta": { "title": "Remux Converted Voice" }
+  },
+  "9": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["8", 0],
+      "filename_prefix": "video/adrift_vc",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Re-voiced Clip" }
+  }
+}

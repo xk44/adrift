@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "title": "Pipeline assemble (core video concat)",
+    "description": "Final step of the Shorts Studio and Click to Ad pipelines, core ComfyUI + VideoHelperSuite only, no models. Template = one scene; the builder (src/lib/oj/pipelineAssemble.ts) keeps SaveVideo and regenerates the rest per scene: VHS_LoadVideo (resampled to the output fps, frame cap = clip length) -> ImageScale (center crop to 720x1280 or 1080x1920) -> optional last-frame hold (ImageFromBatch -1 -> RepeatImageBatch -> ImageBatch) so the shot lasts as long as its narration -> TextOverlay caption -> CreateVideo. Soundtrack: per scene LoadAudio narration padded with EmptyAudio and cut by TrimAudioDuration to the scene's exact length, chained with AudioConcat; the music bed (AudioAdjustVolume, TrimAudioDuration) is mixed in with AudioMerge. ConcatenateVideo joins the scenes with that soundtrack as complete_audio -> SaveVideo (H.264 MP4)."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 24.0,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 96,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Scene 1 Clip" }
+  },
+  "2": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["1", 0],
+      "upscale_method": "lanczos",
+      "width": 720,
+      "height": 1280,
+      "crop": "center"
+    },
+    "_meta": { "title": "Scene 1 Fit 9:16" }
+  },
+  "3": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["2", 0], "fps": 24.0 },
+    "_meta": { "title": "Scene 1 Video" }
+  },
+  "4": {
+    "class_type": "ConcatenateVideo",
+    "inputs": { "videos.video0": ["3", 0], "codec": "auto" },
+    "_meta": { "title": "Concat Scenes" }
+  },
+  "5": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["4", 0],
+      "filename_prefix": "video/adrift_short",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Short" }
+  }
+}

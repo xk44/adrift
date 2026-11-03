@@ -1,0 +1,236 @@
+{
+ "_meta": {
+  "source": "MiniMaxH3AddGuide + SaveAudio: live GET /object_info on the reference box (ComfyUI 0.42.0, 2026-10-27). CJAudioStems: generated from INPUT_TYPES of comfy_nodes/cj_stems/cj_audio_stems.py (in-repo node). Re-record graphLint.objectInfo.json to supersede.",
+  "transcribed_at": "2026-10-27"
+ },
+ "MiniMaxH3AddGuide": {
+  "input": {
+   "required": {
+    "positive": [
+     "CONDITIONING",
+     {}
+    ],
+    "latent": [
+     "LATENT",
+     {}
+    ],
+    "frame_idx": [
+     "INT",
+     {
+      "tooltip": "Frame index to anchor the image or the clip's first frame at. Negative values are counted from the end of the video.",
+      "default": 0,
+      "min": -9999,
+      "max": 9999
+     }
+    ]
+   },
+   "optional": {
+    "vae": [
+     "VAE",
+     {
+      "tooltip": "Video VAE, needed when an image is connected."
+     }
+    ],
+    "audio_vae": [
+     "VAE",
+     {
+      "tooltip": "Audio VAE, needed when an audio is connected."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {
+      "tooltip": "Image or video frames to anchor. Multi-frame batches are anchored as a clip and cropped down to the model's valid clip lengths: 5, 22, 39... (17k + 5) frames. Batches shorter than 5 frames use only the first image."
+     }
+    ],
+    "audio": [
+     "AUDIO",
+     {
+      "tooltip": "Soundtrack to anchor starting at the same frame index, cropped to the video's remaining duration."
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "positive",
+    "latent",
+    "frame_idx"
+   ],
+   "optional": [
+    "vae",
+    "audio_vae",
+    "image",
+    "audio"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "CONDITIONING"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "positive"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "MiniMaxH3AddGuide",
+  "display_name": "Add Guide for MiniMax H3",
+  "description": "Anchor an image, a short clip, audio, or a clip with its soundtrack at any frame of a MiniMax H3 video. Chain several nodes to anchor several frames.",
+  "python_module": "comfy_extras.nodes_minimax_h3",
+  "category": "model/conditioning/minimax",
+  "output_node": false,
+  "deprecated": false,
+  "experimental": false,
+  "dev_only": false,
+  "api_node": false,
+  "price_badge": null,
+  "search_aliases": null,
+  "essentials_category": null,
+  "has_intermediate_output": false
+ },
+ "SaveAudio": {
+  "input": {
+   "required": {
+    "audio": [
+     "AUDIO",
+     {}
+    ],
+    "filename_prefix": [
+     "STRING",
+     {
+      "default": "audio/ComfyUI",
+      "multiline": false
+     }
+    ]
+   },
+   "hidden": {
+    "prompt": [
+     "PROMPT"
+    ],
+    "extra_pnginfo": [
+     "EXTRA_PNGINFO"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "audio",
+    "filename_prefix"
+   ],
+   "hidden": [
+    "prompt",
+    "extra_pnginfo"
+   ]
+  },
+  "is_input_list": false,
+  "output": [
+   "AUDIO"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "audio"
+  ],
+  "output_tooltips": [
+   null
+  ],
+  "output_matchtypes": null,
+  "name": "SaveAudio",
+  "display_name": "Save Audio (FLAC) (DEPRECATED)",
+  "description": "",
+  "python_module": "comfy_extras.nodes_audio",
+  "category": "audio",
+  "output_node": true,
+  "deprecated": true,
+  "experimental": false,
+  "dev_only": false,
+  "api_node": false,
+  "price_badge": null,
+  "search_aliases": [
+   "export flac"
+  ],
+  "essentials_category": "Audio",
+  "has_intermediate_output": false
+ },
+ "CJAudioStems": {
+  "input": {
+   "required": {
+    "audio": [
+     "AUDIO",
+     {}
+    ],
+    "weights": [
+     [
+      "hdemucs_high_trained.pt"
+     ],
+     {
+      "default": "hdemucs_high_trained.pt"
+     }
+    ],
+    "segment_seconds": [
+     "FLOAT",
+     {
+      "default": 10.0,
+      "min": 2.0,
+      "max": 30.0,
+      "step": 0.5,
+      "tooltip": "Chunk length; VRAM scales with it."
+     }
+    ],
+    "overlap": [
+     "FLOAT",
+     {
+      "default": 0.25,
+      "min": 0.0,
+      "max": 0.5,
+      "step": 0.05,
+      "tooltip": "Fraction of each chunk blended with its neighbour."
+     }
+    ],
+    "keep_loaded": [
+     "BOOLEAN",
+     {
+      "default": false
+     }
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "audio",
+    "weights",
+    "segment_seconds",
+    "overlap",
+    "keep_loaded"
+   ]
+  },
+  "output": [
+   "AUDIO",
+   "AUDIO",
+   "AUDIO",
+   "AUDIO"
+  ],
+  "output_name": [
+   "drums",
+   "bass",
+   "other",
+   "vocals"
+  ],
+  "output_is_list": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "output_node": false,
+  "name": "CJAudioStems",
+  "display_name": "Audio Stems (Demucs, local)",
+  "category": "audio/adrift"
+ }
+}

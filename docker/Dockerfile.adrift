@@ -1,0 +1,68 @@
+# Adrift (Next.js) production image. Build context: the repository root.
+#
+#   docker build -f docker/Dockerfile.adrift -t adrift:local \
+#     --build-arg NEXT_PUBLIC_COMFY_WS_BASE=ws://<host>:8188 .
+#
+# NEXT_PUBLIC_* values are inlined into the browser bundle at build time, so
+# the ComfyUI WebSocket URL the *browser* uses is a build arg, not runtime env.
+
+ARG NODE_IMAGE=node:22-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d
+
+# ---- deps: lockfile install; native modules built from source (no prebuilt
+#      binary downloads from install scripts) -------------------------------
+FROM ${NODE_IMAGE} AS deps
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 make g++ \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund \
+ && npm rebuild better-sqlite3 --build-from-source \
+ && npm rebuild esbuild sharp
+
+# ---- build ---------------------------------------------------------------
+FROM ${NODE_IMAGE} AS build
+WORKDIR /app
+ARG NEXT_PUBLIC_COMFY_WS_BASE=ws://127.0.0.1:8188
+ARG CJ_FRAME_ANCESTORS=
+ARG CJ_DEFAULT_PACK=
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_OUTPUT=standalone \
+    NEXT_PUBLIC_COMFY_WS_BASE=${NEXT_PUBLIC_COMFY_WS_BASE} \
+    CJ_FRAME_ANCESTORS=${CJ_FRAME_ANCESTORS} \
+    CJ_DEFAULT_PACK=${CJ_DEFAULT_PACK}
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx next build
+
+# ---- runtime ---------------------------------------------------------------
+FROM ${NODE_IMAGE} AS runtime
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends tini \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0 \
+    CJ_HOST=0.0.0.0
+# CJ_HOST tells Adrift how exposed it is: 0.0.0.0 means "reachable from other
+# machines", so it refuses to start without ADMIN_API_KEY. docker-compose
+# overrides it with the published BIND_ADDR (127.0.0.1 by default), so a
+# loopback-only stack still runs without a key.
+# Standalone server + the files the app reads from process.cwd() at runtime
+# (public/workflows graphs, scripts/). data/ is a volume.
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build --chown=node:node /app/scripts ./scripts
+RUN mkdir -p /app/data && chown node:node /app/data
+USER node
+VOLUME ["/app/data"]
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/api/health').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
+
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["node", "server.js"]

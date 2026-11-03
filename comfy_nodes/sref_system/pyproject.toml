@@ -1,0 +1,28 @@
+# Comfy Registry / ComfyUI-Manager metadata for the Adrift node pack
+# (the sref and LoRA shortcode nodes; the overlay is comfy_nodes/adrift_overlay).
+# Spec: https://docs.comfy.org/registry/specifications
+#
+# Publish from this directory of the public tree with `comfy node publish`.
+
+[project]
+name = "adrift-nodes"
+description = "Adrift nodes for ComfyUI: LoRA shortcode nodes."
+version = "0.1.0"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+# torch and safetensors come with ComfyUI; everything else is stdlib.
+dependencies = []
+classifiers = [
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Repository = "https://github.com/xk44/adrift"
+Documentation = "https://github.com/xk44/adrift/blob/main/docs/custom-nodes.md"
+"Bug Tracker" = "https://github.com/xk44/adrift/issues"
+
+[tool.comfy]
+PublisherId = "xk44"
+DisplayName = "Adrift Nodes"
+Icon = "https://raw.githubusercontent.com/xk44/adrift/main/public/icon-192.png"
+includes = []

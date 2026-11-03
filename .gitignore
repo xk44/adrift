@@ -1,0 +1,61 @@
+# Dependencies
+node_modules
+
+# Next.js build
+.next/
+.next-build/
+.next-mock/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Python helper caches
+__pycache__/
+*.py[cod]
+
+# Environment (keep .env.example)
+.env
+.env.local
+.env.*.local
+.env.local.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data / cache
+data/*
+!data/wildcards/
+*.sqlite
+*.sqlite-journal
+
+# Debug
+npm-debug.log*
+
+# Agent scratch
+.spark-work/
+
+# Docker stack local state (see README: Docker)
+docker/adrift.env
+docker/models/
+docker/comfy-data/
+docker/adrift-data/
+docker/custom_nodes/
+docker/extra-models/
+
+# Written by "Add Adrift to ComfyUI" (the Adrift URL for the overlay bridge)
+comfy_nodes/adrift_overlay/web/adrift_config.json
+
+# Optional style library service: local venv and caches stay out, its bundled
+# data folder stays in (the data/ rule above would drop it)
+services/stylevault/.venv/
+services/stylevault/src/*.egg-info/
+services/stylevault/.pytest_cache/
+!services/stylevault/src/stylevault/data/

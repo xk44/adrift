@@ -1,0 +1,166 @@
+Patch for https://github.com/wildminder/ComfyUI-Chatterbox (pinned commit b619de9e605b).
+This diff modifies that project's files and is distributed under its
+license (Apache-2.0), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/modules/generation.py b/modules/generation.py
+index 98b04d1..7d39a1f 100644
+--- a/modules/generation.py
++++ b/modules/generation.py
+@@ -119,6 +119,28 @@ FAMILY_FLASH = "flash"
+ REFINEMENT_CACHE_DEPTH = 5
+ 
+ 
++import hashlib
++import contextlib as _contextlib
++
++
++@_contextlib.contextmanager
++def _keep_builtin_conds(model: Any):
++    """Local patch (Adrift): upstream ``generate(audio_prompt_path=...)`` and
++    ``generate(target_voice_path=...)`` overwrite ``model.conds`` /
++    ``model.ref_dict`` for good, so a later run with no reference clip speaks
++    in the LAST cloned voice instead of the pack's built-in one (one user's
++    clone leaks into another's stock run). Restore both after every call."""
++    saved = {a: getattr(model, a) for a in ("conds", "ref_dict") if hasattr(model, a)}
++    try:
++        yield
++    finally:
++        for attr, value in saved.items():
++            try:
++                setattr(model, attr, value)
++            except Exception:
++                pass
++
++
+ # ---------------------------------------------------------------------------
+ # Progress
+ # ---------------------------------------------------------------------------
+@@ -618,7 +640,7 @@ def _generate_one_chunk(
+         # the progress bar, the way the temp-file write it replaces did.
+         prompt = preprocess_comfy_audio(audio_prompt, target_sr=S3GEN_SAMPLE_RATE)
+         try:
+-            with torch.no_grad():
++            with torch.no_grad(), _keep_builtin_conds(model):
+                 waveform = model.generate(
+                     chunk,
+                     audio_prompt_path=prompt,
+@@ -875,7 +897,7 @@ def convert_voice_audio(
+             target_voice_audio, target_sr=S3GEN_SAMPLE_RATE, name="target voice"
+         )
+         try:
+-            with torch.no_grad():
++            with torch.no_grad(), _keep_builtin_conds(model):
+                 waveform = model.generate(
+                     source,
+                     target_voice_path=target,
+@@ -1114,7 +1136,7 @@ def generate_mtl_audio(
+ 
+     set_seed(seed)
+     prompt = preprocess_comfy_audio(audio_prompt, target_sr=S3GEN_SAMPLE_RATE)
+-    with torch.no_grad():
++    with torch.no_grad(), _keep_builtin_conds(model):
+         waveform = model.generate(
+             text,
+             language_id=language_id,
+@@ -1176,7 +1198,7 @@ def generate_turbo_audio(
+ 
+     set_seed(seed)
+     prompt = preprocess_comfy_audio(audio_prompt, target_sr=S3GEN_SAMPLE_RATE)
+-    with torch.no_grad():
++    with torch.no_grad(), _keep_builtin_conds(model):
+         waveform = model.generate(
+             text,
+             audio_prompt_path=prompt,
+@@ -1283,25 +1305,40 @@ class RefinementCache:
+         return len(self._iterations)
+ 
+ 
++def _audio_digest(audio: Optional[dict]) -> str:
++    """Local patch (Adrift): content digest of an ``AUDIO`` dict ("none" if absent).
++
++    blake2b over ~1 MB of float32 samples is about a millisecond -- noise next
++    to one conversion -- and it is the only identity that is actually safe.
++    """
++    if not isinstance(audio, dict) or audio.get("waveform") is None:
++        return "none"
++    wav = audio["waveform"]
++    h = hashlib.blake2b(digest_size=16)
++    h.update(str((tuple(wav.shape), str(wav.dtype), audio.get("sample_rate"))).encode())
++    h.update(wav.detach().to("cpu").contiguous().numpy().tobytes())
++    return h.hexdigest()
++
++
+ def _refinement_cache_key(
+     cache_key: Optional[str],
+     audio: Optional[dict],
+     n_timesteps: int,
+     temperature: float,
+     flow_cfg_scale: float,
++    target_voice_audio: Optional[dict] = None,
+ ) -> str:
+     """A stable identity for one conversion job.
+ 
+-    The source audio's *shape* stands in for its content. Hashing megabytes of
+-    waveform on every run would cost more than the conversion the cache saves,
+-    and the guarantee that matters -- within one run, a repeated request returns
+-    the cached iteration -- does not depend on the bytes being identical.
++    Local patch (Adrift): upstream keyed on the source *shape* and left the
++    target voice out, so two different clips of equal length -- or one clip
++    converted to two different target voices -- were served each other's
++    cached result (a cross-user audio leak in a shared server). The key now
++    carries content digests of both the source and the target.
+     """
+-    shape = "none"
+-    if isinstance(audio, dict) and audio.get("waveform") is not None:
+-        shape = str(tuple(audio["waveform"].shape))
+     return (
+-        f"{cache_key or 'adhoc'}|{shape}|{int(n_timesteps)}|{temperature}|"
++        f"{cache_key or 'adhoc'}|{_audio_digest(audio)}|"
++        f"{_audio_digest(target_voice_audio)}|{int(n_timesteps)}|{temperature}|"
+         f"{flow_cfg_scale}"
+     )
+ 
+@@ -1363,7 +1400,8 @@ def iterative_convert_voice(
+     passes = max(1, int(refinement_passes))
+     convert = single_pass or convert_voice_audio
+     key = _refinement_cache_key(
+-        cache_key, audio, n_timesteps, temperature, flow_cfg_scale
++        cache_key, audio, n_timesteps, temperature, flow_cfg_scale,
++        target_voice_audio=target_voice_audio,
+     )
+     stored = cache.get(key) if cache is not None else []
+ 
+diff --git a/tests/test_vc_iterative.py b/tests/test_vc_iterative.py
+index 0b35338..2740379 100644
+--- a/tests/test_vc_iterative.py
++++ b/tests/test_vc_iterative.py
+@@ -282,6 +282,28 @@ class TestRefinementCache:
+         )
+         assert len(model.calls) == 2
+ 
++    def test_a_different_target_voice_does_not_share_iterations(self, source_audio) -> None:
++        """Local patch (Adrift): the target voice is part of the job identity."""
++        cache = RefinementCache()
++        model = _CountingVC()
++        voice_a = {"waveform": torch.ones(1, 1, 2400), "sample_rate": S3GEN_SAMPLE_RATE}
++        voice_b = {"waveform": torch.full((1, 1, 2400), 0.5), "sample_rate": S3GEN_SAMPLE_RATE}
++        for target in (None, voice_a, voice_b):
++            iterative_convert_voice(
++                model, source_audio, target_voice_audio=target, cache=cache, cache_key="job"
++            )
++        assert len(model.calls) == 3, "a different target voice was served a cached result"
++
++    def test_same_shape_different_content_does_not_share_iterations(self, source_audio) -> None:
++        """Local patch (Adrift): equal-length clips are different jobs."""
++        cache = RefinementCache()
++        model = _CountingVC()
++        other = dict(source_audio)
++        other["waveform"] = source_audio["waveform"] + 0.25
++        iterative_convert_voice(model, source_audio, cache=cache, cache_key="job")
++        iterative_convert_voice(model, other, cache=cache, cache_key="job")
++        assert len(model.calls) == 2, "an equal-length clip was served another clip's result"
++
+     def test_the_cache_is_capped(self, source_audio) -> None:
+         """Nine passes retain five iterations -- the documented cap, not memory."""
+         cache = RefinementCache()

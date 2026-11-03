@@ -1,0 +1,424 @@
+{
+  "name": "wan_animate",
+  "tool": "wan_animate",
+  "action": "wan_animate",
+  "workflow": "packs/wan-animate/wan_animate.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Clip (motion)",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "ImageFromBatch",
+      "title": "Frame Cap",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "2",
+          0
+        ],
+        "length": 241
+      }
+    },
+    "4": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize Clip",
+      "inputs": {
+        "input": [
+          "3",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.crop": "center",
+        "resize_type.height": 480,
+        "resize_type.width": 832,
+        "scale_method": "area"
+      }
+    },
+    "5": {
+      "class_type": "GetImageSize",
+      "title": "Clip Size",
+      "inputs": {
+        "image": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "ComfyMathExpression",
+      "title": "Length 4n+1",
+      "inputs": {
+        "expression": "4 * floor((a - 1) / 4) + 1",
+        "values.a": [
+          "5",
+          2
+        ]
+      }
+    },
+    "7": {
+      "class_type": "LoadImage",
+      "title": "Character Photo",
+      "inputs": {
+        "image": "golden_ref2.png [input]"
+      }
+    },
+    "8": {
+      "class_type": "ResizeImageMaskNode",
+      "title": "Resize Character",
+      "inputs": {
+        "input": [
+          "7",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.crop": "center",
+        "resize_type.height": 480,
+        "resize_type.width": 832,
+        "scale_method": "area"
+      }
+    },
+    "9": {
+      "class_type": "CLIPVisionLoader",
+      "title": "CLIP Vision",
+      "inputs": {
+        "clip_name": "clip_vision_h.safetensors"
+      }
+    },
+    "10": {
+      "class_type": "CLIPVisionEncode",
+      "title": "CLIP Vision (character)",
+      "inputs": {
+        "clip_vision": [
+          "9",
+          0
+        ],
+        "crop": "none",
+        "image": [
+          "8",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "ImageFromBatch",
+      "title": "First Clip Frame",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "4",
+          0
+        ],
+        "length": 1
+      }
+    },
+    "12": {
+      "class_type": "CLIPVisionEncode",
+      "title": "CLIP Vision (pose)",
+      "inputs": {
+        "clip_vision": [
+          "9",
+          0
+        ],
+        "crop": "none",
+        "image": [
+          "11",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "CLIPLoader",
+      "title": "UMT5",
+      "inputs": {
+        "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "device": "default",
+        "type": "wan"
+      }
+    },
+    "14": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive Prompt",
+      "inputs": {
+        "clip": [
+          "13",
+          0
+        ],
+        "text": "Character appearance description: golden test subject, exactly as in the reference image, keeping its look, colors and outfit.\nBackground description: the background of the reference image."
+      }
+    },
+    "15": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative Prompt",
+      "inputs": {
+        "clip": [
+          "13",
+          0
+        ],
+        "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走"
+      }
+    },
+    "16": {
+      "class_type": "CLIPTextEncode",
+      "title": "Pose Prompt",
+      "inputs": {
+        "clip": [
+          "13",
+          0
+        ],
+        "text": "A person moving naturally, following the reference motion, camera static"
+      }
+    },
+    "17": {
+      "class_type": "VAELoader",
+      "title": "Wan 2.1 VAE",
+      "inputs": {
+        "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+      }
+    },
+    "18": {
+      "class_type": "UNETLoader",
+      "title": "Wan Animate 2 (distilled)",
+      "inputs": {
+        "unet_name": "wan_animate_2_distill_int8_convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "19": {
+      "class_type": "ContextWindowsManual",
+      "title": "Context Windows (long clips)",
+      "inputs": {
+        "causal_window_fix": true,
+        "closed_loop": false,
+        "cond_retain_index_list": "0",
+        "context_length": 21,
+        "context_overlap": 8,
+        "context_schedule": "standard_static",
+        "context_stride": 1,
+        "dim": 2,
+        "freenoise": true,
+        "fuse_method": "pyramid",
+        "latent_retain_index_list": "",
+        "model": [
+          "18",
+          0
+        ],
+        "split_conds_to_windows": false
+      }
+    },
+    "20": {
+      "class_type": "WanAnimate2Cache",
+      "title": "Animate Cache",
+      "inputs": {
+        "device": "cpu",
+        "dtype": "int8",
+        "model": [
+          "19",
+          0
+        ]
+      }
+    },
+    "21": {
+      "class_type": "ModelSamplingSD3",
+      "title": "Shift",
+      "inputs": {
+        "model": [
+          "20",
+          0
+        ],
+        "shift": 5
+      }
+    },
+    "22": {
+      "class_type": "WanAnimate2ToVideo",
+      "title": "Wan Animate 2",
+      "inputs": {
+        "batch_size": 1,
+        "clip_vision_output": [
+          "10",
+          0
+        ],
+        "clip_vision_output_pose": [
+          "12",
+          0
+        ],
+        "height": 480,
+        "length": [
+          "6",
+          1
+        ],
+        "negative": [
+          "15",
+          0
+        ],
+        "pose_end_percent": 1,
+        "pose_start_percent": 0,
+        "pose_strength": 1,
+        "pose_video": [
+          "4",
+          0
+        ],
+        "positive": [
+          "14",
+          0
+        ],
+        "positive_pose": [
+          "16",
+          0
+        ],
+        "reference_image": [
+          "8",
+          0
+        ],
+        "reference_image_strength": 1,
+        "vae": [
+          "17",
+          0
+        ],
+        "video_frame_offset": 0,
+        "width": 832
+      }
+    },
+    "23": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "lcm"
+      }
+    },
+    "24": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "21",
+          0
+        ],
+        "scheduler": "simple",
+        "steps": 10
+      }
+    },
+    "25": {
+      "class_type": "SamplerCustom",
+      "title": "Sample",
+      "inputs": {
+        "add_noise": true,
+        "cfg": 1,
+        "latent_image": [
+          "22",
+          2
+        ],
+        "model": [
+          "21",
+          0
+        ],
+        "negative": [
+          "22",
+          1
+        ],
+        "noise_seed": 314799534,
+        "positive": [
+          "22",
+          0
+        ],
+        "sampler": [
+          "23",
+          0
+        ],
+        "sigmas": [
+          "24",
+          0
+        ]
+      }
+    },
+    "26": {
+      "class_type": "TrimVideoLatent",
+      "title": "Trim Latent",
+      "inputs": {
+        "samples": [
+          "25",
+          0
+        ],
+        "trim_amount": [
+          "22",
+          3
+        ]
+      }
+    },
+    "27": {
+      "class_type": "VAEDecode",
+      "title": "Decode",
+      "inputs": {
+        "samples": [
+          "26",
+          0
+        ],
+        "vae": [
+          "17",
+          0
+        ]
+      }
+    },
+    "28": {
+      "class_type": "ImageFromBatch",
+      "title": "Drop Continuation Frames",
+      "inputs": {
+        "batch_index": [
+          "22",
+          4
+        ],
+        "image": [
+          "27",
+          0
+        ],
+        "length": 4096
+      }
+    },
+    "29": {
+      "class_type": "CreateVideo",
+      "title": "Mux Video",
+      "inputs": {
+        "audio": [
+          "2",
+          1
+        ],
+        "fps": [
+          "2",
+          2
+        ],
+        "images": [
+          "28",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_WanAnimate",
+        "format": "auto",
+        "video": [
+          "29",
+          0
+        ]
+      }
+    }
+  }
+}

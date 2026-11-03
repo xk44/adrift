@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "title": "Refocus (depth lens blur)",
+    "description": "Click-to-refocus a photo: Depth Anything 3 (core LoadDA3Model / DA3Inference mono / DA3Render depth, v2_style, near = white) -> cj_image_tools CJRefocus, a layered depth-of-field blur: per-pixel circle of confusion from |depth - focal depth| x aperture, focal depth sampled at the clicked point (focus_x / focus_y, normalized), each CoC layer blurred with its own disc and composited back-to-front so sharp subjects never halo into the blurred background, optional highlight bokeh boost in linear light. Builder: src/lib/oj/refocus.ts. Model (models/geometry_estimation): depth_anything_3_mono_large.safetensors (default) or depth_anything_3_base.safetensors (fast)."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source image" }
+  },
+  "2": {
+    "class_type": "LoadDA3Model",
+    "inputs": {
+      "model_name": "depth_anything_3_mono_large.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": { "title": "Depth model" }
+  },
+  "3": {
+    "class_type": "DA3Inference",
+    "inputs": {
+      "da3_model": ["2", 0],
+      "image": ["1", 0],
+      "resolution": 1008,
+      "resize_method": "upper_bound_resize",
+      "mode": "mono"
+    },
+    "_meta": { "title": "Depth" }
+  },
+  "4": {
+    "class_type": "DA3Render",
+    "inputs": {
+      "da3_geometry": ["3", 0],
+      "output": "depth",
+      "output.normalization": "v2_style",
+      "output.apply_sky_clip": false
+    },
+    "_meta": { "title": "Depth map (near = white)" }
+  },
+  "5": {
+    "class_type": "CJRefocus",
+    "inputs": {
+      "image": ["1", 0],
+      "depth": ["4", 0],
+      "focus_x": 0.5,
+      "focus_y": 0.5,
+      "blur_amount": 2.4,
+      "focus_range": 0.04,
+      "highlights": 0.3,
+      "depth_smoothing": 0.0,
+      "invert_depth": false
+    },
+    "_meta": { "title": "Refocus" }
+  },
+  "6": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["5", 0], "filename_prefix": "CJ_Refocus/refocus" },
+    "_meta": { "title": "Save" }
+  }
+}

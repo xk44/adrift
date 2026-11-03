@@ -1,0 +1,200 @@
+{
+  "_comment": "Hand-written from ComfyUI execution.py validate_prompt / server.py post_prompt (HTTP 400 bodies of POST /prompt) and the WS execution_error message. Never captured from a live POST.",
+  "missing_node_type": {
+    "error": {
+      "type": "missing_node_type",
+      "message": "Node 'Krea2EditConditioning' not found. The custom node may not be installed.",
+      "details": "Node ID '#12'",
+      "extra_info": {
+        "node_id": "12",
+        "class_type": "Krea2EditConditioning",
+        "node_title": "Edit conditioning"
+      }
+    },
+    "node_errors": {}
+  },
+  "legacy_missing_node": {
+    "error": {
+      "type": "invalid_prompt",
+      "message": "Cannot execute because node VHS_VideoCombine does not exist.",
+      "details": "Node ID '#30'",
+      "extra_info": {}
+    },
+    "node_errors": {}
+  },
+  "missing_checkpoint": {
+    "error": {
+      "type": "prompt_outputs_failed_validation",
+      "message": "Prompt outputs failed validation",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": {
+      "4": {
+        "errors": [
+          {
+            "type": "value_not_in_list",
+            "message": "Value not in list",
+            "details": "ckpt_name: 'lumen_v2.safetensors' not in ['sd_xl_base_1.0.safetensors', 'flux1-dev-fp8.safetensors']",
+            "extra_info": {
+              "input_name": "ckpt_name",
+              "input_config": [
+                ["sd_xl_base_1.0.safetensors", "flux1-dev-fp8.safetensors"]
+              ],
+              "received_value": "lumen_v2.safetensors"
+            }
+          }
+        ],
+        "dependent_outputs": ["9"],
+        "class_type": "CheckpointLoaderSimple"
+      }
+    }
+  },
+  "missing_lora_no_extra": {
+    "error": {
+      "type": "prompt_outputs_failed_validation",
+      "message": "Prompt outputs failed validation",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": {
+      "21": {
+        "errors": [
+          {
+            "type": "value_not_in_list",
+            "message": "Value not in list",
+            "details": "lora_name: 'edit_tools/relight_v1.safetensors' not in []"
+          }
+        ],
+        "dependent_outputs": ["9"],
+        "class_type": "LoraLoaderModelOnly"
+      }
+    }
+  },
+  "missing_input_image": {
+    "error": {
+      "type": "prompt_outputs_failed_validation",
+      "message": "Prompt outputs failed validation",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": {
+      "10": {
+        "errors": [
+          {
+            "type": "custom_validation_failed",
+            "message": "Custom validation failed for node",
+            "details": "image - Invalid image file: cj_ref_mara01.png",
+            "extra_info": { "input_name": "image" }
+          }
+        ],
+        "dependent_outputs": ["9"],
+        "class_type": "LoadImage"
+      }
+    }
+  },
+  "bad_sampler_value": {
+    "error": {
+      "type": "prompt_outputs_failed_validation",
+      "message": "Prompt outputs failed validation",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": {
+      "3": {
+        "errors": [
+          {
+            "type": "value_not_in_list",
+            "message": "Value not in list",
+            "details": "sampler_name: 'euler_pip' not in ['euler', 'euler_ancestral', 'dpmpp_2m']",
+            "extra_info": {
+              "input_name": "sampler_name",
+              "received_value": "euler_pip"
+            }
+          },
+          {
+            "type": "value_bigger_than_max",
+            "message": "Value 200 bigger than max of 100",
+            "details": "cfg",
+            "extra_info": { "input_name": "cfg", "received_value": 200 }
+          }
+        ],
+        "dependent_outputs": ["9"],
+        "class_type": "KSampler"
+      }
+    }
+  },
+  "required_input_missing": {
+    "error": {
+      "type": "prompt_outputs_failed_validation",
+      "message": "Prompt outputs failed validation",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": {
+      "8": {
+        "errors": [
+          {
+            "type": "required_input_missing",
+            "message": "Required input is missing",
+            "details": "vae",
+            "extra_info": { "input_name": "vae" }
+          }
+        ],
+        "dependent_outputs": ["9"],
+        "class_type": "VAEDecode"
+      }
+    }
+  },
+  "no_outputs": {
+    "error": {
+      "type": "prompt_no_outputs",
+      "message": "Prompt has no outputs",
+      "details": "",
+      "extra_info": {}
+    },
+    "node_errors": []
+  },
+  "ws_execution_error_oom": {
+    "type": "execution_error",
+    "data": {
+      "prompt_id": "7f1c2a9e-0000-4000-8000-000000000001",
+      "node_id": "3",
+      "node_type": "KSampler",
+      "executed": ["4", "6", "7"],
+      "exception_message": "Allocation on device 0 would exceed allowed memory. (out of memory)\nCurrently allocated     : 22.31 GiB\nRequested               : 1.50 GiB",
+      "exception_type": "torch.OutOfMemoryError",
+      "traceback": ["  File \"execution.py\", line 323, in execute\n"],
+      "current_inputs": {},
+      "current_outputs": {}
+    }
+  },
+  "ws_execution_error_missing_file": {
+    "type": "execution_error",
+    "data": {
+      "prompt_id": "7f1c2a9e-0000-4000-8000-000000000002",
+      "node_id": "40",
+      "node_type": "UNETLoader",
+      "executed": [],
+      "exception_message": "[Errno 2] No such file or directory: 'models/diffusion_models/pip_unet.gguf'",
+      "exception_type": "FileNotFoundError",
+      "traceback": [],
+      "current_inputs": {},
+      "current_outputs": {}
+    }
+  },
+  "ws_execution_error_interrupted": {
+    "type": "execution_error",
+    "data": {
+      "prompt_id": "7f1c2a9e-0000-4000-8000-000000000003",
+      "node_id": "3",
+      "node_type": "KSampler",
+      "executed": [],
+      "exception_message": "",
+      "exception_type": "comfy.model_management.InterruptProcessingException",
+      "traceback": [],
+      "current_inputs": {},
+      "current_outputs": {}
+    }
+  }
+}

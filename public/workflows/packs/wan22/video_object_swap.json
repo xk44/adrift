@@ -1,0 +1,556 @@
+{
+  "_meta": {
+    "title": "Swap object in video from a reference image (SAM 3.1 + Wan2.2 Fun VACE, masked paste-back)",
+    "description": "Core nodes + h3-relay LabsH3PrepareVideo + cj_h3_tools. Same masking and paste-back as video_object_remove, plus a reference image of the replacement. LoadVideo -> LabsH3PrepareVideo (24 fps, ~0.5 MP on the 32-px grid, first 3 s = 73 frames, 4n+1 for VACE) -> SAM 3.1 text-prompted video tracking (node 31 = what to replace; Smart select clicks can replace this branch) -> SAM3_TrackToMask -> GrowMask (wider than removal so a differently shaped object fits) -> CJMaskTemporal (max) -> WanVaceToVideo: control video = original frames with the masked area neutral grey, control_masks = the mask (1 = regenerate), reference_image = the replacement object (LoadImage -> BiRefNet RemoveBackground -> ImageCropToMask on white -> ResizeAndPadImage white to the video size, VACE's subject-reference convention; the builder can skip the cut-out) -> two-stage Wan2.2 Fun VACE sampling (balanced: hi w/o LoRA 8 steps cfg 3.5 0-4, lo + lightx2v cfg 1; fast: LoRA both, 4 steps cfg 1) -> TrimVideoLatent drops the reference latent -> trim to the real frame count -> CJPasteBackSave: generated pixels only inside the mask, the source everywhere else at source resolution, source audio copied. A second CJMaskTemporal (node 38, max, radius 4 = the worst distance between a frame and the frame WanVaceToVideo samples for its latent's mask) feeds control_masks and the paste-back's expanded_mask: VACE keeps one frame's mask per 4-frame latent, so a fast limb greyed in a frame the sample missed was copied as grey (smear); with the wider latent mask every greyed pixel is regenerated."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE high noise"
+    }
+  },
+  "2": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE low noise"
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "umt5 xxl"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Wan 2.1 VAE"
+    }
+  },
+  "5": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "High-noise lightx2v LoRA (fast mode only)"
+    }
+  },
+  "6": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Low-noise lightx2v LoRA"
+    }
+  },
+  "7": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift high"
+    }
+  },
+  "8": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift low"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "The object from the reference image in place of the original object, same position, scale and motion, matching the scene's perspective, lighting and shadows, consistent with the rest of the video."
+    },
+    "_meta": {
+      "title": "Positive (replacement)"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "blurry, smeared, ghosting, artifacts, low quality, distorted, deformed, duplicate, worst quality, jpeg artifacts"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "11": {
+    "class_type": "WanVaceToVideo",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "width": [
+        "21",
+        2
+      ],
+      "height": [
+        "21",
+        3
+      ],
+      "length": 73,
+      "batch_size": 1,
+      "strength": 1.0,
+      "control_video": [
+        "37",
+        0
+      ],
+      "control_masks": [
+        "38",
+        0
+      ],
+      "reference_image": [
+        "44",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VACE masked swap (reference = new object)"
+    }
+  },
+  "12": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "add_noise": "enable",
+      "noise_seed": 4242,
+      "steps": 8,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "11",
+        2
+      ],
+      "start_at_step": 0,
+      "end_at_step": 4,
+      "return_with_leftover_noise": "enable"
+    },
+    "_meta": {
+      "title": "Sampler high noise"
+    }
+  },
+  "13": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "start_at_step": 4,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    },
+    "_meta": {
+      "title": "Sampler low noise"
+    }
+  },
+  "14": {
+    "class_type": "TrimVideoLatent",
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "trim_amount": [
+        "11",
+        3
+      ]
+    },
+    "_meta": {
+      "title": "Trim reference latent"
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "16": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "15",
+        0
+      ],
+      "batch_index": 0,
+      "length": [
+        "21",
+        5
+      ]
+    },
+    "_meta": {
+      "title": "Trim to the real frame count"
+    }
+  },
+  "17": {
+    "class_type": "CJPasteBackSave",
+    "inputs": {
+      "frames": [
+        "16",
+        0
+      ],
+      "source": [
+        "20",
+        0
+      ],
+      "raw_mask": [
+        "33",
+        0
+      ],
+      "expanded_mask": [
+        "38",
+        0
+      ],
+      "filename_prefix": "video/CJ_ObjectSwap",
+      "crf": 17,
+      "diff_thresh": 10.0,
+      "grow_px": 6,
+      "feather_px": 4,
+      "t_radius": 2,
+      "protect_text": false
+    },
+    "_meta": {
+      "title": "Paste back (mask only, source res, audio)"
+    }
+  },
+  "20": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "21": {
+    "class_type": "LabsH3PrepareVideo",
+    "inputs": {
+      "video": [
+        "20",
+        0
+      ],
+      "resolution": "480",
+      "duration_seconds": 3.0
+    },
+    "_meta": {
+      "title": "Prepare (24 fps, ~0.5 MP, 3 s)"
+    }
+  },
+  "30": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "SAM 3.1"
+    }
+  },
+  "31": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "30",
+        1
+      ],
+      "text": "object"
+    },
+    "_meta": {
+      "title": "What to replace (SAM prompt)"
+    }
+  },
+  "32": {
+    "class_type": "SAM3_VideoTrack",
+    "inputs": {
+      "images": [
+        "21",
+        0
+      ],
+      "model": [
+        "30",
+        0
+      ],
+      "conditioning": [
+        "31",
+        0
+      ],
+      "detection_threshold": 0.4,
+      "max_objects": 4,
+      "detect_interval": 4
+    },
+    "_meta": {
+      "title": "Track"
+    }
+  },
+  "33": {
+    "class_type": "SAM3_TrackToMask",
+    "inputs": {
+      "track_data": [
+        "32",
+        0
+      ],
+      "object_indices": ""
+    },
+    "_meta": {
+      "title": "Track -> mask"
+    }
+  },
+  "34": {
+    "class_type": "GrowMask",
+    "inputs": {
+      "mask": [
+        "33",
+        0
+      ],
+      "expand": 16,
+      "tapered_corners": true
+    },
+    "_meta": {
+      "title": "Grow (room for the new shape)"
+    }
+  },
+  "35": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "34",
+        0
+      ],
+      "mode": "max",
+      "radius": 2
+    },
+    "_meta": {
+      "title": "Temporal dilate"
+    }
+  },
+  "36": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "21",
+        2
+      ],
+      "height": [
+        "21",
+        3
+      ],
+      "batch_size": 1,
+      "color": 8355711
+    },
+    "_meta": {
+      "title": "Neutral grey (VACE fill)"
+    }
+  },
+  "37": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": [
+        "21",
+        0
+      ],
+      "source": [
+        "36",
+        0
+      ],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": [
+        "35",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Grey out the masked area (VACE inpaint control)"
+    }
+  },
+  "40": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "reference.png"
+    },
+    "_meta": {
+      "title": "Replacement object (reference image)"
+    }
+  },
+  "41": {
+    "class_type": "LoadBackgroundRemovalModel",
+    "inputs": {
+      "bg_removal_name": "birefnet.safetensors"
+    },
+    "_meta": {
+      "title": "BiRefNet"
+    }
+  },
+  "42": {
+    "class_type": "RemoveBackground",
+    "inputs": {
+      "bg_removal_model": [
+        "41",
+        0
+      ],
+      "image": [
+        "40",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Reference foreground mask"
+    }
+  },
+  "43": {
+    "class_type": "ImageCropToMask",
+    "inputs": {
+      "images": [
+        "40",
+        0
+      ],
+      "masks": [
+        "42",
+        0
+      ],
+      "width": 768,
+      "height": 768,
+      "pad_factor": 1.15,
+      "grow_mask": 0,
+      "background": "#FFFFFF"
+    },
+    "_meta": {
+      "title": "Cut out the object on white"
+    }
+  },
+  "44": {
+    "class_type": "ResizeAndPadImage",
+    "inputs": {
+      "image": [
+        "43",
+        0
+      ],
+      "target_width": [
+        "21",
+        2
+      ],
+      "target_height": [
+        "21",
+        3
+      ],
+      "padding_color": "white",
+      "interpolation": "lanczos"
+    },
+    "_meta": {
+      "title": "Fit reference to the video size (white pad)"
+    }
+  },
+  "38": {
+    "class_type": "CJMaskTemporal",
+    "inputs": {
+      "mask": [
+        "35",
+        0
+      ],
+      "mode": "max",
+      "radius": 4
+    },
+    "_meta": {
+      "title": "Latent-safe mask (VACE samples 1 of 4 frames)"
+    }
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "_meta": {
+    "title": "Layers (Qwen-Image-Layered)",
+    "description": "Core nodes only (official Qwen-Image-Layered template, flattened). The source image is scaled to a max side of 640 (or 1024), VAE-encoded with the layered RGBA VAE and passed as a ReferenceLatent to both prompts; EmptyQwenImageLayeredLatentImage holds 1 + N frames. Frame 0 of the result is the reconstructed composite: it is decoded alone, its alpha dropped and saved first as the flattened preview (CJ_Layers/preview). Frames 1..N are the layers, back to front, decoded as RGBA and saved as transparent PNGs (CJ_Layers/layer). No speed LoRA exists for this model: fast = 20 steps cfg 2.5 (template default), best = 50 steps cfg 4.0 (original settings). The caption is optional; an empty prompt works."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Source image"
+    }
+  },
+  "2": {
+    "class_type": "ImageScaleToMaxDimension",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "largest_size": 640
+    },
+    "_meta": {
+      "title": "Scale to max side"
+    }
+  },
+  "3": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Size"
+    }
+  },
+  "4": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_layered_fp8mixed.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Qwen-Image-Layered"
+    }
+  },
+  "5": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Qwen2.5-VL 7B"
+    }
+  },
+  "6": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_layered_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Layered RGBA VAE"
+    }
+  },
+  "7": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "shift": 1.0
+    },
+    "_meta": {
+      "title": "Shift"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Caption (optional)"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "5",
+        0
+      ],
+      "text": ""
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "10": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "2",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Encode source"
+    }
+  },
+  "11": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "8",
+        0
+      ],
+      "latent": [
+        "10",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Reference positive"
+    }
+  },
+  "12": {
+    "class_type": "ReferenceLatent",
+    "inputs": {
+      "conditioning": [
+        "9",
+        0
+      ],
+      "latent": [
+        "10",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Reference negative"
+    }
+  },
+  "13": {
+    "class_type": "EmptyQwenImageLayeredLatentImage",
+    "inputs": {
+      "width": [
+        "3",
+        0
+      ],
+      "height": [
+        "3",
+        1
+      ],
+      "layers": 4,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Layered latent"
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "12",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 0,
+      "steps": 20,
+      "cfg": 2.5,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "15": {
+    "class_type": "LatentCut",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "dim": "t",
+      "index": 0,
+      "amount": 1
+    },
+    "_meta": {
+      "title": "Composite frame"
+    }
+  },
+  "16": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "15",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode composite"
+    }
+  },
+  "17": {
+    "class_type": "SplitImageWithAlpha",
+    "inputs": {
+      "image": [
+        "16",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Drop alpha"
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "17",
+        0
+      ],
+      "filename_prefix": "CJ_Layers/preview"
+    },
+    "_meta": {
+      "title": "Save flattened preview"
+    }
+  },
+  "19": {
+    "class_type": "LatentCut",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "dim": "t",
+      "index": 1,
+      "amount": 16384
+    },
+    "_meta": {
+      "title": "Layer frames"
+    }
+  },
+  "20": {
+    "class_type": "LatentCutToBatch",
+    "inputs": {
+      "samples": [
+        "19",
+        0
+      ],
+      "dim": "t",
+      "slice_size": 1
+    },
+    "_meta": {
+      "title": "Layers to batch"
+    }
+  },
+  "21": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "20",
+        0
+      ],
+      "vae": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode layers (RGBA)"
+    }
+  },
+  "22": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "21",
+        0
+      ],
+      "filename_prefix": "CJ_Layers/layer"
+    },
+    "_meta": {
+      "title": "Save layers (transparent PNG)"
+    }
+  }
+}

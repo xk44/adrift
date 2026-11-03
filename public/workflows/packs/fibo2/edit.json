@@ -1,0 +1,291 @@
+{
+  "_meta": {
+    "title": "FIBO 2.0 Edit (Turbo)",
+    "description": "Bria FIBO 2.0 instruction edit (Edit Turbo: 4 steps, CFG 1, euler/simple). TextEncodeFibo2 grounds the instruction on the source (images.image_1), auto-sizes to ~1 MP for its aspect (width/height 0) and centre-crops; CJImagePasteBack (fit crop) then warps the edit back onto the ORIGINAL at full resolution: region = SAM3 '<area>' on the original, protect = SAM3 'face' on the original; pose change adds subject = SAM3 'person' on the original + new_content = SAM3 'person' on the edit (whole body from the edit, face kept). Pixels outside the paste-back alpha are the original's. Builder (src/lib/oj/fiboEdit.ts): empty area -> region pruned (diff-only); pose off -> subject/new_content pruned; toggle off -> chain removed. This file = every mask wired. REQUIRES: diffusion_models/fibo2_edit_turbo_bf16.safetensors, text_encoders/qwen3vl_4b_bf16.safetensors (CLIP type fibo2), vae/flux2-vae.safetensors, checkpoints/sam3.1_multiplex_fp16.safetensors, custom node cj_h3_tools (CJImagePasteBack). License: CC-BY-NC-4.0 (Bria FIBO 2.0)."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "fibo2_edit_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "fibo2",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "input.png",
+      "upload": "image"
+    },
+    "_meta": {
+      "title": "Source Image"
+    }
+  },
+  "5": {
+    "class_type": "TextEncodeFibo2",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "prompt": "",
+      "negative_prompt": "",
+      "images.image_1": [
+        "4",
+        0
+      ],
+      "width": 0,
+      "height": 0,
+      "batch_size": 1,
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Edit Instruction"
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "5",
+        0
+      ],
+      "negative": [
+        "5",
+        1
+      ],
+      "latent_image": [
+        "5",
+        2
+      ],
+      "seed": 42,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "6",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "8": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+    },
+    "_meta": {
+      "title": "SAM3 (paste-back masks)"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "8",
+        1
+      ],
+      "text": "object"
+    },
+    "_meta": {
+      "title": "Area to change"
+    }
+  },
+  "10": {
+    "class_type": "SAM3_Detect",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "conditioning": [
+        "9",
+        0
+      ],
+      "threshold": 0.3,
+      "refine_iterations": 2,
+      "individual_masks": false
+    },
+    "_meta": {
+      "title": "Region (original)"
+    }
+  },
+  "11": {
+    "class_type": "SAM3_Detect",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "image": [
+        "7",
+        0
+      ],
+      "conditioning": [
+        "16",
+        0
+      ],
+      "threshold": 0.3,
+      "refine_iterations": 2,
+      "individual_masks": false
+    },
+    "_meta": {
+      "title": "Pose: person on the edit (new_content)"
+    }
+  },
+  "12": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "8",
+        1
+      ],
+      "text": "face"
+    },
+    "_meta": {
+      "title": "Protect text"
+    }
+  },
+  "13": {
+    "class_type": "SAM3_Detect",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "conditioning": [
+        "12",
+        0
+      ],
+      "threshold": 0.3,
+      "refine_iterations": 2,
+      "individual_masks": false
+    },
+    "_meta": {
+      "title": "Protect faces"
+    }
+  },
+  "14": {
+    "class_type": "CJImagePasteBack",
+    "inputs": {
+      "original": [
+        "4",
+        0
+      ],
+      "edited": [
+        "7",
+        0
+      ],
+      "region": [
+        "10",
+        0
+      ],
+      "new_content": [
+        "11",
+        0
+      ],
+      "protect": [
+        "13",
+        0
+      ],
+      "subject": [
+        "17",
+        0
+      ],
+      "fit": "crop",
+      "diff_thresh": 22.0,
+      "reach": 0.18,
+      "grow_px": 12,
+      "feather_px": 6,
+      "min_blob": 0.001,
+      "color_match": true
+    },
+    "_meta": {
+      "title": "Paste edit back (full res)"
+    }
+  },
+  "16": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "8",
+        1
+      ],
+      "text": "person"
+    },
+    "_meta": {
+      "title": "Pose subject text"
+    }
+  },
+  "17": {
+    "class_type": "SAM3_Detect",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "conditioning": [
+        "16",
+        0
+      ],
+      "threshold": 0.3,
+      "refine_iterations": 2,
+      "individual_masks": false
+    },
+    "_meta": {
+      "title": "Pose: person on the original (subject)"
+    }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "14",
+        0
+      ],
+      "filename_prefix": "cj_fibo2_edit"
+    }
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "name": "edit_flux3",
+  "tool": "edit_flux3",
+  "action": "edit_flux3",
+  "workflow": "packs/flux3/edit.json",
+  "seed": 157399766,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "flux3_image_klein_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_4b_bf16.safetensors",
+        "device": "default",
+        "type": "flux3"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "flux2-vae.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "CLIPTextEncode",
+      "title": "Positive Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "5": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative Prompt",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "text": ""
+      }
+    },
+    "7": {
+      "class_type": "KSampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "17",
+          2
+        ],
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "17",
+          1
+        ],
+        "positive": [
+          "17",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 157399766,
+        "steps": 50
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "7",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "cj_flux3_edit",
+        "images": [
+          "908",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]",
+        "upload": "image"
+      }
+    },
+    "17": {
+      "class_type": "ReferenceMultiLatent",
+      "inputs": {
+        "images.image0": [
+          "11",
+          0
+        ],
+        "negative": [
+          "5",
+          0
+        ],
+        "positive": [
+          "4",
+          0
+        ],
+        "resolution": "resize",
+        "resolution.megapixels": 1,
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "900": {
+      "class_type": "CheckpointLoaderSimple",
+      "title": "SAM3 (paste-back masks)",
+      "inputs": {
+        "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+      }
+    },
+    "901": {
+      "class_type": "CLIPTextEncode",
+      "title": "Area to change",
+      "inputs": {
+        "clip": [
+          "900",
+          1
+        ],
+        "text": "golden second text"
+      }
+    },
+    "902": {
+      "class_type": "SAM3_Detect",
+      "title": "Region (original)",
+      "inputs": {
+        "conditioning": [
+          "901",
+          0
+        ],
+        "image": [
+          "11",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "900",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "903": {
+      "class_type": "CLIPTextEncode",
+      "title": "Protect text",
+      "inputs": {
+        "clip": [
+          "900",
+          1
+        ],
+        "text": "face"
+      }
+    },
+    "904": {
+      "class_type": "SAM3_Detect",
+      "title": "Protect faces",
+      "inputs": {
+        "conditioning": [
+          "903",
+          0
+        ],
+        "image": [
+          "11",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "900",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "908": {
+      "class_type": "CJImagePasteBack",
+      "title": "Paste edit back (full res)",
+      "inputs": {
+        "color_match": true,
+        "diff_thresh": 22,
+        "edited": [
+          "8",
+          0
+        ],
+        "feather_px": 6,
+        "fit": "stretch",
+        "grow_px": 12,
+        "min_blob": 0.001,
+        "original": [
+          "11",
+          0
+        ],
+        "protect": [
+          "904",
+          0
+        ],
+        "reach": 0.18,
+        "region": [
+          "902",
+          0
+        ]
+      }
+    }
+  }
+}

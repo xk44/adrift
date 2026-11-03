@@ -1,0 +1,638 @@
+{
+  "_meta": {
+    "title": "Extend video (Wan2.2 Fun VACE)",
+    "description": "Core nodes + Adrift's cj_video_extend nodes (CJColorMatchToReference, CJRetimeFrames). Generation: the source window (whole clip up to 20 s, shorter for heavy resolutions/frame rates) is resampled to 16 fps and squeezed (no crop) onto the ~480p VACE canvas; its last 17 frames are kept as context (mask black) and followed by gray frames VACE fills in (mask white). Output: the source window at its native resolution, frame rate and audio (node 30, only re-encoded by SaveVideo) followed by the continuation, which is colour-matched to the context in LAB (node 50), retimed from 16 fps to the source fps by duplicating/dropping frames (node 56) and lanczos-upscaled to the source size (node 55); silence pads the audio under the continuation. The last 17 generated frames (16 fps, canvas size, before H.264) are also saved as PNGs under video/adrift_ctx/<video name>/ (node 53, hidden from the gallery) so extending this output again conditions on lossless frames. Two-stage Wan2.2 sampling (8 steps, shift 8): high-noise model without LoRA at cfg 3.5 for steps 0-4 (prompt adherence), low-noise model + lightx2v 4-step LoRA at cfg 1 for steps 4-8. speed=fast puts the high-noise LoRA (node 5) in and runs 4 steps at cfg 1 on both stages."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE high noise"
+    }
+  },
+  "2": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Wan2.2 Fun VACE low noise"
+    }
+  },
+  "3": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "umt5 xxl"
+    }
+  },
+  "4": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "split_files/vae/wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Wan 2.1 VAE"
+    }
+  },
+  "5": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "High-noise lightx2v LoRA (fast mode only)"
+    }
+  },
+  "6": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "lora_name": "wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Low-noise lightx2v LoRA"
+    }
+  },
+  "7": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift high"
+    }
+  },
+  "8": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "Shift low"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "The scene continues naturally with the same motion, same camera movement, consistent lighting and style."
+    },
+    "_meta": {
+      "title": "Positive"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "3",
+        0
+      ],
+      "text": "blurry, low quality, static, distorted, text, watermark, worst quality, jpeg artifacts"
+    },
+    "_meta": {
+      "title": "Negative"
+    }
+  },
+  "11": {
+    "class_type": "WanVaceToVideo",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ],
+      "width": 832,
+      "height": 480,
+      "length": 65,
+      "batch_size": 1,
+      "strength": 1.0,
+      "control_video": [
+        "42",
+        0
+      ],
+      "control_masks": [
+        "46",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VACE conditioning"
+    }
+  },
+  "12": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "add_noise": "enable",
+      "noise_seed": 4242,
+      "steps": 8,
+      "cfg": 3.5,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "11",
+        2
+      ],
+      "start_at_step": 0,
+      "end_at_step": 4,
+      "return_with_leftover_noise": "enable"
+    },
+    "_meta": {
+      "title": "Sampler high noise"
+    }
+  },
+  "13": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "12",
+        0
+      ],
+      "start_at_step": 4,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    },
+    "_meta": {
+      "title": "Sampler low noise"
+    }
+  },
+  "14": {
+    "class_type": "TrimVideoLatent",
+    "inputs": {
+      "samples": [
+        "13",
+        0
+      ],
+      "trim_amount": [
+        "11",
+        3
+      ]
+    },
+    "_meta": {
+      "title": "Trim reference latent"
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Decode"
+    }
+  },
+  "16": {
+    "class_type": "CreateVideo",
+    "inputs": {
+      "images": [
+        "48",
+        0
+      ],
+      "fps": [
+        "30",
+        2
+      ],
+      "audio": [
+        "58",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Video at source fps"
+    }
+  },
+  "17": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": [
+        "16",
+        0
+      ],
+      "filename_prefix": "video/CJ_VaceExtend",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": {
+      "title": "Save video"
+    }
+  },
+  "20": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": ""
+    },
+    "_meta": {
+      "title": "Source video"
+    }
+  },
+  "21": {
+    "class_type": "Video Slice",
+    "inputs": {
+      "video": [
+        "20",
+        0
+      ],
+      "start_time": 0.0,
+      "duration": 5.0625,
+      "strict_duration": false
+    },
+    "_meta": {
+      "title": "Trim to window"
+    }
+  },
+  "22": {
+    "class_type": "VideoFrameSample",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ],
+      "num_frames": 81,
+      "strategy": "uniform",
+      "seed": 0
+    },
+    "_meta": {
+      "title": "Resample to 16 fps"
+    }
+  },
+  "23": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "22",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Frames"
+    }
+  },
+  "24": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "23",
+        0
+      ],
+      "upscale_method": "area",
+      "width": 832,
+      "height": 480,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Squeeze frames onto the VACE canvas"
+    }
+  },
+  "30": {
+    "class_type": "GetVideoComponents",
+    "inputs": {
+      "video": [
+        "21",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source frames, audio and fps (native)"
+    }
+  },
+  "31": {
+    "class_type": "GetImageSize",
+    "inputs": {
+      "image": [
+        "30",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source size"
+    }
+  },
+  "40": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "24",
+        0
+      ],
+      "batch_index": 64,
+      "length": 17
+    },
+    "_meta": {
+      "title": "Context: last source frames"
+    }
+  },
+  "41": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 832,
+      "height": 480,
+      "batch_size": 48,
+      "color": 8421504
+    },
+    "_meta": {
+      "title": "Gray frames to generate"
+    }
+  },
+  "42": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "40",
+        0
+      ],
+      "image2": [
+        "41",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Control video"
+    }
+  },
+  "43": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 832,
+      "height": 480,
+      "batch_size": 17,
+      "color": 0
+    },
+    "_meta": {
+      "title": "Mask keep (black)"
+    }
+  },
+  "44": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": 832,
+      "height": 480,
+      "batch_size": 48,
+      "color": 16777215
+    },
+    "_meta": {
+      "title": "Mask generate (white)"
+    }
+  },
+  "45": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "43",
+        0
+      ],
+      "image2": [
+        "44",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Mask frames"
+    }
+  },
+  "46": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "45",
+        0
+      ],
+      "channel": "red"
+    },
+    "_meta": {
+      "title": "Control masks"
+    }
+  },
+  "47": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "15",
+        0
+      ],
+      "batch_index": 17,
+      "length": 48
+    },
+    "_meta": {
+      "title": "New frames only"
+    }
+  },
+  "48": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "30",
+        0
+      ],
+      "image2": [
+        "55",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Source (native) + continuation"
+    }
+  },
+  "50": {
+    "class_type": "CJColorMatchToReference",
+    "inputs": {
+      "images": [
+        "47",
+        0
+      ],
+      "reference": [
+        "40",
+        0
+      ],
+      "strength": 1.0,
+      "method": "mean_std_lab"
+    },
+    "_meta": {
+      "title": "Colour match continuation to context"
+    }
+  },
+  "51": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "40",
+        0
+      ],
+      "image2": [
+        "50",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Context + continuation (16 fps)"
+    }
+  },
+  "52": {
+    "class_type": "ImageFromBatch",
+    "inputs": {
+      "image": [
+        "51",
+        0
+      ],
+      "batch_index": 48,
+      "length": 17
+    },
+    "_meta": {
+      "title": "Lossless tail (last 17 frames)"
+    }
+  },
+  "53": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "52",
+        0
+      ],
+      "filename_prefix": "video/adrift_ctx/CJ_VaceExtend/f"
+    },
+    "_meta": {
+      "title": "Save lossless tail",
+      "adrift_sidecar": true
+    }
+  },
+  "55": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "56",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "width": [
+        "31",
+        0
+      ],
+      "height": [
+        "31",
+        1
+      ],
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Continuation to source size"
+    }
+  },
+  "56": {
+    "class_type": "CJRetimeFrames",
+    "inputs": {
+      "images": [
+        "50",
+        0
+      ],
+      "src_fps": 16.0,
+      "dst_fps": [
+        "30",
+        2
+      ],
+      "method": "nearest"
+    },
+    "_meta": {
+      "title": "Continuation to source fps"
+    }
+  },
+  "57": {
+    "class_type": "EmptyAudio",
+    "inputs": {
+      "duration": 3.0,
+      "sample_rate": 44100,
+      "channels": 2
+    },
+    "_meta": {
+      "title": "Silence under the continuation"
+    }
+  },
+  "58": {
+    "class_type": "AudioConcat",
+    "inputs": {
+      "audio1": [
+        "30",
+        1
+      ],
+      "audio2": [
+        "57",
+        0
+      ],
+      "direction": "after"
+    },
+    "_meta": {
+      "title": "Source audio + silence"
+    }
+  }
+}

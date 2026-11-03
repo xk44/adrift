@@ -1,0 +1,212 @@
+{
+  "_meta": {
+    "title": "Upscale video: FlashVSR",
+    "description": "FlashVSR v1.1 one-step video super-resolution through ComfyUI-WanVideoWrapper's local nodes (after Kijai's wanvideo_1_3B_FlashVSR_upscale_example): LoadVideo -> GetVideoComponents -> ResizeImageMaskNode (target size; 2x / 1080p, clips cap at 1080p like Best) -> ResizeImageMaskNode (cover-crop to multiples of 16: Wan latent /8 x patch 2, LQ projection 16x16 pixel-shuffle) -> frames padded to the smallest 4n+1 above the clip length by holding the last frame -> WanVideoEmptyEmbeds (target size) + WanVideoAddFlashVSRInput (the resized frames are the low-quality input) -> WanVideoSampler (1 step, cfg 1, shift 5, euler, no added noise) on the Wan2.1 T2V 1.3B FlashVSR model with the LQ projection as extra model -> WanVideoDecode with the FlashVSR TCDecoder (conditioned on the same frames) -> cut back to the source frame count, skipping decoded frame 0 (the sampler prepends a copy of the first frame to the LQ input, so decoded frame i+1 is source frame i) -> CreateVideo (source fps + audio) -> SaveVideo. WanVideoContextOptions (49-frame windows, 16 overlap) splits long clips; shorter clips run in one pass. The fixed prompt is the example's. The builder (src/lib/oj/flashvsrUpscale.ts) sets the source, size and seed. Decode memory: the TCDecoder decodes every frame on the GPU at once with no tiling, so the clip is capped to a pixel-frame budget (240 frames at 1080p, about 960 at 960x540; a 12 s 720p source at 2x ran out of memory on a 24 GB card). CreateVideo trims the audio to the kept frames. Models (Kijai/WanVideo_comfy, Apache-2.0 like FlashVSR v1.1 and Wan2.1): diffusion_models/WanVideo/FlashVSR/Wan2_1-T2V-1_3B_FlashVSR_fp32.safetensors, diffusion_models/WanVideo/FlashVSR/Wan2_1_FlashVSR_LQ_proj_model_bf16.safetensors, vae/Wan2_1_FlashVSR_TCDecoder_fp32.safetensors, text_encoders/umt5-xxl-enc-fp8_e4m3fn.safetensors."
+  },
+  "2": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "" },
+    "_meta": { "title": "Source Video" }
+  },
+  "3": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["2", 0] },
+    "_meta": { "title": "Frames + Audio + FPS" }
+  },
+  "4": {
+    "class_type": "ResizeImageMaskNode",
+    "inputs": {
+      "input": ["3", 0],
+      "resize_type": "scale by multiplier",
+      "resize_type.multiplier": 2,
+      "scale_method": "lanczos"
+    },
+    "_meta": { "title": "Target Size" }
+  },
+  "5": {
+    "class_type": "ResizeImageMaskNode",
+    "inputs": {
+      "input": ["4", 0],
+      "resize_type": "scale to multiple",
+      "resize_type.multiple": 16,
+      "scale_method": "lanczos"
+    },
+    "_meta": { "title": "Fit to /16" }
+  },
+  "6": {
+    "class_type": "GetImageSize",
+    "inputs": { "image": ["5", 0] },
+    "_meta": { "title": "Target size + frame count" }
+  },
+  "7": {
+    "class_type": "ComfyMathExpression",
+    "inputs": { "expression": "4 * ((a + 3) // 4) + 1", "values.a": ["25", 1] },
+    "_meta": { "title": "Frames: smallest 4n+1 > clip" }
+  },
+  "8": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["26", 0], "batch_index": -1, "length": 1 },
+    "_meta": { "title": "Last frame" }
+  },
+  "9": {
+    "class_type": "RepeatImageBatch",
+    "inputs": { "image": ["8", 0], "amount": 4 },
+    "_meta": { "title": "Hold last frame" }
+  },
+  "10": {
+    "class_type": "ImageBatch",
+    "inputs": { "image1": ["26", 0], "image2": ["9", 0] },
+    "_meta": { "title": "Clip + held frames" }
+  },
+  "11": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["10", 0], "batch_index": 0, "length": ["7", 1] },
+    "_meta": { "title": "Pad to 4n+1" }
+  },
+  "12": {
+    "class_type": "WanVideoEmptyEmbeds",
+    "inputs": { "width": ["6", 0], "height": ["6", 1], "num_frames": ["7", 1] },
+    "_meta": { "title": "Empty Embeds (target size)" }
+  },
+  "13": {
+    "class_type": "WanVideoAddFlashVSRInput",
+    "inputs": { "embeds": ["12", 0], "images": ["11", 0], "strength": 1 },
+    "_meta": { "title": "FlashVSR Input" }
+  },
+  "14": {
+    "class_type": "WanVideoExtraModelSelect",
+    "inputs": {
+      "extra_model": "WanVideo/FlashVSR/Wan2_1_FlashVSR_LQ_proj_model_bf16.safetensors"
+    },
+    "_meta": { "title": "FlashVSR LQ Projection" }
+  },
+  "15": {
+    "class_type": "WanVideoModelLoader",
+    "inputs": {
+      "model": "WanVideo/FlashVSR/Wan2_1-T2V-1_3B_FlashVSR_fp32.safetensors",
+      "base_precision": "fp16",
+      "quantization": "disabled",
+      "load_device": "offload_device",
+      "attention_mode": "sdpa",
+      "extra_model": ["14", 0],
+      "rms_norm_function": "default"
+    },
+    "_meta": { "title": "FlashVSR Model (Wan2.1 1.3B)" }
+  },
+  "16": {
+    "class_type": "LoadWanVideoT5TextEncoder",
+    "inputs": {
+      "model_name": "umt5-xxl-enc-fp8_e4m3fn.safetensors",
+      "precision": "bf16",
+      "load_device": "offload_device",
+      "quantization": "disabled"
+    },
+    "_meta": { "title": "umT5-XXL" }
+  },
+  "17": {
+    "class_type": "WanVideoTextEncode",
+    "inputs": {
+      "positive_prompt": "Cinematic, High Contrast, highly detailed, taken using a Canon EOS R camera, hyper detailed photo-realistic maximum detail, 32k, Color Grading, ultra HD, extreme meticulous detailing, skin pore detailing, hyper sharpness, perfect without deformations.",
+      "negative_prompt": "Bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards",
+      "t5": ["16", 0],
+      "force_offload": true,
+      "model_to_offload": ["15", 0],
+      "use_disk_cache": false,
+      "device": "gpu"
+    },
+    "_meta": { "title": "Prompt (fixed)" }
+  },
+  "18": {
+    "class_type": "WanVideoContextOptions",
+    "inputs": {
+      "context_schedule": "uniform_standard",
+      "context_frames": 49,
+      "context_stride": 4,
+      "context_overlap": 16,
+      "freenoise": true,
+      "verbose": false,
+      "fuse_method": "linear"
+    },
+    "_meta": { "title": "Context windows (long clips)" }
+  },
+  "19": {
+    "class_type": "WanVideoSampler",
+    "inputs": {
+      "model": ["15", 0],
+      "image_embeds": ["13", 0],
+      "text_embeds": ["17", 0],
+      "context_options": ["18", 0],
+      "steps": 1,
+      "cfg": 1,
+      "shift": 5,
+      "seed": 0,
+      "force_offload": true,
+      "scheduler": "euler",
+      "riflex_freq_index": 0,
+      "denoise_strength": 1,
+      "batched_cfg": false,
+      "rope_function": "comfy",
+      "start_step": 0,
+      "end_step": -1,
+      "add_noise_to_samples": false
+    },
+    "_meta": { "title": "FlashVSR One-step Sampler" }
+  },
+  "20": {
+    "class_type": "WanVideoFlashVSRDecoderLoader",
+    "inputs": {
+      "model_name": "Wan2_1_FlashVSR_TCDecoder_fp32.safetensors",
+      "precision": "fp16"
+    },
+    "_meta": { "title": "FlashVSR TCDecoder" }
+  },
+  "21": {
+    "class_type": "WanVideoDecode",
+    "inputs": {
+      "vae": ["20", 0],
+      "samples": ["19", 0],
+      "enable_vae_tiling": false,
+      "tile_x": 272,
+      "tile_y": 272,
+      "tile_stride_x": 144,
+      "tile_stride_y": 128,
+      "normalization": "default"
+    },
+    "_meta": { "title": "Decode (TCDecoder)" }
+  },
+  "22": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["21", 0], "batch_index": 1, "length": ["25", 1] },
+    "_meta": { "title": "Cut back to source length (skip prepended frame)" }
+  },
+  "23": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["22", 0], "fps": ["3", 2], "audio": ["3", 1] },
+    "_meta": { "title": "Mux Video (source fps + audio)" }
+  },
+  "24": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["23", 0],
+      "filename_prefix": "video/CJ_Upscale_FlashVSR",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Video" }
+  },
+  "25": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "min(c, max(1, 497664000 // (a * b)))",
+      "values.a": ["6", 0],
+      "values.b": ["6", 1],
+      "values.c": ["6", 2]
+    },
+    "_meta": { "title": "Frame cap: decode memory (240 frames at 1080p)" }
+  },
+  "26": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["5", 0], "batch_index": 0, "length": ["25", 1] },
+    "_meta": { "title": "Cap clip length" }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "title": "Layer Split (see-through)",
+    "description": "One illustration -> ~24 tagged, amodally completed RGBA parts (back hair, topwear, face, irides, ...) with a per-part depth map, via the ComfyUI-See-through custom node pack (github.com/shitagaki-lab/see-through @ 98d754bf, MIT): SDXL LayerDiff3D (layerdifforg/seethroughv0.0.2_layerdiff3d) generates the layers, Marigold (layerdifforg/seethroughv0.0.1_marigold) their depth; weights RAIL++-M under models/SeeThrough/, auto_download off. SavePSD writes <prefix>_<ts>_<uid>_<tag>.png + _depth.png per part and a _layers.json manifest into the output root and returns the manifest path, which PreviewAny surfaces as the job's text output. CJLayerPreview (Adrift cj_image_tools) renders the job image: the parts recomposited per pixel by depth beside a labelled parts sheet (the pack's own preview drops alpha, so every part shows as a box). Builder: src/lib/oj/seeThrough.ts."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source image" }
+  },
+  "2": {
+    "class_type": "SeeThrough_LoadLayerDiffModel",
+    "inputs": {
+      "model": "layerdifforg/seethroughv0.0.2_layerdiff3d",
+      "vae_ckpt": "",
+      "unet_ckpt": "",
+      "quant_mode": "none",
+      "cache_tag_embeds": true,
+      "group_offload": false,
+      "auto_download": false
+    },
+    "_meta": { "title": "LayerDiff3D model" }
+  },
+  "3": {
+    "class_type": "SeeThrough_LoadDepthModel",
+    "inputs": {
+      "model": "layerdifforg/seethroughv0.0.1_marigold",
+      "quant_mode": "none",
+      "cache_tag_embeds": true,
+      "group_offload": false,
+      "auto_download": false
+    },
+    "_meta": { "title": "Marigold depth model" }
+  },
+  "4": {
+    "class_type": "SeeThrough_GenerateLayers",
+    "inputs": {
+      "image": ["1", 0],
+      "layerdiff_model": ["2", 0],
+      "seed": 42,
+      "resolution": 1280,
+      "num_inference_steps": 30
+    },
+    "_meta": { "title": "Generate layers" }
+  },
+  "5": {
+    "class_type": "SeeThrough_GenerateDepth",
+    "inputs": {
+      "layers": ["4", 0],
+      "depth_model": ["3", 0],
+      "seed": 42,
+      "resolution_depth": -1
+    },
+    "_meta": { "title": "Layer depth" }
+  },
+  "6": {
+    "class_type": "SeeThrough_PostProcess",
+    "inputs": {
+      "layers_depth": ["5", 0],
+      "tblr_split": true,
+      "use_lama": false
+    },
+    "_meta": { "title": "Post-process parts" }
+  },
+  "7": {
+    "class_type": "SeeThrough_SavePSD",
+    "inputs": { "parts": ["6", 0], "filename_prefix": "adrift_layers" },
+    "_meta": { "title": "Save parts + manifest" }
+  },
+  "8": {
+    "class_type": "PreviewAny",
+    "inputs": { "source": ["7", 0] },
+    "_meta": { "title": "Manifest path" }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["10", 0],
+      "filename_prefix": "adrift_layers_preview"
+    },
+    "_meta": { "title": "Save preview" }
+  },
+  "10": {
+    "class_type": "CJLayerPreview",
+    "inputs": { "parts": ["6", 0], "height": 1024 },
+    "_meta": { "title": "Depth composite + parts sheet" }
+  }
+}

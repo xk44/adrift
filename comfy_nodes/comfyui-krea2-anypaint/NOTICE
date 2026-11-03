@@ -1,0 +1,14 @@
+comfyui-krea2-anypaint (part of Adrift, MIT License)
+
+The preparation contract (condition / known image / keep mask / generated
+mask), the bbox reference placement and the known-token rule implemented here
+follow the reference pipeline published with "Krea 2 AnyPaint"
+(https://huggingface.co/yijunwang2/krea2-anypaint: anypaint.py, pipeline.py),
+whose pipeline and helper code are distributed under the Apache License,
+Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0). This is an
+independent reimplementation on ComfyUI's native Krea 2 model; no files from
+that repository are included. The LoRA weights are not included and are
+licensed separately under the Krea 2 Community License Agreement.
+
+This pack contains no code from ostris/ComfyUI-Krea2-Ostris-Edit; it loads
+that pack, installed separately by the user, at runtime.

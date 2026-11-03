@@ -1,0 +1,91 @@
+{
+  "_meta": {
+    "title": "Upscale video: NVIDIA RTX",
+    "description": "NVIDIA RTX Video Super Resolution through Comfy-Org/Nvidia_RTX_Nodes_ComfyUI (Apache-2.0 node pack). The nvidia-vfx SDK it calls is NVIDIA proprietary, needs an RTX GPU and driver >= 580.82, and is installed separately into the ComfyUI venv from https://pypi.nvidia.com. Deterministic, non-generative SR: sharper than bicubic, no invented detail. LoadVideo -> GetVideoComponents -> target size from the source size (the builder sets the scale expression: 2x stops at a 3840 long side, 1080p = short side 1080, 4K = long side 3840; never below 1x or above 4x; rounded to /8) -> frame cap -> RTXVideoSuperResolution (target dimensions, HIGHBITRATE_ULTRA) -> CreateVideo (source fps + audio) -> SaveVideo. Frame cap: the upscaled clip is held in RAM as a float tensor (a 4K frame is about 100 MB), so clips stop at 1990656000 pixel-frames (240 frames at 4K, 960 at 1080p) and at 4096 frames; CreateVideo trims the audio to the kept frames. No model files: the weights ship inside the SDK."
+  },
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "" },
+    "_meta": { "title": "Source Video" }
+  },
+  "2": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["1", 0] },
+    "_meta": { "title": "Frames + Audio + FPS" }
+  },
+  "3": {
+    "class_type": "GetImageSize",
+    "inputs": { "image": ["2", 0] },
+    "_meta": { "title": "Source size + frame count" }
+  },
+  "4": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "min(2, max(1, 3840 / max(a, b)))",
+      "values.a": ["3", 0],
+      "values.b": ["3", 1]
+    },
+    "_meta": { "title": "Scale factor" }
+  },
+  "5": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "8 * ((a * b + 4) // 8)",
+      "values.a": ["3", 0],
+      "values.b": ["4", 0]
+    },
+    "_meta": { "title": "Target width (/8)" }
+  },
+  "6": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "8 * ((a * b + 4) // 8)",
+      "values.a": ["3", 1],
+      "values.b": ["4", 0]
+    },
+    "_meta": { "title": "Target height (/8)" }
+  },
+  "7": {
+    "class_type": "ComfyMathExpression",
+    "inputs": {
+      "expression": "min(4096, c, max(1, 1990656000 // (a * b)))",
+      "values.a": ["5", 1],
+      "values.b": ["6", 1],
+      "values.c": ["3", 2]
+    },
+    "_meta": { "title": "Frame cap: output RAM (240 frames at 4K)" }
+  },
+  "8": {
+    "class_type": "ImageFromBatch",
+    "inputs": { "image": ["2", 0], "batch_index": 0, "length": ["7", 1] },
+    "_meta": { "title": "Cap clip length" }
+  },
+  "9": {
+    "class_type": "RTXVideoSuperResolution",
+    "inputs": {
+      "images": ["8", 0],
+      "resize_type": "target dimensions",
+      "resize_type.width": ["5", 1],
+      "resize_type.height": ["6", 1],
+      "quality": "HIGHBITRATE_ULTRA",
+      "strength": 1,
+      "image_encoding": "8-bit RGB"
+    },
+    "_meta": { "title": "RTX Video Super Resolution" }
+  },
+  "10": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["9", 0], "fps": ["2", 2], "audio": ["2", 1] },
+    "_meta": { "title": "Mux Video (source fps + audio)" }
+  },
+  "11": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["10", 0],
+      "filename_prefix": "video/CJ_Upscale_RTX",
+      "format": "auto",
+      "format.codec": "auto"
+    },
+    "_meta": { "title": "Save Video" }
+  }
+}

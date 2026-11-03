@@ -1,0 +1,209 @@
+{
+  "name": "subject_matte",
+  "tool": "subject_matte",
+  "action": "subject_matte",
+  "workflow": "packs/matanyone/subject_matte.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadVideo",
+      "title": "Source Video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "2": {
+      "class_type": "GetVideoComponents",
+      "title": "Frames + Audio + FPS",
+      "inputs": {
+        "video": [
+          "1",
+          0
+        ]
+      }
+    },
+    "3": {
+      "class_type": "GetImageSize",
+      "title": "Source size + frame count",
+      "inputs": {
+        "image": [
+          "2",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "ComfyMathExpression",
+      "title": "Frame cap: RAM (480 frames at 1080p)",
+      "inputs": {
+        "expression": "min(c, max(1, 995328000 // (a * b)))",
+        "values.a": [
+          "3",
+          0
+        ],
+        "values.b": [
+          "3",
+          1
+        ],
+        "values.c": [
+          "3",
+          2
+        ]
+      }
+    },
+    "5": {
+      "class_type": "ImageFromBatch",
+      "title": "Cap clip length",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "2",
+          0
+        ],
+        "length": [
+          "4",
+          1
+        ]
+      }
+    },
+    "6": {
+      "class_type": "CJSampleFrames",
+      "title": "Look through the clip",
+      "inputs": {
+        "images": [
+          "5",
+          0
+        ],
+        "samples": 32
+      }
+    },
+    "7": {
+      "class_type": "CheckpointLoaderSimple",
+      "title": "SAM 3.1",
+      "inputs": {
+        "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "title": "Subject",
+      "inputs": {
+        "clip": [
+          "7",
+          1
+        ],
+        "text": "person"
+      }
+    },
+    "9": {
+      "class_type": "SAM3_Detect",
+      "title": "Find the subject",
+      "inputs": {
+        "conditioning": [
+          "8",
+          0
+        ],
+        "image": [
+          "6",
+          0
+        ],
+        "individual_masks": true,
+        "model": [
+          "7",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.35
+      }
+    },
+    "10": {
+      "class_type": "CJFindSubjectFrame",
+      "title": "Frame the subject is first clear in",
+      "inputs": {
+        "bboxes": [
+          "9",
+          1
+        ],
+        "masks": [
+          "9",
+          0
+        ],
+        "step": [
+          "6",
+          1
+        ]
+      }
+    },
+    "11": {
+      "class_type": "MatAnyone2",
+      "title": "MatAnyone2 matte",
+      "inputs": {
+        "foreground_MASK": [
+          "10",
+          0
+        ],
+        "mask_frame": [
+          "10",
+          1
+        ],
+        "max_internal_size": 1080,
+        "n_warmup": 10,
+        "src_video": [
+          "5",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "ImageToMask",
+      "title": "Matte as mask",
+      "inputs": {
+        "channel": "red",
+        "image": [
+          "11",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "InvertMask",
+      "title": "Background mask",
+      "inputs": {
+        "mask": [
+          "12",
+          0
+        ]
+      }
+    },
+    "18": {
+      "class_type": "JoinImageWithAlpha",
+      "title": "Cut out",
+      "inputs": {
+        "alpha": [
+          "13",
+          0
+        ],
+        "image": [
+          "5",
+          0
+        ]
+      }
+    },
+    "19": {
+      "class_type": "SaveAnimatedPNG",
+      "title": "Save Animated PNG",
+      "inputs": {
+        "compress_level": 4,
+        "filename_prefix": "video/CJ_SubjectMatte_alpha",
+        "fps": [
+          "2",
+          2
+        ],
+        "images": [
+          "18",
+          0
+        ]
+      }
+    }
+  }
+}

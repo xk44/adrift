@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "title": "SDR to HDR",
+    "description": "Core ImageSDRToHDR (Lottes-style inverse tone map) expands an SDR sRGB image to HLG-encoded Rec.2020 (BT.2100) with a peak-white target in nits (0 = calibrated rendering). Saves two files with core SaveImageAdvanced: a 10-bit HLG AVIF (CJ_HDR/hdr_NNNNN_.avif) that is the job image and shows as HDR on HDR displays (browsers tone-map it on SDR screens), and a scene-linear Rec.2020 OpenEXR master (adrift_master/, half or full float) listed as a download. This is an expansion curve, not recovered highlights: clipped areas stay clipped. No models."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": ""
+    },
+    "_meta": {
+      "title": "Source image"
+    }
+  },
+  "2": {
+    "class_type": "ImageSDRToHDR",
+    "inputs": {
+      "image": ["1", 0],
+      "algorithm": "lottes",
+      "algorithm.target_luminance": 650
+    },
+    "_meta": {
+      "title": "SDR to HDR (HLG)"
+    }
+  },
+  "3": {
+    "class_type": "SaveImageAdvanced",
+    "inputs": {
+      "images": ["2", 0],
+      "filename_prefix": "CJ_HDR/hdr",
+      "format": "avif",
+      "format.bit_depth": "10-bit YUV420",
+      "format.input_color_space": "HDR",
+      "format.crf": 18,
+      "format.save_mode": "still images"
+    },
+    "_meta": {
+      "title": "HDR preview (AVIF, HLG)"
+    }
+  },
+  "4": {
+    "class_type": "SaveImageAdvanced",
+    "inputs": {
+      "images": ["2", 0],
+      "filename_prefix": "adrift_master/Adrift_sdr-to-hdr_hdr_master",
+      "format": "exr",
+      "format.bit_depth": "16-bit float",
+      "format.input_color_space": "HDR"
+    },
+    "_meta": {
+      "title": "HDR master (EXR, scene-linear Rec.2020)",
+      "adrift_master": true
+    }
+  }
+}

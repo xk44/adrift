@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "title": "Photo upscale (VOSR2)",
+    "description": "VOSR 2.0 one-step diffusion image super-resolution through the ComfyUI-VOSR2 custom nodes: LoadImage -> VOSR2Upscale (VOSR2ModelLoader bundle) -> SaveImage. Image only. The builder (src/lib/oj/vosr2Upscale.ts) sets the source, the scale (2x or 4x, default 4x), the seed (from the source job), color alignment (wavelet default, adain, none) and pins the tile settings (VOSR2_TILES; not user knobs). Tiling is fixed for a 24 GB card at 4x of a ~1 MP photo: VOSR 2.0 was trained at up to 512 px, so the DiT runs on 512 px output tiles with 64 px overlap, and the VAE decodes 1024 px tiles with 32 px overlap (untiled VAE decode runs out of memory past ~1024 px). Model: the VOSR2 bundle folder models/vosr2/VOSR2/ (CSWRY/VOSR, ~7 GB: checkpoints/ema_model.safetensors DiT, Qwen-Image-vae-2d/, dinov2_vitl14.safetensors). The node downloads a missing bundle on first run, so the model check gates the card on checkpoints/ema_model.safetensors instead."
+  },
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "" },
+    "_meta": { "title": "Source Image" }
+  },
+  "2": {
+    "class_type": "VOSR2ModelLoader",
+    "inputs": { "model": "VOSR2", "dtype": "default" },
+    "_meta": { "title": "VOSR2 Model" }
+  },
+  "3": {
+    "class_type": "VOSR2Upscale",
+    "inputs": {
+      "model": ["2", 0],
+      "image": ["1", 0],
+      "upscale": 4,
+      "seed": 42,
+      "color_alignment": "wavelet",
+      "tile_size": 512,
+      "tile_overlap": 64,
+      "vae_tile_size": 1024,
+      "vae_tile_overlap": 32
+    },
+    "_meta": { "title": "VOSR2 One-step Upscale" }
+  },
+  "4": {
+    "class_type": "SaveImage",
+    "inputs": { "images": ["3", 0], "filename_prefix": "CJ_VOSR2" },
+    "_meta": { "title": "Save Image" }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "name": "moge_geometry",
+  "tool": "moge_geometry",
+  "action": "moge_geometry",
+  "workflow": "packs/image-tools/moge_geometry.json",
+  "seed": 7,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "LoadMoGeModel",
+      "title": "MoGe-2 model",
+      "inputs": {
+        "model_name": "moge_2_vitl_normal_fp16.safetensors"
+      }
+    },
+    "3": {
+      "class_type": "MoGeInference",
+      "title": "Geometry",
+      "inputs": {
+        "apply_mask": true,
+        "batch_size": 1,
+        "force_projection": true,
+        "fov_x_degrees": 0,
+        "image": [
+          "1",
+          0
+        ],
+        "moge_model": [
+          "2",
+          0
+        ],
+        "refine_steps": 0,
+        "resolution_level": 9
+      }
+    },
+    "4": {
+      "class_type": "MoGeRender",
+      "title": "Depth map (near = white)",
+      "inputs": {
+        "moge_geometry": [
+          "3",
+          0
+        ],
+        "output": "depth"
+      }
+    },
+    "5": {
+      "class_type": "SaveImage",
+      "title": "Save depth",
+      "inputs": {
+        "filename_prefix": "CJ_MoGe/depth",
+        "images": [
+          "4",
+          0
+        ]
+      }
+    },
+    "6": {
+      "class_type": "MoGeRender",
+      "title": "Normal map",
+      "inputs": {
+        "moge_geometry": [
+          "3",
+          0
+        ],
+        "output": "normal_opengl"
+      }
+    },
+    "7": {
+      "class_type": "SaveImage",
+      "title": "Save normals",
+      "inputs": {
+        "filename_prefix": "CJ_MoGe/normal",
+        "images": [
+          "6",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "MoGePointMapToMesh",
+      "title": "Point map mesh",
+      "inputs": {
+        "batch_index": 0,
+        "decimation": 2,
+        "discontinuity_threshold": 0.04,
+        "moge_geometry": [
+          "3",
+          0
+        ],
+        "texture": true
+      }
+    },
+    "9": {
+      "class_type": "SaveGLB",
+      "title": "Save GLB",
+      "inputs": {
+        "filename_prefix": "3d/adrift_moge",
+        "mesh": [
+          "8",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "MoGeGeometryToFOV",
+      "title": "Horizontal FOV",
+      "inputs": {
+        "axis": "horizontal",
+        "moge_geometry": [
+          "3",
+          0
+        ],
+        "unit": "degrees"
+      }
+    },
+    "11": {
+      "class_type": "MoGeGeometryToFOV",
+      "title": "Vertical FOV",
+      "inputs": {
+        "axis": "vertical",
+        "moge_geometry": [
+          "3",
+          0
+        ],
+        "unit": "degrees"
+      }
+    },
+    "12": {
+      "class_type": "StringFormat",
+      "title": "FOV text",
+      "inputs": {
+        "f_string": "Estimated FOV: {a:.1f}° horizontal, {b:.1f}° vertical (focal length {c:.0f} px)",
+        "values.a": [
+          "10",
+          0
+        ],
+        "values.b": [
+          "11",
+          0
+        ],
+        "values.c": [
+          "10",
+          1
+        ]
+      }
+    },
+    "13": {
+      "class_type": "PreviewAny",
+      "title": "Estimated FOV",
+      "inputs": {
+        "source": [
+          "12",
+          0
+        ]
+      }
+    }
+  }
+}

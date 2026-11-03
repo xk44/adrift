@@ -1,0 +1,286 @@
+{
+ "nodes": [
+  {
+   "id": 1,
+   "type": "CheckpointLoaderSimple",
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL"
+    },
+    {
+     "name": "CLIP",
+     "type": "CLIP"
+    },
+    {
+     "name": "VAE",
+     "type": "VAE"
+    }
+   ],
+   "widgets_values": [
+    "base.safetensors"
+   ]
+  },
+  {
+   "id": 2,
+   "type": "44444444-4444-4444-8444-444444444444",
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 1
+    },
+    {
+     "name": "clip_a",
+     "type": "CLIP",
+     "link": 2
+    },
+    {
+     "name": "clip_b",
+     "type": "CLIP",
+     "link": 3
+    }
+   ],
+   "outputs": [
+    {
+     "name": "model_out",
+     "type": "MODEL"
+    },
+    {
+     "name": "merged",
+     "type": "CLIP"
+    },
+    {
+     "name": "merged_again",
+     "type": "CLIP"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "ModelSink",
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 4
+    }
+   ],
+   "outputs": []
+  },
+  {
+   "id": 4,
+   "type": "ClipSink",
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 5
+    }
+   ],
+   "outputs": []
+  },
+  {
+   "id": 5,
+   "type": "ClipSink",
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 6
+    }
+   ],
+   "outputs": []
+  },
+  {
+   "id": 6,
+   "type": "ClipSink",
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 7
+    }
+   ],
+   "outputs": []
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   2,
+   0,
+   "MODEL"
+  ],
+  [
+   2,
+   1,
+   1,
+   2,
+   1,
+   "CLIP"
+  ],
+  [
+   3,
+   1,
+   1,
+   2,
+   2,
+   "CLIP"
+  ],
+  [
+   4,
+   2,
+   0,
+   3,
+   0,
+   "MODEL"
+  ],
+  [
+   5,
+   2,
+   1,
+   4,
+   0,
+   "CLIP"
+  ],
+  [
+   6,
+   2,
+   1,
+   5,
+   0,
+   "CLIP"
+  ],
+  [
+   7,
+   2,
+   2,
+   6,
+   0,
+   "CLIP"
+  ]
+ ],
+ "definitions": {
+  "subgraphs": [
+   {
+    "id": "44444444-4444-4444-8444-444444444444",
+    "name": "router",
+    "inputNode": {
+     "id": -10
+    },
+    "outputNode": {
+     "id": -20
+    },
+    "inputs": [
+     {
+      "name": "model",
+      "type": "MODEL"
+     },
+     {
+      "name": "clip_a",
+      "type": "CLIP"
+     },
+     {
+      "name": "clip_b",
+      "type": "CLIP"
+     }
+    ],
+    "outputs": [
+     {
+      "name": "model_out",
+      "type": "MODEL"
+     },
+     {
+      "name": "merged",
+      "type": "CLIP"
+     },
+     {
+      "name": "merged_again",
+      "type": "CLIP"
+     }
+    ],
+    "nodes": [
+     {
+      "id": 30,
+      "type": "CLIPMergeSimple",
+      "inputs": [
+       {
+        "name": "clip1",
+        "type": "CLIP",
+        "link": 41
+       },
+       {
+        "name": "clip2",
+        "type": "CLIP",
+        "link": 42
+       },
+       {
+        "name": "ratio",
+        "type": "FLOAT",
+        "widget": {
+         "name": "ratio"
+        },
+        "link": null
+       }
+      ],
+      "outputs": [
+       {
+        "name": "CLIP",
+        "type": "CLIP"
+       }
+      ],
+      "widgets_values": [
+       0.25
+      ]
+     }
+    ],
+    "links": [
+     {
+      "id": 40,
+      "origin_id": -10,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 0,
+      "type": "MODEL"
+     },
+     {
+      "id": 41,
+      "origin_id": -10,
+      "origin_slot": 1,
+      "target_id": 30,
+      "target_slot": 0,
+      "type": "CLIP"
+     },
+     {
+      "id": 42,
+      "origin_id": -10,
+      "origin_slot": 2,
+      "target_id": 30,
+      "target_slot": 1,
+      "type": "CLIP"
+     },
+     {
+      "id": 43,
+      "origin_id": 30,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 1,
+      "type": "CLIP"
+     },
+     {
+      "id": 44,
+      "origin_id": 30,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 2,
+      "type": "CLIP"
+     }
+    ]
+   }
+  ]
+ }
+}

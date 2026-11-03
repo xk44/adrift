@@ -1,0 +1,34 @@
+Patch for https://github.com/wildminder/ComfyUI-VibeVoice (pinned commit de6ee6bf81ba).
+This diff modifies that project's files and is distributed under its
+license (MIT), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/src/vibevoice/modular/modeling_vibevoice_streaming_inference.py b/src/vibevoice/modular/modeling_vibevoice_streaming_inference.py
+index e65ebcf..865d490 100644
+--- a/src/vibevoice/modular/modeling_vibevoice_streaming_inference.py
++++ b/src/vibevoice/modular/modeling_vibevoice_streaming_inference.py
+@@ -109,7 +109,13 @@ def _tensor_device_and_dtype(*tensors):
+     return torch.device("cpu"), torch.get_default_dtype()
+ 
+ 
+-class MockCacheLayer:
++try:  # transformers >= 5.5 checks isinstance(layer, CacheLayerMixin)
++    from transformers.cache_utils import CacheLayerMixin as _CacheLayerBase
++except ImportError:  # pragma: no cover - older transformers
++    _CacheLayerBase = object
++
++
++class MockCacheLayer(_CacheLayerBase):
+     """
+     Mock cache layer bridging the pre-4.57 and 5.x ``CacheLayer`` APIs.
+ 
+@@ -222,7 +228,8 @@ class MockCacheLayer:
+     def get_mask_sizes(self, cache_position):
+         """Return KV length and offset for mask creation."""
+         seq_length = self.get_seq_length()
+-        query_length = cache_position.shape[0]
++        # 5.5 passes query_length (int); earlier 5.x passed cache_position.
++        query_length = cache_position if isinstance(cache_position, int) else cache_position.shape[0]
+         return seq_length + query_length, 0
+ 
+     def lazy_initialization(self, key_states, value_states) -> None:

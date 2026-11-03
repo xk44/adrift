@@ -1,0 +1,173 @@
+{
+ "nodes": [
+  {
+   "id": 1,
+   "type": "CheckpointLoaderSimple",
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL"
+    },
+    {
+     "name": "CLIP",
+     "type": "CLIP"
+    },
+    {
+     "name": "VAE",
+     "type": "VAE"
+    }
+   ],
+   "widgets_values": [
+    "base.safetensors"
+   ]
+  },
+  {
+   "id": 2,
+   "type": "33333333-3333-4333-8333-333333333333",
+   "inputs": [
+    {
+     "name": "clip",
+     "type": "CLIP",
+     "link": 1
+    },
+    {
+     "name": "text",
+     "type": "STRING",
+     "widget": {
+      "name": "text"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "cond",
+     "type": "CONDITIONING",
+     "links": [
+      2
+     ]
+    }
+   ],
+   "widgets_values": [
+    "promoted: a red fox"
+   ]
+  },
+  {
+   "id": 3,
+   "type": "ConditioningSink",
+   "inputs": [
+    {
+     "name": "conditioning",
+     "type": "CONDITIONING",
+     "link": 2
+    }
+   ],
+   "outputs": []
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   1,
+   2,
+   0,
+   "CLIP"
+  ],
+  [
+   2,
+   2,
+   0,
+   3,
+   0,
+   "CONDITIONING"
+  ]
+ ],
+ "definitions": {
+  "subgraphs": [
+   {
+    "id": "33333333-3333-4333-8333-333333333333",
+    "name": "prompt encoder",
+    "inputNode": {
+     "id": -10
+    },
+    "outputNode": {
+     "id": -20
+    },
+    "inputs": [
+     {
+      "name": "clip",
+      "type": "CLIP"
+     },
+     {
+      "name": "text",
+      "type": "STRING"
+     }
+    ],
+    "outputs": [
+     {
+      "name": "cond",
+      "type": "CONDITIONING"
+     }
+    ],
+    "nodes": [
+     {
+      "id": 20,
+      "type": "CLIPTextEncode",
+      "inputs": [
+       {
+        "name": "clip",
+        "type": "CLIP",
+        "link": 31
+       },
+       {
+        "name": "text",
+        "type": "STRING",
+        "widget": {
+         "name": "text"
+        },
+        "link": 33
+       }
+      ],
+      "outputs": [
+       {
+        "name": "CONDITIONING",
+        "type": "CONDITIONING"
+       }
+      ],
+      "widgets_values": [
+       "inner default"
+      ]
+     }
+    ],
+    "links": [
+     {
+      "id": 31,
+      "origin_id": -10,
+      "origin_slot": 0,
+      "target_id": 20,
+      "target_slot": 0,
+      "type": "CLIP"
+     },
+     {
+      "id": 33,
+      "origin_id": -10,
+      "origin_slot": 1,
+      "target_id": 20,
+      "target_slot": 1,
+      "type": "STRING"
+     },
+     {
+      "id": 32,
+      "origin_id": 20,
+      "origin_slot": 0,
+      "target_id": -20,
+      "target_slot": 0,
+      "type": "CONDITIONING"
+     }
+    ]
+   }
+  ]
+ }
+}

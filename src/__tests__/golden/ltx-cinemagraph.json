@@ -1,0 +1,297 @@
+{
+  "name": "ltx_cinemagraph",
+  "tool": "ltx_cinemagraph",
+  "action": "ltx_cinemagraph",
+  "workflow": "packs/ltx25/vfx_cinemagraph.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "LTX-2.5 22B distilled",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "VFX LoRA",
+      "inputs": {
+        "lora_name": "ltx25/ltx-2.5-22b-lora-cinemagraph-0.9.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 1.1
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPLoader",
+      "title": "Gemma 4 text encoder",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "device": "default",
+        "type": "ltxv"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "title": "Prompt",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "CINEMAGRAPH_MOTION, tripod locked-off static camera, zero camera movement, only the golden test subject moves, everything else stays perfectly still, seamless natural loop"
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "cars moving, camera movement, pan, tilt, zoom, parallax, whole image moving, background sliding, person moving, flicker on entire image, noisy texture, crawling texture, distorted, blurry, low quality"
+      }
+    },
+    "9": {
+      "class_type": "LTXVConditioning",
+      "title": "Frame rate",
+      "inputs": {
+        "frame_rate": 24,
+        "negative": [
+          "8",
+          0
+        ],
+        "positive": [
+          "7",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "title": "Latent size",
+      "inputs": {
+        "batch_size": 1,
+        "height": 512,
+        "length": 25,
+        "width": 704
+      }
+    },
+    "11": {
+      "class_type": "LTXVImgToVideoInplace",
+      "title": "First frame = photo",
+      "inputs": {
+        "bypass": false,
+        "image": [
+          "22",
+          0
+        ],
+        "latent": [
+          "10",
+          0
+        ],
+        "strength": 1,
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "title": "Audio latent",
+      "inputs": {
+        "audio_vae": [
+          "5",
+          0
+        ],
+        "batch_size": 1,
+        "frame_rate": 24,
+        "frames_number": 25
+      }
+    },
+    "13": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "AV latent",
+      "inputs": {
+        "audio_latent": [
+          "12",
+          0
+        ],
+        "video_latent": [
+          "11",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "RandomNoise",
+      "title": "Seed",
+      "inputs": {
+        "noise_seed": 1234
+      }
+    },
+    "15": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      }
+    },
+    "16": {
+      "class_type": "ManualSigmas",
+      "title": "Distilled sigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      }
+    },
+    "17": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Guider (cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "2",
+          0
+        ],
+        "negative": [
+          "9",
+          1
+        ],
+        "positive": [
+          "9",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "18": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "17",
+          0
+        ],
+        "latent_image": [
+          "13",
+          0
+        ],
+        "noise": [
+          "14",
+          0
+        ],
+        "sampler": [
+          "15",
+          0
+        ],
+        "sigmas": [
+          "16",
+          0
+        ]
+      }
+    },
+    "19": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Split AV",
+      "inputs": {
+        "av_latent": [
+          "18",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "title": "Source photo",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "21": {
+      "class_type": "ImageScale",
+      "title": "Fit photo (/32)",
+      "inputs": {
+        "crop": "center",
+        "height": 512,
+        "image": [
+          "20",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": 704
+      }
+    },
+    "22": {
+      "class_type": "LTXVPreprocess",
+      "title": "Preprocess",
+      "inputs": {
+        "image": [
+          "21",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "40": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode",
+      "inputs": {
+        "overlap": 64,
+        "samples": [
+          "19",
+          0
+        ],
+        "temporal_overlap": 16,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "41": {
+      "class_type": "CreateVideo",
+      "title": "Video 24 fps",
+      "inputs": {
+        "fps": 24,
+        "images": [
+          "40",
+          0
+        ]
+      }
+    },
+    "42": {
+      "class_type": "SaveVideo",
+      "title": "Save video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_LTXVFX_Cinemagraph",
+        "format": "auto",
+        "video": [
+          "41",
+          0
+        ]
+      }
+    }
+  }
+}

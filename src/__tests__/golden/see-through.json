@@ -1,0 +1,128 @@
+{
+  "name": "see_through",
+  "tool": "see_through",
+  "action": "see_through",
+  "workflow": "packs/image-tools/see_through.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "SeeThrough_LoadLayerDiffModel",
+      "title": "LayerDiff3D model",
+      "inputs": {
+        "auto_download": false,
+        "cache_tag_embeds": true,
+        "group_offload": false,
+        "model": "layerdifforg/seethroughv0.0.2_layerdiff3d",
+        "quant_mode": "none",
+        "unet_ckpt": "",
+        "vae_ckpt": ""
+      }
+    },
+    "3": {
+      "class_type": "SeeThrough_LoadDepthModel",
+      "title": "Marigold depth model",
+      "inputs": {
+        "auto_download": false,
+        "cache_tag_embeds": true,
+        "group_offload": false,
+        "model": "layerdifforg/seethroughv0.0.1_marigold",
+        "quant_mode": "none"
+      }
+    },
+    "4": {
+      "class_type": "SeeThrough_GenerateLayers",
+      "title": "Generate layers",
+      "inputs": {
+        "image": [
+          "1",
+          0
+        ],
+        "layerdiff_model": [
+          "2",
+          0
+        ],
+        "num_inference_steps": 30,
+        "resolution": 1280,
+        "seed": 1234
+      }
+    },
+    "5": {
+      "class_type": "SeeThrough_GenerateDepth",
+      "title": "Layer depth",
+      "inputs": {
+        "depth_model": [
+          "3",
+          0
+        ],
+        "layers": [
+          "4",
+          0
+        ],
+        "resolution_depth": -1,
+        "seed": 1234
+      }
+    },
+    "6": {
+      "class_type": "SeeThrough_PostProcess",
+      "title": "Post-process parts",
+      "inputs": {
+        "layers_depth": [
+          "5",
+          0
+        ],
+        "tblr_split": true,
+        "use_lama": false
+      }
+    },
+    "7": {
+      "class_type": "SeeThrough_SavePSD",
+      "title": "Save parts + manifest",
+      "inputs": {
+        "filename_prefix": "adrift_layers",
+        "parts": [
+          "6",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "PreviewAny",
+      "title": "Manifest path",
+      "inputs": {
+        "source": [
+          "7",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "title": "Save preview",
+      "inputs": {
+        "filename_prefix": "adrift_layers_preview",
+        "images": [
+          "10",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "CJLayerPreview",
+      "title": "Depth composite + parts sheet",
+      "inputs": {
+        "height": 1024,
+        "parts": [
+          "6",
+          0
+        ]
+      }
+    }
+  }
+}

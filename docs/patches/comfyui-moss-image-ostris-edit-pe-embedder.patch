@@ -1,0 +1,25 @@
+Patch for https://github.com/ostris/ComfyUI-MOSS-Image-Ostris-Edit (pinned commit 8f9b50c0d2b2).
+This diff modifies that project's files and is distributed under its
+license (MIT), not under Adrift's MIT license. Applied by
+docker/install-comfy-packs.py; see docs/custom-nodes.md.
+
+diff --git a/nodes.py b/nodes.py
+index 3b2f266..905f5af 100644
+--- a/nodes.py
++++ b/nodes.py
+@@ -159,7 +159,14 @@ def _text_ids(text_len, device):
+ 
+ 
+ def _pe(dit, ids):
+-    return dit.pe_embedder(ids.unsqueeze(0)).transpose(1, 2).contiguous()
++    # local patch: ComfyUI #17172 dropped MOSSImage.pe_embedder for dit.rope();
++    # rebuild the identical parameter-free EmbedND (theta 10000, rope_axes_dim) when absent.
++    emb = getattr(dit, "pe_embedder", None)
++    if emb is None:
++        from comfy.ldm.flux.layers import EmbedND
++        axes = list(dit.rope_axes_dim)
++        emb = EmbedND(dim=sum(axes), theta=10000, axes_dim=axes)
++    return emb(ids.unsqueeze(0)).transpose(1, 2).contiguous()
+ 
+ 
+ def _modulation(dit, vec):

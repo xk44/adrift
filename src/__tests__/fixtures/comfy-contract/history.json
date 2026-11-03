@@ -1,0 +1,430 @@
+{
+  "830a60ab-3db4-4576-811e-5e2418b944a6": {
+    "prompt": [
+      0,
+      "830a60ab-3db4-4576-811e-5e2418b944a6",
+      {
+        "1": {
+          "class_type": "UNETLoader",
+          "inputs": {
+            "unet_name": "moss_image_sft_bf16.safetensors",
+            "weight_dtype": "default"
+          }
+        },
+        "2": {
+          "class_type": "CLIPLoader",
+          "inputs": {
+            "clip_name": "qwen3.5_9b_bf16.safetensors",
+            "type": "moss_image",
+            "device": "default"
+          }
+        },
+        "3": {
+          "class_type": "VAELoader",
+          "inputs": {
+            "vae_name": "flux2-vae.safetensors"
+          }
+        },
+        "4": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "a weathered lighthouse keeper in a yellow raincoat holding a brass lantern on a rocky shore at dusk, crashing waves, cinematic light, detailed film photograph",
+            "clip": [
+              "2",
+              0
+            ]
+          },
+          "_meta": {
+            "title": "Positive Prompt"
+          }
+        },
+        "5": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "ugly, blurry, low quality, distorted",
+            "clip": [
+              "2",
+              0
+            ]
+          },
+          "_meta": {
+            "title": "Negative Prompt"
+          }
+        },
+        "6": {
+          "class_type": "EmptyFlux2LatentImage",
+          "inputs": {
+            "width": 1024,
+            "height": 1024,
+            "batch_size": 1
+          }
+        },
+        "7": {
+          "class_type": "KSampler",
+          "inputs": {
+            "model": [
+              "11",
+              0
+            ],
+            "positive": [
+              "4",
+              0
+            ],
+            "negative": [
+              "5",
+              0
+            ],
+            "latent_image": [
+              "6",
+              0
+            ],
+            "seed": 7,
+            "steps": 50,
+            "cfg": 3,
+            "sampler_name": "euler",
+            "scheduler": "sgm_uniform",
+            "denoise": 1
+          }
+        },
+        "8": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "7",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "9": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "images": [
+              "8",
+              0
+            ],
+            "filename_prefix": "cj_spectrum_fix"
+          }
+        },
+        "10": {
+          "class_type": "ModelSamplingAuraFlow",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "shift": 5
+          }
+        },
+        "11": {
+          "class_type": "SkipLayerGuidanceDiTSimple",
+          "inputs": {
+            "model": [
+              "12",
+              0
+            ],
+            "double_layers": "",
+            "single_layers": "22",
+            "start_percent": 0,
+            "end_percent": 1
+          }
+        },
+        "12": {
+          "class_type": "SpectrumMOSSImageAdaptive",
+          "inputs": {
+            "model": [
+              "10",
+              0
+            ],
+            "warmup_steps": 8,
+            "detail_guard_steps": 8,
+            "tail_actual_steps": 6,
+            "post_guard_horizon_cap": 3,
+            "window_size": 2,
+            "flex_window": 0.5,
+            "cache_device": "main_device",
+            "debug": true,
+            "error_tolerance": 1,
+            "warn_unverified_sampler": false
+          },
+          "_meta": {
+            "title": "Spectrum MOSS-Image (Adaptive)"
+          }
+        }
+      },
+      {
+        "client_id": "claude-moss-test",
+        "create_time": 1792619539331
+      },
+      [
+        "9"
+      ]
+    ],
+    "outputs": {
+      "9": {
+        "images": [
+          {
+            "filename": "cj_spectrum_fix_00001_.png",
+            "subfolder": "",
+            "type": "output",
+            "metadata": {
+              "kind": "image",
+              "width": 1024,
+              "height": 1024
+            }
+          }
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "830a60ab-3db4-4576-811e-5e2418b944a6",
+            "timestamp": 1792619539331
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "830a60ab-3db4-4576-811e-5e2418b944a6",
+            "timestamp": 1792619539333
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "830a60ab-3db4-4576-811e-5e2418b944a6",
+            "timestamp": 1792619679547
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "9": {
+        "node_id": "9",
+        "display_node": "9",
+        "parent_node": null,
+        "real_node_id": "9"
+      }
+    }
+  },
+  "29c527fc-4d58-4e65-9796-db288f41f709": {
+    "prompt": [
+      1,
+      "29c527fc-4d58-4e65-9796-db288f41f709",
+      {
+        "1": {
+          "class_type": "MOSSImageLoader",
+          "inputs": {
+            "dit": "moss_image_base_bf16.safetensors",
+            "weight_dtype": "default",
+            "text_encoder": "qwen3.5_9b_bf16.safetensors",
+            "vae": "flux2-vae.safetensors"
+          }
+        },
+        "2": {
+          "class_type": "LoadImage",
+          "inputs": {
+            "image": "colorize_src_bw.png [input]",
+            "upload": "image"
+          },
+          "_meta": {
+            "title": "Page"
+          }
+        },
+        "3": {
+          "class_type": "MOSSi2iReference",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "vae": [
+              "1",
+              2
+            ],
+            "image": [
+              "2",
+              0
+            ],
+            "lora_name": "moss_image_base_colorize_v2.safetensors",
+            "strength": 1,
+            "resolution": 1024,
+            "ref_scale": 2
+          }
+        },
+        "4": {
+          "class_type": "ModelSamplingSD3",
+          "inputs": {
+            "model": [
+              "3",
+              0
+            ],
+            "shift": 5
+          }
+        },
+        "5": {
+          "class_type": "SkipLayerGuidanceDiTSimple",
+          "inputs": {
+            "model": [
+              "4",
+              0
+            ],
+            "double_layers": "",
+            "single_layers": "22",
+            "start_percent": 0,
+            "end_percent": 1
+          }
+        },
+        "6": {
+          "class_type": "MOSSi2iTextEncode",
+          "inputs": {
+            "clip": [
+              "1",
+              1
+            ],
+            "image": [
+              "2",
+              0
+            ],
+            "text": "",
+            "resolution": 1024
+          },
+          "_meta": {
+            "title": "Positive Prompt"
+          }
+        },
+        "7": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "clip": [
+              "1",
+              1
+            ],
+            "text": ""
+          },
+          "_meta": {
+            "title": "Negative Prompt"
+          }
+        },
+        "8": {
+          "class_type": "KSampler",
+          "inputs": {
+            "model": [
+              "5",
+              0
+            ],
+            "positive": [
+              "6",
+              0
+            ],
+            "negative": [
+              "7",
+              0
+            ],
+            "latent_image": [
+              "3",
+              1
+            ],
+            "seed": 7,
+            "steps": 30,
+            "cfg": 3,
+            "sampler_name": "er_sde",
+            "scheduler": "sgm_uniform",
+            "denoise": 1
+          }
+        },
+        "9": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "8",
+              0
+            ],
+            "vae": [
+              "1",
+              2
+            ]
+          }
+        },
+        "10": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "images": [
+              "9",
+              0
+            ],
+            "filename_prefix": "cj_tool_moss-colorize"
+          }
+        }
+      },
+      {
+        "client_id": "claude-moss-test",
+        "create_time": 1792619684585
+      },
+      [
+        "10"
+      ]
+    ],
+    "outputs": {
+      "10": {
+        "images": [
+          {
+            "filename": "cj_tool_moss-colorize_00002_.png",
+            "subfolder": "",
+            "type": "output",
+            "metadata": {
+              "kind": "image",
+              "width": 768,
+              "height": 768
+            }
+          }
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "29c527fc-4d58-4e65-9796-db288f41f709",
+            "timestamp": 1792619684586
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "29c527fc-4d58-4e65-9796-db288f41f709",
+            "timestamp": 1792619684587
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "29c527fc-4d58-4e65-9796-db288f41f709",
+            "timestamp": 1792619806918
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "10": {
+        "node_id": "10",
+        "display_node": "10",
+        "parent_node": null,
+        "real_node_id": "10"
+      }
+    }
+  }
+}

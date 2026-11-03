@@ -1,0 +1,112 @@
+# Adrift + its own ComfyUI. See README.md -> "Docker".
+#
+#   cp docker/.env.example docker/.env   # edit paths / bind address
+#   docker compose -f docker/docker-compose.yml up -d --build
+#
+# ComfyUI runs as one of two services (pick with COMPOSE_PROFILES in .env):
+#   gpu -> service "comfyui"      NVIDIA GPU via the container toolkit
+#   cpu -> service "comfyui-cpu"  --cpu (no GPU needed; slow, for smoke tests)
+# Both answer to the hostname "comfyui" inside the stack.
+
+name: adrift
+
+x-comfyui: &comfyui
+  image: adrift-comfyui:local
+  build:
+    context: ${ADRIFT_SRC:-..}
+    dockerfile: docker/Dockerfile.comfyui
+    args:
+      # all | required | none: third-party packs from docs/custom-nodes.json
+      ADRIFT_NODE_PACKS: ${ADRIFT_NODE_PACKS:-all}
+  user: "${PUID:-1000}:${PGID:-1000}"
+  restart: unless-stopped
+  environment:
+    # Browser origin of Adrift; ComfyUI's WebSocket rejects other origins.
+    COMFY_CORS_ORIGIN: ${ADRIFT_PUBLIC_URL:-http://127.0.0.1:3044}
+    # Empty = ComfyUI's dynamic VRAM management. e.g. "--reserve-vram 1.0".
+    COMFY_VRAM_ARGS: ${COMFY_VRAM_ARGS:-}
+    COMFY_EXTRA_ARGS: ${COMFY_EXTRA_ARGS:-}
+  volumes:
+    - ${COMFY_MODELS_DIR:-./models}:/models:ro
+    - ${COMFY_DATA_DIR:-./comfy-data}:/data
+    - ${COMFY_OUTPUT_DIR:-./comfy-data/output}:/data/output
+    - ${COMFY_CUSTOM_NODES_DIR:-./custom_nodes}:/custom_nodes
+    # Optional second model library (read-only), mapped by
+    # ${COMFY_DATA_DIR}/extra_model_paths.yaml. See README.
+    - ${COMFY_EXTRA_MODELS_DIR:-./extra-models}:/extra-models:ro
+  ports:
+    # ComfyUI has no login: keep it on loopback (COMFY_BIND_ADDR), even when
+    # Adrift itself is published on a LAN address (BIND_ADDR).
+    - "${COMFY_BIND_ADDR:-127.0.0.1}:${COMFY_PORT:-8188}:8188"
+  shm_size: "8gb"
+
+services:
+  comfyui:
+    <<: *comfyui
+    profiles: ["gpu"]
+    environment:
+      COMFY_CORS_ORIGIN: ${ADRIFT_PUBLIC_URL:-http://127.0.0.1:3044}
+      COMFY_VRAM_ARGS: ${COMFY_VRAM_ARGS:-}
+      COMFY_EXTRA_ARGS: ${COMFY_EXTRA_ARGS:-}
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  comfyui-cpu:
+    <<: *comfyui
+    profiles: ["cpu"]
+    command: ["--cpu"]
+    networks:
+      default:
+        aliases: [comfyui]
+
+  adrift:
+    image: adrift:local
+    build:
+      context: ${ADRIFT_SRC:-..}
+      dockerfile: docker/Dockerfile.adrift
+      args:
+        # Inlined into the browser bundle: the ComfyUI WebSocket as the
+        # *browser* reaches it (host address, not the service name).
+        NEXT_PUBLIC_COMFY_WS_BASE: ${COMFY_PUBLIC_WS:-ws://127.0.0.1:8188}
+        CJ_FRAME_ANCESTORS: ${CJ_FRAME_ANCESTORS:-}
+        CJ_DEFAULT_PACK: ${CJ_DEFAULT_PACK:-}
+    user: "${PUID:-1000}:${PGID:-1000}"
+    restart: unless-stopped
+    depends_on:
+      comfyui:
+        condition: service_started
+        required: false
+      comfyui-cpu:
+        condition: service_started
+        required: false
+    # Optional extra app settings (see ../.env.example), e.g. CJ_MOSS_IMAGE=1.
+    env_file:
+      - path: ./adrift.env
+        required: false
+    environment:
+      COMFY_HTTP_URL: http://comfyui:8188
+      COMFY_WS_BASE: ws://comfyui:8188
+      # ComfyUI tree as Adrift sees it: models (model-status checks),
+      # outputs, user workflows, extra custom nodes.
+      COMFY_ROOT: /comfy
+      COMFYUI_OUTPUT_DIR: /comfy/output
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-}
+      # Where the port is published on the host. Anything but loopback
+      # makes ADMIN_API_KEY mandatory (the app refuses to start otherwise).
+      CJ_HOST: ${BIND_ADDR:-127.0.0.1}
+      SESSION_SECRET: ${SESSION_SECRET:-}
+      CJ_DEFAULT_PACK: ${CJ_DEFAULT_PACK:-}
+    volumes:
+      - ${ADRIFT_DATA_DIR:-./adrift-data}:/app/data
+      - ${COMFY_MODELS_DIR:-./models}:/comfy/models:ro
+      - ${COMFY_OUTPUT_DIR:-./comfy-data/output}:/comfy/output
+      - ${COMFY_DATA_DIR:-./comfy-data}/user:/comfy/user:ro
+      - ${COMFY_CUSTOM_NODES_DIR:-./custom_nodes}:/comfy/custom_nodes:ro
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${ADRIFT_PORT:-3044}:3000"

@@ -1,0 +1,190 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`graph snapshots > Flux --tilesize 1024 (implies tiled) 1`] = `
+{
+  "class_type": "VAEDecodeTiled",
+  "inputs": {
+    "overlap": 64,
+    "samples": [
+      "6",
+      0,
+    ],
+    "temporal_overlap": 8,
+    "temporal_size": 64,
+    "tile_size": 1024,
+    "vae": [
+      "3",
+      0,
+    ],
+  },
+}
+`;
+
+exports[`graph snapshots > Krea2 --clipskip 2 --tiledvae: clip skip ignored, decode tiled 1`] = `
+{
+  "12": {
+    "_meta": {
+      "title": "Decode",
+    },
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "overlap": 64,
+      "samples": [
+        "10",
+        0,
+      ],
+      "temporal_overlap": 8,
+      "temporal_size": 64,
+      "tile_size": 512,
+      "vae": [
+        "11",
+        0,
+      ],
+    },
+  },
+  "6": {
+    "_meta": {
+      "title": "Positive Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+  "8": {
+    "_meta": {
+      "title": "Negative Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+}
+`;
+
+exports[`graph snapshots > SD1.5 --clipskip 2 --tiledvae 1`] = `
+{
+  "6": {
+    "_meta": {
+      "title": "Positive Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "cj_clip_skip_4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+  "7": {
+    "_meta": {
+      "title": "Negative Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "cj_clip_skip_4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+  "8": {
+    "class_type": "VAEDecodeTiled",
+    "inputs": {
+      "overlap": 64,
+      "samples": [
+        "3",
+        0,
+      ],
+      "temporal_overlap": 8,
+      "temporal_size": 64,
+      "tile_size": 512,
+      "vae": [
+        "4",
+        2,
+      ],
+    },
+  },
+  "cj_clip_skip_4": {
+    "_meta": {
+      "title": "Clip Skip 2",
+    },
+    "class_type": "CLIPSetLastLayer",
+    "inputs": {
+      "clip": [
+        "4",
+        1,
+      ],
+      "stop_at_clip_layer": -2,
+    },
+  },
+}
+`;
+
+exports[`graph snapshots > SDXL --clipskip 2 1`] = `
+{
+  "6": {
+    "_meta": {
+      "title": "Positive Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "cj_clip_skip_4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+  "7": {
+    "_meta": {
+      "title": "Negative Prompt",
+    },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "cj_clip_skip_4",
+        0,
+      ],
+      "text": "",
+    },
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0,
+      ],
+      "vae": [
+        "4",
+        2,
+      ],
+    },
+  },
+  "cj_clip_skip_4": {
+    "_meta": {
+      "title": "Clip Skip 2",
+    },
+    "class_type": "CLIPSetLastLayer",
+    "inputs": {
+      "clip": [
+        "4",
+        1,
+      ],
+      "stop_at_clip_layer": -2,
+    },
+  },
+}
+`;

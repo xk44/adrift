@@ -1,0 +1,111 @@
+{
+  "_meta": {
+    "title": "FLUX.3 Klein Distilled T2I",
+    "description": "Step-distilled checkpoint, official ComfyUI template settings: 16 steps (4-16), CFG 1, euler/simple. REQUIRES (gated, accept the BFL license on HF first): black-forest-labs/flux-3-image-klein-comfy diffusion_models/flux3-image-klein-int8-convrot.safetensors (5.8 GB, CUDA), saved as diffusion_models/flux3_image_klein_sd_int8_convrot.safetensors; on Apple Silicon use diffusion_models/flux3-image-klein-bf16.safetensors (the step-distilled checkpoint, despite the name) saved as diffusion_models/flux3_image_klein_sd_bf16.safetensors, which the app picks automatically when int8 is missing, plus text_encoders/qwen3vl_4b_bf16.safetensors (CLIP type flux3) and vae/flux2-vae.safetensors from the same repo. bf16 on Apple Silicon (int8_convrot/nvfp4 are CUDA paths). The official template runs the Qwen3.5 9B prompt upsampler first; this graph skips it, so write a full scene caption (subject, framing, background, lighting)."
+  },
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux3_image_klein_sd_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_bf16.safetensors",
+      "type": "flux3",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "flux2-vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "",
+      "clip": [
+        "2",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "4",
+        0
+      ],
+      "negative": [
+        "5",
+        0
+      ],
+      "latent_image": [
+        "6",
+        0
+      ],
+      "seed": 42,
+      "steps": 16,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "7",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "cj_flux3_t2i_fast"
+    }
+  },
+  "6": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  }
+}

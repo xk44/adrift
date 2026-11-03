@@ -1,0 +1,32 @@
+{
+  "name": "vectorize",
+  "tool": "vectorize",
+  "action": "vectorize",
+  "workflow": "packs/image-tools/vectorize.json",
+  "seed": 0,
+  "graph": {
+    "1": {
+      "class_type": "LoadImage",
+      "title": "Source image",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "2": {
+      "class_type": "CJVectorize",
+      "title": "Vectorize",
+      "inputs": {
+        "colors": 0,
+        "detail": 1,
+        "engine": "opencv",
+        "filename_prefix": "CJ_Vector/vector",
+        "image": [
+          "1",
+          0
+        ],
+        "max_side": 1600,
+        "preset": "logo"
+      }
+    }
+  }
+}

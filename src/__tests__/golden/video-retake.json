@@ -1,0 +1,828 @@
+{
+  "name": "video_retake",
+  "tool": "video_retake",
+  "action": "video_retake",
+  "workflow": "packs/ltx25/video_retake.json",
+  "seed": 1234,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "LTX-2.5 22B distilled",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPLoader",
+      "title": "Gemma 4 text encoder",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "device": "default",
+        "type": "ltxv"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "title": "Prompt (new segment)",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "golden test subject"
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "title": "Negative",
+      "inputs": {
+        "clip": [
+          "6",
+          0
+        ],
+        "text": "jump cut, flicker, morphing, distorted, blurry, text, watermark, worst quality"
+      }
+    },
+    "9": {
+      "class_type": "LTXVConditioning",
+      "title": "Frame rate (source fps)",
+      "inputs": {
+        "frame_rate": [
+          "22",
+          2
+        ],
+        "negative": [
+          "8",
+          0
+        ],
+        "positive": [
+          "7",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "title": "Audio latent (keep: generated, discarded)",
+      "inputs": {
+        "audio_vae": [
+          "5",
+          0
+        ],
+        "batch_size": 1,
+        "frame_rate": [
+          "22",
+          2
+        ],
+        "frames_number": [
+          "26",
+          1
+        ]
+      }
+    },
+    "13": {
+      "class_type": "LTXVConcatAVLatent",
+      "title": "AV latent",
+      "inputs": {
+        "audio_latent": [
+          "12",
+          0
+        ],
+        "video_latent": [
+          "37",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "RandomNoise",
+      "title": "Seed",
+      "inputs": {
+        "noise_seed": 1234
+      }
+    },
+    "15": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      }
+    },
+    "16": {
+      "class_type": "ManualSigmas",
+      "title": "Distilled sigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      }
+    },
+    "17": {
+      "class_type": "LTXVDualCFGGuider",
+      "title": "Guider (cfg 1)",
+      "inputs": {
+        "audio_cfg": 1,
+        "model": [
+          "1",
+          0
+        ],
+        "negative": [
+          "9",
+          1
+        ],
+        "positive": [
+          "9",
+          0
+        ],
+        "video_cfg": 1
+      }
+    },
+    "18": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "17",
+          0
+        ],
+        "latent_image": [
+          "13",
+          0
+        ],
+        "noise": [
+          "14",
+          0
+        ],
+        "sampler": [
+          "15",
+          0
+        ],
+        "sigmas": [
+          "16",
+          0
+        ]
+      }
+    },
+    "19": {
+      "class_type": "LTXVSeparateAVLatent",
+      "title": "Split AV",
+      "inputs": {
+        "av_latent": [
+          "18",
+          0
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LoadVideo",
+      "title": "Source video",
+      "inputs": {
+        "file": "golden_clip.mp4 [input]"
+      }
+    },
+    "21": {
+      "class_type": "VideoTemporalCrop",
+      "title": "First 121 frames (native fps)",
+      "inputs": {
+        "length": 121,
+        "start_frame": 0,
+        "video": [
+          "20",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "GetVideoComponents",
+      "title": "Source frames / audio / fps",
+      "inputs": {
+        "video": [
+          "21",
+          0
+        ]
+      }
+    },
+    "24": {
+      "class_type": "GetImageSize",
+      "title": "Source size + frame count",
+      "inputs": {
+        "image": [
+          "22",
+          0
+        ]
+      }
+    },
+    "26": {
+      "class_type": "ComfyMathExpression",
+      "title": "Frames: smallest 8n+1 >= clip",
+      "inputs": {
+        "expression": "8 * ((a + 6) // 8) + 1",
+        "values.a": [
+          "24",
+          2
+        ]
+      }
+    },
+    "27": {
+      "class_type": "ComfyMathExpression",
+      "title": "Latent frames",
+      "inputs": {
+        "expression": "(a - 1) // 8 + 1",
+        "values.a": [
+          "26",
+          1
+        ]
+      }
+    },
+    "28": {
+      "class_type": "ImageFromBatch",
+      "title": "Last frame",
+      "inputs": {
+        "batch_index": -1,
+        "image": [
+          "22",
+          0
+        ],
+        "length": 1
+      }
+    },
+    "29": {
+      "class_type": "RepeatImageBatch",
+      "title": "Hold last frame",
+      "inputs": {
+        "amount": 8,
+        "image": [
+          "28",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "ImageBatch",
+      "title": "Clip + held tail",
+      "inputs": {
+        "image1": [
+          "22",
+          0
+        ],
+        "image2": [
+          "29",
+          0
+        ]
+      }
+    },
+    "31": {
+      "class_type": "ImageFromBatch",
+      "title": "Pad to 8n+1",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "30",
+          0
+        ],
+        "length": [
+          "26",
+          1
+        ]
+      }
+    },
+    "32": {
+      "class_type": "ImageScale",
+      "title": "Generation size (/32)",
+      "inputs": {
+        "crop": "disabled",
+        "height": 576,
+        "image": [
+          "31",
+          0
+        ],
+        "upscale_method": "area",
+        "width": 1024
+      }
+    },
+    "33": {
+      "class_type": "VAEEncode",
+      "title": "Encode source",
+      "inputs": {
+        "pixels": [
+          "32",
+          0
+        ],
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "35": {
+      "class_type": "ImageFromBatch",
+      "title": "Latent mask: first T values",
+      "inputs": {
+        "batch_index": 0,
+        "image": [
+          "108",
+          0
+        ],
+        "length": [
+          "27",
+          1
+        ]
+      }
+    },
+    "36": {
+      "class_type": "ImageToMask",
+      "title": "Latent mask (per latent frame)",
+      "inputs": {
+        "channel": "red",
+        "image": [
+          "35",
+          0
+        ]
+      }
+    },
+    "37": {
+      "class_type": "SetLatentNoiseMask",
+      "title": "Regenerate masked latent frames",
+      "inputs": {
+        "mask": [
+          "36",
+          0
+        ],
+        "samples": [
+          "33",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "VAEDecodeTiled",
+      "title": "Decode",
+      "inputs": {
+        "overlap": 64,
+        "samples": [
+          "19",
+          0
+        ],
+        "temporal_overlap": 16,
+        "temporal_size": 64,
+        "tile_size": 512,
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "42": {
+      "class_type": "ImageScale",
+      "title": "Generation to source size",
+      "inputs": {
+        "crop": "disabled",
+        "height": [
+          "24",
+          1
+        ],
+        "image": [
+          "40",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": [
+          "24",
+          0
+        ]
+      }
+    },
+    "44": {
+      "class_type": "ImageToMask",
+      "title": "Pixel alpha (per frame)",
+      "inputs": {
+        "channel": "red",
+        "image": [
+          "220",
+          0
+        ]
+      }
+    },
+    "45": {
+      "class_type": "ImageCompositeMasked",
+      "title": "Range from generation, rest = source frames",
+      "inputs": {
+        "destination": [
+          "22",
+          0
+        ],
+        "mask": [
+          "44",
+          0
+        ],
+        "resize_source": false,
+        "source": [
+          "42",
+          0
+        ],
+        "x": 0,
+        "y": 0
+      }
+    },
+    "54": {
+      "class_type": "CreateVideo",
+      "title": "Video (source fps + audio)",
+      "inputs": {
+        "audio": [
+          "22",
+          1
+        ],
+        "fps": [
+          "22",
+          2
+        ],
+        "images": [
+          "45",
+          0
+        ]
+      }
+    },
+    "55": {
+      "class_type": "SaveVideo",
+      "title": "Save video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_VideoRetake_LTX",
+        "format": "auto",
+        "video": [
+          "54",
+          0
+        ]
+      }
+    },
+    "100": {
+      "class_type": "EmptyImage",
+      "title": "Latent mask: 5 x 0.000",
+      "inputs": {
+        "batch_size": 5,
+        "color": 0,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "101": {
+      "class_type": "EmptyImage",
+      "title": "Latent mask: 1 x 0.502",
+      "inputs": {
+        "batch_size": 1,
+        "color": 8388608,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "102": {
+      "class_type": "ImageBatch",
+      "title": "Latent mask",
+      "inputs": {
+        "image1": [
+          "100",
+          0
+        ],
+        "image2": [
+          "101",
+          0
+        ]
+      }
+    },
+    "103": {
+      "class_type": "EmptyImage",
+      "title": "Latent mask: 6 x 1.000",
+      "inputs": {
+        "batch_size": 6,
+        "color": 16711680,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "104": {
+      "class_type": "ImageBatch",
+      "title": "Latent mask",
+      "inputs": {
+        "image1": [
+          "102",
+          0
+        ],
+        "image2": [
+          "103",
+          0
+        ]
+      }
+    },
+    "105": {
+      "class_type": "EmptyImage",
+      "title": "Latent mask: 1 x 0.502",
+      "inputs": {
+        "batch_size": 1,
+        "color": 8388608,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "106": {
+      "class_type": "ImageBatch",
+      "title": "Latent mask",
+      "inputs": {
+        "image1": [
+          "104",
+          0
+        ],
+        "image2": [
+          "105",
+          0
+        ]
+      }
+    },
+    "107": {
+      "class_type": "EmptyImage",
+      "title": "Latent mask: 3 x 0.000",
+      "inputs": {
+        "batch_size": 3,
+        "color": 0,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "108": {
+      "class_type": "ImageBatch",
+      "title": "Latent mask",
+      "inputs": {
+        "image1": [
+          "106",
+          0
+        ],
+        "image2": [
+          "107",
+          0
+        ]
+      }
+    },
+    "200": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 48 x 0.000",
+      "inputs": {
+        "batch_size": 48,
+        "color": 0,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "201": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.200",
+      "inputs": {
+        "batch_size": 1,
+        "color": 3342336,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "202": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "200",
+          0
+        ],
+        "image2": [
+          "201",
+          0
+        ]
+      }
+    },
+    "203": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.400",
+      "inputs": {
+        "batch_size": 1,
+        "color": 6684672,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "204": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "202",
+          0
+        ],
+        "image2": [
+          "203",
+          0
+        ]
+      }
+    },
+    "205": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.600",
+      "inputs": {
+        "batch_size": 1,
+        "color": 10027008,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "206": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "204",
+          0
+        ],
+        "image2": [
+          "205",
+          0
+        ]
+      }
+    },
+    "207": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.800",
+      "inputs": {
+        "batch_size": 1,
+        "color": 13369344,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "208": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "206",
+          0
+        ],
+        "image2": [
+          "207",
+          0
+        ]
+      }
+    },
+    "209": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 28 x 1.000",
+      "inputs": {
+        "batch_size": 28,
+        "color": 16711680,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "210": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "208",
+          0
+        ],
+        "image2": [
+          "209",
+          0
+        ]
+      }
+    },
+    "211": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.800",
+      "inputs": {
+        "batch_size": 1,
+        "color": 13369344,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "212": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "210",
+          0
+        ],
+        "image2": [
+          "211",
+          0
+        ]
+      }
+    },
+    "213": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.600",
+      "inputs": {
+        "batch_size": 1,
+        "color": 10027008,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "214": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "212",
+          0
+        ],
+        "image2": [
+          "213",
+          0
+        ]
+      }
+    },
+    "215": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.400",
+      "inputs": {
+        "batch_size": 1,
+        "color": 6684672,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "216": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "214",
+          0
+        ],
+        "image2": [
+          "215",
+          0
+        ]
+      }
+    },
+    "217": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 1 x 0.200",
+      "inputs": {
+        "batch_size": 1,
+        "color": 3342336,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "218": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "216",
+          0
+        ],
+        "image2": [
+          "217",
+          0
+        ]
+      }
+    },
+    "219": {
+      "class_type": "EmptyImage",
+      "title": "Pixel alpha: 37 x 0.000",
+      "inputs": {
+        "batch_size": 37,
+        "color": 0,
+        "height": 1,
+        "width": 1
+      }
+    },
+    "220": {
+      "class_type": "ImageBatch",
+      "title": "Pixel alpha",
+      "inputs": {
+        "image1": [
+          "218",
+          0
+        ],
+        "image2": [
+          "219",
+          0
+        ]
+      }
+    }
+  }
+}

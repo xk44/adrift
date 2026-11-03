@@ -1,0 +1,220 @@
+{
+  "name": "edit_qwen21",
+  "tool": "edit_qwen21",
+  "action": "edit_qwen21",
+  "workflow": "packs/qwen-image-21/edit.json",
+  "seed": 157399766,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "qwen_image_2.1_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "4": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen3vl_8b_bf16.safetensors",
+        "device": "default",
+        "type": "qwen_image"
+      }
+    },
+    "5": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "LoadImage",
+      "title": "Source Image",
+      "inputs": {
+        "image": "golden_src.png [input]",
+        "upload": "image"
+      }
+    },
+    "8": {
+      "class_type": "TextEncodeQwenImage21",
+      "title": "Edit Instruction",
+      "inputs": {
+        "clip": [
+          "4",
+          0
+        ],
+        "images.image_1": [
+          "6",
+          0
+        ],
+        "negative_prompt": "",
+        "prompt": "golden test subject",
+        "resolution": 1024,
+        "vae": [
+          "5",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "KSampler",
+      "inputs": {
+        "cfg": 1,
+        "denoise": 1,
+        "latent_image": [
+          "8",
+          2
+        ],
+        "model": [
+          "30",
+          0
+        ],
+        "negative": [
+          "8",
+          1
+        ],
+        "positive": [
+          "8",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "seed": 157399766,
+        "steps": 25
+      }
+    },
+    "12": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "11",
+          0
+        ],
+        "vae": [
+          "5",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "cj_qwen21_edit",
+        "images": [
+          "908",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "LoraLoaderModelOnly",
+      "inputs": {
+        "lora_name": "Qwen-Image-2.1-viggle-turbo-4step-lora-r64.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 0
+      }
+    },
+    "900": {
+      "class_type": "CheckpointLoaderSimple",
+      "title": "SAM3 (paste-back masks)",
+      "inputs": {
+        "ckpt_name": "sam3.1_multiplex_fp16.safetensors"
+      }
+    },
+    "901": {
+      "class_type": "CLIPTextEncode",
+      "title": "Area to change",
+      "inputs": {
+        "clip": [
+          "900",
+          1
+        ],
+        "text": "golden second text"
+      }
+    },
+    "902": {
+      "class_type": "SAM3_Detect",
+      "title": "Region (original)",
+      "inputs": {
+        "conditioning": [
+          "901",
+          0
+        ],
+        "image": [
+          "6",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "900",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "903": {
+      "class_type": "CLIPTextEncode",
+      "title": "Protect text",
+      "inputs": {
+        "clip": [
+          "900",
+          1
+        ],
+        "text": "face"
+      }
+    },
+    "904": {
+      "class_type": "SAM3_Detect",
+      "title": "Protect faces",
+      "inputs": {
+        "conditioning": [
+          "903",
+          0
+        ],
+        "image": [
+          "6",
+          0
+        ],
+        "individual_masks": false,
+        "model": [
+          "900",
+          0
+        ],
+        "refine_iterations": 2,
+        "threshold": 0.3
+      }
+    },
+    "908": {
+      "class_type": "CJImagePasteBack",
+      "title": "Paste edit back (full res)",
+      "inputs": {
+        "color_match": true,
+        "diff_thresh": 22,
+        "edited": [
+          "12",
+          0
+        ],
+        "feather_px": 6,
+        "fit": "stretch",
+        "grow_px": 12,
+        "min_blob": 0.001,
+        "original": [
+          "6",
+          0
+        ],
+        "protect": [
+          "904",
+          0
+        ],
+        "reach": 0.18,
+        "region": [
+          "902",
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+ "1": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "control.png",
+   "upload": "image"
+  },
+  "_meta": {
+   "title": "Control Image"
+  }
+ },
+ "15": {
+  "class_type": "LoadDA3Model",
+  "inputs": {
+   "model_name": "depth_anything_3_base.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "Depth Anything 3 (auto depth)"
+  }
+ },
+ "16": {
+  "class_type": "DA3Inference",
+  "inputs": {
+   "da3_model": [
+    "15",
+    0
+   ],
+   "image": [
+    "1",
+    0
+   ],
+   "resolution": 504,
+   "resize_method": "upper_bound_resize",
+   "mode": "mono"
+  },
+  "_meta": {
+   "title": "Estimate Depth"
+  }
+ },
+ "17": {
+  "class_type": "DA3Render",
+  "inputs": {
+   "da3_geometry": [
+    "16",
+    0
+   ],
+   "output": "depth",
+   "output.normalization": "v2_style",
+   "output.apply_sky_clip": false
+  },
+  "_meta": {
+   "title": "Depth Map (near = white)"
+  }
+ },
+ "3": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "krea2_turbo_bf16.safetensors",
+   "weight_dtype": "default"
+  }
+ },
+ "4": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "qwen3vl_4b_bf16.safetensors",
+   "type": "krea2",
+   "device": "default"
+  }
+ },
+ "5": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "qwen_image_vae.safetensors"
+  }
+ },
+ "6": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "text": "",
+   "clip": [
+    "4",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "Positive Prompt"
+  }
+ },
+ "7": {
+  "class_type": "ConditioningZeroOut",
+  "inputs": {
+   "conditioning": [
+    "6",
+    0
+   ]
+  }
+ },
+ "11": {
+  "class_type": "EmptyLatentImage",
+  "inputs": {
+   "width": 1024,
+   "height": 1024,
+   "batch_size": 1
+  }
+ },
+ "12": {
+  "class_type": "Krea2ControlLoRALoader",
+  "inputs": {
+   "model": [
+    "3",
+    0
+   ],
+   "lora_name": "krea2_control/krea2_depth_control_lora.safetensors",
+   "strength": 1.0
+  }
+ },
+ "13": {
+  "class_type": "Krea2ControlImageEncode",
+  "inputs": {
+   "control_image": [
+    "17",
+    0
+   ],
+   "vae": [
+    "5",
+    0
+   ],
+   "resize": "match_latent_size",
+   "upscale_method": "lanczos",
+   "crop": "center",
+   "channel_mode": "rgb",
+   "normalize": "none",
+   "invert": false,
+   "batch_mode": "independent_images",
+   "latent": [
+    "11",
+    0
+   ]
+  }
+ },
+ "14": {
+  "class_type": "Krea2ControlApply",
+  "inputs": {
+   "model": [
+    "12",
+    0
+   ],
+   "control_latent": [
+    "13",
+    0
+   ]
+  }
+ },
+ "8": {
+  "class_type": "KSampler",
+  "inputs": {
+   "model": [
+    "14",
+    0
+   ],
+   "positive": [
+    "6",
+    0
+   ],
+   "negative": [
+    "7",
+    0
+   ],
+   "latent_image": [
+    "11",
+    0
+   ],
+   "seed": 0,
+   "steps": 8,
+   "cfg": 1,
+   "sampler_name": "euler",
+   "scheduler": "simple",
+   "denoise": 1.0
+  }
+ },
+ "9": {
+  "class_type": "VAEDecode",
+  "inputs": {
+   "samples": [
+    "8",
+    0
+   ],
+   "vae": [
+    "5",
+    0
+   ]
+  }
+ },
+ "10": {
+  "class_type": "SaveImage",
+  "inputs": {
+   "images": [
+    "9",
+    0
+   ],
+   "filename_prefix": "CJ_krea2_cn"
+  }
+ }
+}

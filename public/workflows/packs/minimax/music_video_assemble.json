@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "title": "Music video assemble",
+    "description": "Joins the rendered music-video segments (hard cuts, they already continue each other) and lays the original song window under them. No models. The builder (src/lib/oj/musicVideo.ts) adds one VHS_LoadVideo (24 fps, frame cap = the segment's kept frames) per segment and chains them with ImageBatch; the song is cut to the window by TrimAudioDuration."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 24,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Segment 1" }
+  },
+  "2": {
+    "class_type": "LoadAudio",
+    "inputs": { "audio": "" },
+    "_meta": { "title": "Song" }
+  },
+  "3": {
+    "class_type": "TrimAudioDuration",
+    "inputs": { "audio": ["2", 0], "start_index": 0, "duration": 5.0 },
+    "_meta": { "title": "Song Window" }
+  },
+  "4": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["1", 0], "audio": ["3", 0], "fps": 24 },
+    "_meta": { "title": "Music Video" }
+  },
+  "5": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["4", 0],
+      "filename_prefix": "video/adrift_mtv/CJ_MTV",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Music Video" }
+  }
+}

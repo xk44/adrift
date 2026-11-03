@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "title": "Stitch clips (concat + crossfade)",
+    "description": "Joins 2-8 finished clips into one, core ComfyUI + VideoHelperSuite only, no models. Template = two clips with a hard cut; the builder (src/lib/oj/stitchClips.ts) keeps SaveVideo and regenerates the rest per clip: VHS_LoadVideo (resampled to the output fps) -> ImageScale to the first clip's size (GetImageSize) -> ImageBatch per cut, or per crossfade VHS_SplitImages (last K frames / first K frames) + one ImageBlend per frame -> CreateVideo (optional soundtrack: each clip's sound padded with EmptyAudio, cut by TrimAudioDuration, chained with AudioConcat) -> SaveVideo (H.264 MP4)."
+  },
+  "1": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 24,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Clip 1" }
+  },
+  "2": {
+    "class_type": "VHS_LoadVideo",
+    "inputs": {
+      "video": "",
+      "force_rate": 24,
+      "custom_width": 0,
+      "custom_height": 0,
+      "frame_load_cap": 0,
+      "skip_first_frames": 0,
+      "select_every_nth": 1,
+      "format": "None"
+    },
+    "_meta": { "title": "Clip 2" }
+  },
+  "3": {
+    "class_type": "GetImageSize",
+    "inputs": { "image": ["1", 0] },
+    "_meta": { "title": "Clip 1 Size" }
+  },
+  "4": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["2", 0],
+      "upscale_method": "lanczos",
+      "width": ["3", 0],
+      "height": ["3", 1],
+      "crop": "center"
+    },
+    "_meta": { "title": "Clip 2 Fit" }
+  },
+  "5": {
+    "class_type": "ImageBatch",
+    "inputs": { "image1": ["1", 0], "image2": ["4", 0] },
+    "_meta": { "title": "Cut to Clip 2" }
+  },
+  "6": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["5", 0], "fps": 24 },
+    "_meta": { "title": "Stitched Video" }
+  },
+  "7": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["6", 0],
+      "filename_prefix": "video/adrift_stitch",
+      "format": "auto",
+      "codec": "auto"
+    },
+    "_meta": { "title": "Save Stitched Video" }
+  }
+}

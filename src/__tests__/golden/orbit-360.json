@@ -1,0 +1,208 @@
+{
+  "name": "orbit_360",
+  "tool": "orbit_360",
+  "action": "orbit_360",
+  "workflow": "packs/minimax/orbit_360.json",
+  "seed": 314799534,
+  "graph": {
+    "1": {
+      "class_type": "UNETLoader",
+      "title": "Load MiniMax H3 (pruned bf16)",
+      "inputs": {
+        "unet_name": "minimax_h3_fl2va_pruned_bf16.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "title": "Load Qwen3-VL 32B Encoder",
+      "inputs": {
+        "clip_name": "qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "device": "default",
+        "type": "minimax"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "title": "Video VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_video_vae_fp16.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "title": "Audio VAE",
+      "inputs": {
+        "vae_name": "minimax_h3_audio_vae_fp32.safetensors"
+      }
+    },
+    "5": {
+      "class_type": "MiniMaxH3ImageToVideo",
+      "title": "H3 Conditioning + AV Latent",
+      "inputs": {
+        "clip": [
+          "2",
+          0
+        ],
+        "first_frame": [
+          "15",
+          0
+        ],
+        "height": 768,
+        "last_frame": [
+          "15",
+          0
+        ],
+        "length": 73,
+        "prompt": "One frozen instant. Only the camera moves. In a continuous 360 orbit. Preserve every person and object in exactly the same world position, orientation, shape and pose throughout the shot. Airborne objects remain suspended at the captured height and angle: no wobbling, shaking, spinning, drifting, falling or continued action. Keep faces, hands, clothing, liquids and the background motionless while retaining their natural appearance. Camera parallax is the only source of apparent movement. No cuts, zoom, morphing or added objects. golden test subject",
+        "vae": [
+          "3",
+          0
+        ],
+        "width": 1344
+      }
+    },
+    "6": {
+      "class_type": "KSamplerSelect",
+      "title": "Sampler",
+      "inputs": {
+        "sampler_name": "res_multistep"
+      }
+    },
+    "7": {
+      "class_type": "BasicScheduler",
+      "title": "Scheduler",
+      "inputs": {
+        "denoise": 1,
+        "model": [
+          "16",
+          0
+        ],
+        "scheduler": "simple",
+        "steps": 28
+      }
+    },
+    "8": {
+      "class_type": "RandomNoise",
+      "title": "Noise",
+      "inputs": {
+        "noise_seed": 314799534
+      }
+    },
+    "9": {
+      "class_type": "BasicGuider",
+      "title": "Guider",
+      "inputs": {
+        "conditioning": [
+          "5",
+          0
+        ],
+        "model": [
+          "16",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "SamplerCustomAdvanced",
+      "title": "Sample",
+      "inputs": {
+        "guider": [
+          "9",
+          0
+        ],
+        "latent_image": [
+          "5",
+          1
+        ],
+        "noise": [
+          "8",
+          0
+        ],
+        "sampler": [
+          "6",
+          0
+        ],
+        "sigmas": [
+          "7",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "VAEDecode",
+      "title": "Decode Video",
+      "inputs": {
+        "samples": [
+          "10",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "VAEDecodeAudio",
+      "title": "Decode Audio",
+      "inputs": {
+        "samples": [
+          "10",
+          0
+        ],
+        "vae": [
+          "4",
+          0
+        ]
+      }
+    },
+    "13": {
+      "class_type": "CreateVideo",
+      "title": "Mux AV",
+      "inputs": {
+        "audio": [
+          "12",
+          0
+        ],
+        "fps": 24,
+        "images": [
+          "11",
+          0
+        ]
+      }
+    },
+    "14": {
+      "class_type": "SaveVideo",
+      "title": "Save Video",
+      "inputs": {
+        "codec": "auto",
+        "filename_prefix": "video/CJ_MiniMax_H3_Orbit360",
+        "format": "auto",
+        "video": [
+          "13",
+          0
+        ]
+      }
+    },
+    "15": {
+      "class_type": "LoadImage",
+      "title": "Source image (first AND last frame)",
+      "inputs": {
+        "image": "golden_src.png [input]"
+      }
+    },
+    "16": {
+      "class_type": "LoraLoaderModelOnly",
+      "title": "360 orbit LoRA (pablodawson, FL2VA)",
+      "inputs": {
+        "lora_name": "minimax_h3_flf2v_lora_v1.safetensors",
+        "model": [
+          "1",
+          0
+        ],
+        "strength_model": 1
+      }
+    }
+  }
+}

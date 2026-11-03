@@ -1,0 +1,1709 @@
+{
+  "about": "Weight files each Tools-page card loads, as paths under ComfyUI/models/. Generated from the tool graphs (src/__tests__/modelsToolMap.test.ts); read by scripts/fetch-models.mjs --tool. Regenerate: npm run docs:models",
+  "tools": [
+    {
+      "id": "edit_photo",
+      "kind": "action",
+      "title": "Edit photo",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "loras/krea2_identity_edit_v1_2.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "diffusion_models/krea2_raw_bf16.safetensors",
+        "loras/krea2_selfie_v1.safetensors",
+        "diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+        "loras/qwen-image-edit-2511-multiple-angles-lora.safetensors",
+        "loras/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "loras/edit_tools/krea2_inpaint_edit_v2_17500.safetensors"
+      ]
+    },
+    {
+      "id": "edit_qwen21",
+      "kind": "action",
+      "title": "Edit (Qwen 2.1)",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/Qwen-Image-2.1-viggle-turbo-4step-lora-r64.safetensors"
+      ]
+    },
+    {
+      "id": "edit_flux3",
+      "kind": "action",
+      "title": "Edit (FLUX.3)",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/flux3_image_klein_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "diffusion_models/flux3_image_klein_sd_int8_convrot.safetensors"
+      ]
+    },
+    {
+      "id": "edit_fibo",
+      "kind": "action",
+      "title": "FIBO 2.0 Edit",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/fibo2_edit_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors",
+        "diffusion_models/fibo2_dev_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "remove_object",
+      "kind": "action",
+      "title": "Object Remover",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "loras/krea2_identity_edit_v1_2.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": "restyle_locked",
+      "kind": "action",
+      "title": "Restyle",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_raw_bf16.safetensors",
+        "loras/krea2_identity_edit_v1.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/krea2_control/krea2_depth_control_lora.safetensors"
+      ]
+    },
+    {
+      "id": "replace_person",
+      "kind": "action",
+      "title": "Replace person",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "loras/krea2_identity_edit_v1_2.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": "pose_character",
+      "kind": "action",
+      "title": "Pose character",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "loras/krea2_identity_edit_v1_2.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "geometry_estimation/depth_anything_3_mono_large.safetensors",
+        "loras/krea2_control/krea2_depth_control_lora.safetensors"
+      ]
+    },
+    {
+      "id": "bg_remove",
+      "kind": "action",
+      "title": "Remove background",
+      "category": "Enhance",
+      "files": [
+        "background_removal/birefnet.safetensors"
+      ]
+    },
+    {
+      "id": "upscale",
+      "kind": "action",
+      "title": "Upscale",
+      "category": "Enhance",
+      "files": [
+        "upscale_models/RealESRGAN_x4plus.pth",
+        "checkpoints/sd_xl_base_1.0.safetensors"
+      ]
+    },
+    {
+      "id": "enhance_faces",
+      "kind": "action",
+      "title": "Enhance faces",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "ultralytics/bbox/face_yolov8m.pt",
+        "ultralytics/bbox/hand_yolov8s.pt"
+      ]
+    },
+    {
+      "id": "animate",
+      "kind": "action",
+      "title": "Animate image",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      ]
+    },
+    {
+      "id": "make_3d_trellis",
+      "kind": "action",
+      "title": "Make 3D",
+      "category": "Animate & 3D",
+      "files": [
+        "clip_vision/dino_v3_L_naf_fp32.safetensors",
+        "diffusion_models/trellis_2_int8_convrot.safetensors",
+        "geometry_estimation/moge_2_vitl_normal_fp16.safetensors",
+        "vae/trellis_2_shape_vae_bf16.safetensors",
+        "vae/trellis_2_texture_vae_bf16.safetensors",
+        "background_removal/birefnet.safetensors",
+        "diffusion_models/pixal3d_int8_convrot.safetensors"
+      ]
+    },
+    {
+      "id": "image_to_splat",
+      "kind": "action",
+      "title": "3D splat",
+      "category": "Animate & 3D",
+      "files": [
+        "background_removal/birefnet.safetensors",
+        "clip_vision/dino_v3_vit_h.safetensors",
+        "vae/flux2-vae.safetensors",
+        "diffusion_models/triposplat_fp16.safetensors",
+        "vae/triposplat_vae_decoder_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "body_3d",
+      "kind": "action",
+      "title": "Body 3D",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/rt_detr_v4-x-hgnet_fp16.safetensors",
+        "detection/sam_3d_body_dinov3_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "moge_geometry",
+      "kind": "action",
+      "title": "Depth & Normals",
+      "category": "Animate & 3D",
+      "files": [
+        "geometry_estimation/moge_2_vitl_normal_fp16.safetensors",
+        "geometry_estimation/moge_3_vitg_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "material_maps",
+      "kind": "action",
+      "title": "Material Maps",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/marigold_v2_depth_log_stage2.safetensors",
+        "embeddings/marigold_v2_depth_conditioning.safetensors",
+        "vae/marigold_v2_depth_log_stage2_vae.safetensors",
+        "loras/marigold_v2_normals.safetensors",
+        "embeddings/marigold_v2_normals_conditioning.safetensors",
+        "vae/marigold_v2_normals_vae.safetensors",
+        "loras/marigold_v2_albedo.safetensors",
+        "embeddings/marigold_v2_albedo_conditioning.safetensors",
+        "vae/marigold_v2_albedo_vae.safetensors"
+      ]
+    },
+    {
+      "id": "body_3d_video",
+      "kind": "action",
+      "title": "Body 3D from video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/rt_detr_v4-x-hgnet_fp16.safetensors",
+        "detection/sam_3d_body_dinov3_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "make_3d",
+      "kind": "action",
+      "title": "Make 3D (legacy)",
+      "category": "Animate & 3D",
+      "files": [
+        "clip_vision/dino_v3_L_naf_fp32.safetensors",
+        "diffusion_models/trellis_2_int8_convrot.safetensors",
+        "geometry_estimation/moge_2_vitl_normal_fp16.safetensors",
+        "vae/trellis_2_shape_vae_bf16.safetensors",
+        "vae/trellis_2_texture_vae_bf16.safetensors",
+        "background_removal/birefnet.safetensors",
+        "diffusion_models/pixal3d_int8_convrot.safetensors"
+      ]
+    },
+    {
+      "id": "music",
+      "kind": "action",
+      "title": "Make music",
+      "category": "Audio",
+      "files": [
+        "diffusion_models/acestep_v1.5_turbo.safetensors",
+        "text_encoders/qwen_0.6b_ace15.safetensors",
+        "text_encoders/qwen_1.7b_ace15.safetensors",
+        "vae/ace_1.5_vae.safetensors"
+      ]
+    },
+    {
+      "id": "sfx",
+      "kind": "action",
+      "title": "Sound effect",
+      "category": "Audio",
+      "files": [
+        "checkpoints/stable_audio_3_small_sfx.safetensors",
+        "text_encoders/t5gemma_b_b_ul2.safetensors"
+      ]
+    },
+    {
+      "id": "sa3_t2a",
+      "kind": "action",
+      "title": "Music & sound",
+      "category": "Audio",
+      "files": [
+        "checkpoints/stable_audio_3_medium.safetensors",
+        "text_encoders/t5gemma_b_b_ul2.safetensors"
+      ]
+    },
+    {
+      "id": "sa3_a2a",
+      "kind": "action",
+      "title": "Restyle audio",
+      "category": "Audio",
+      "files": [
+        "checkpoints/stable_audio_3_medium.safetensors",
+        "text_encoders/t5gemma_b_b_ul2.safetensors"
+      ]
+    },
+    {
+      "id": "sa3_inpaint",
+      "kind": "action",
+      "title": "Fix a section",
+      "category": "Audio",
+      "files": [
+        "checkpoints/stable_audio_3_medium.safetensors",
+        "text_encoders/t5gemma_b_b_ul2.safetensors"
+      ]
+    },
+    {
+      "id": "sa3_extend",
+      "kind": "action",
+      "title": "Extend audio",
+      "category": "Audio",
+      "files": [
+        "checkpoints/stable_audio_3_medium.safetensors",
+        "text_encoders/t5gemma_b_b_ul2.safetensors"
+      ]
+    },
+    {
+      "id": "face_swap",
+      "kind": "action",
+      "title": "Swap face in video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "loras/FaceSwap_H3_REF2VA.safetensors"
+      ]
+    },
+    {
+      "id": "orbit_360",
+      "kind": "action",
+      "title": "360 orbit video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_fl2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_flf2v_lora_v1.safetensors"
+      ]
+    },
+    {
+      "id": "camera_move",
+      "kind": "action",
+      "title": "Camera move video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_fl2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/camera_motion_h3_lora_v1_3000_pruned.safetensors"
+      ]
+    },
+    {
+      "id": "person_remove",
+      "kind": "action",
+      "title": "Video Person Remover",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/H3-Person-Remover-V1.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors",
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "video_object_remove",
+      "kind": "action",
+      "title": "Video Object Remover",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "video_remove_text",
+      "kind": "action",
+      "title": "Video Text Remover",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "video_object_swap",
+      "kind": "action",
+      "title": "Swap object in video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors",
+        "background_removal/birefnet.safetensors"
+      ]
+    },
+    {
+      "id": "video_object_add",
+      "kind": "action",
+      "title": "Add object to video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "video_bg_swap",
+      "kind": "action",
+      "title": "Swap video background (H3)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "cast_swap",
+      "kind": "action",
+      "title": "Recast several people",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "loras/h3_character_swap_v1.5.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "crossview",
+      "kind": "action",
+      "title": "CrossView video",
+      "category": "Animate & 3D",
+      "files": []
+    },
+    {
+      "id": "describe",
+      "kind": "action",
+      "title": "Describe",
+      "category": "Describe",
+      "files": []
+    },
+    {
+      "id": "character_swap",
+      "kind": "action",
+      "title": "Character swap in video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "loras/h3_character_swap_v1.5.safetensors",
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors",
+        "diffusion_models/rt_detr_v4-x-hgnet_fp16.safetensors",
+        "checkpoints/sdpose_wholebody_fp16.safetensors",
+        "model_patches/minimax_h3_fun_controlnet_union_2.0_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "latent_upscale_models/minimax_h3_latent_upscaler_3d_conv_v1_bf16.safetensors",
+        "loras/h3/open_h3_regenerate_2k_lora.safetensors",
+        "loras/h3/sharp_curve_branches.safetensors"
+      ]
+    },
+    {
+      "id": "wan_animate",
+      "kind": "action",
+      "title": "Animate character",
+      "category": "Animate & 3D",
+      "files": [
+        "clip_vision/clip_vision_h.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "diffusion_models/wan_animate_2_distill_int8_convrot.safetensors"
+      ]
+    },
+    {
+      "id": "lipsync",
+      "kind": "action",
+      "title": "Lipsync / talking photo",
+      "category": "Animate & 3D",
+      "files": [
+        "audio_encoders/wav2vec2-chinese-base_fp16.safetensors",
+        "model_patches/wan2.1_infiniteTalk_single_fp16.safetensors",
+        "diffusion_models/wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "clip_vision/clip_vision_h.safetensors"
+      ]
+    },
+    {
+      "id": "video_lipsync",
+      "kind": "action",
+      "title": "Lipsync onto video",
+      "category": "Animate & 3D",
+      "files": [
+        "audio_encoders/wav2vec2-chinese-base_fp16.safetensors",
+        "model_patches/wan2.1_infiniteTalk_single_fp16.safetensors",
+        "diffusion_models/wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "clip_vision/clip_vision_h.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "talking_avatar",
+      "kind": "action",
+      "title": "Talking avatar",
+      "category": "Animate & 3D",
+      "files": [
+        "audio_encoders/wav2vec2_large_english_fp16.safetensors",
+        "diffusion_models/wan2.2_s2v_14B_fp8_scaled.safetensors",
+        "loras/wan22/Wan2.2-Lightning_T2V-v1.1-A14B-4steps-lora_HIGH_fp16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors"
+      ]
+    },
+    {
+      "id": "transition",
+      "kind": "action",
+      "title": "Transition",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_fl2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": "ref_video",
+      "kind": "action",
+      "title": "Reference to Video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": "multiframe_ref",
+      "kind": "action",
+      "title": "Multiframe Reference",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors"
+      ]
+    },
+    {
+      "id": "h3_charsheet",
+      "kind": "action",
+      "title": "H3 Character Sheet",
+      "category": "Camera",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "ltx25_animate",
+      "kind": "action",
+      "title": "Animate (LTX-2.5)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      ]
+    },
+    {
+      "id": "ltx25_transition",
+      "kind": "action",
+      "title": "Transition (LTX-2.5)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors"
+      ]
+    },
+    {
+      "id": "video_bg_remove",
+      "kind": "action",
+      "title": "Remove video background",
+      "category": "Animate & 3D",
+      "files": [
+        "background_removal/birefnet.safetensors"
+      ]
+    },
+    {
+      "id": "video_bg_change",
+      "kind": "action",
+      "title": "Change video background",
+      "category": "Animate & 3D",
+      "files": [
+        "background_removal/birefnet.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "video_palette",
+      "kind": "action",
+      "title": "Video Color Palette",
+      "category": "Animate & 3D",
+      "files": []
+    },
+    {
+      "id": "upscale_seedvr2",
+      "kind": "action",
+      "title": "Upscale (SeedVR2)",
+      "category": "Enhance",
+      "files": [
+        "vae/seedvr2_ema_vae_fp16.safetensors",
+        "diffusion_models/seedvr2_3b_fp8_e4m3fn.safetensors",
+        "diffusion_models/seedvr2_7b_fp8_e4m3fn.safetensors",
+        "diffusion_models/seedvr2_7b_sharp_fp8_e4m3fn.safetensors"
+      ]
+    },
+    {
+      "id": "upscale_vosr2",
+      "kind": "action",
+      "title": "Photo upscale (VOSR2)",
+      "category": "Enhance",
+      "files": []
+    },
+    {
+      "id": "upscale_video",
+      "kind": "action",
+      "title": "Upscale video",
+      "category": "Animate & 3D",
+      "files": [
+        "upscale_models/RealESRGAN_x4plus.pth",
+        "vae/seedvr2_ema_vae_fp16.safetensors",
+        "diffusion_models/seedvr2_3b_fp8_e4m3fn.safetensors",
+        "diffusion_models/seedvr2_7b_fp8_e4m3fn.safetensors",
+        "diffusion_models/seedvr2_7b_sharp_fp8_e4m3fn.safetensors",
+        "diffusion_models/WanVideo/FlashVSR/Wan2_1_FlashVSR_LQ_proj_model_bf16.safetensors",
+        "diffusion_models/WanVideo/FlashVSR/Wan2_1-T2V-1_3B_FlashVSR_fp32.safetensors",
+        "text_encoders/umt5-xxl-enc-fp8_e4m3fn.safetensors",
+        "vae/Wan2_1_FlashVSR_TCDecoder_fp32.safetensors",
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-pixel-spatial-upscaler-x2-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_restore",
+      "kind": "action",
+      "title": "Restore video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-restore-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-deblur-0.9.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-decompression-0.9.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-colorization-0.9.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-refine-details-1.0.safetensors"
+      ]
+    },
+    {
+      "id": "interpolate",
+      "kind": "action",
+      "title": "Smooth motion / slow-mo",
+      "category": "Animate & 3D",
+      "files": [
+        "frame_interpolation/rife_v4.26.safetensors"
+      ]
+    },
+    {
+      "id": "relight",
+      "kind": "action",
+      "title": "Relight",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "loras/Qwen-Image-Edit-2509-Relight.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/Qwen-Image-Edit-2509-Light-Migration.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "wan_motion",
+      "kind": "action",
+      "title": "Motion presets",
+      "category": "Animate & 3D",
+      "files": [
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "diffusion_models/wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "loras/wan_motion/360_Orbit.safetensors",
+        "clip_vision/clip_vision_h.safetensors",
+        "diffusion_models/wan2.2_i2v_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_i2v_low_noise_14B_fp8_scaled.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_motion/wan22_14b_i2v_orbit_high_noise.safetensors",
+        "loras/wan_motion/wan22_14b_i2v_orbit_low_noise.safetensors",
+        "diffusion_models/minimax_h3_fl2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_flf2v_lora_v1.safetensors"
+      ]
+    },
+    {
+      "id": "wan_camera",
+      "kind": "action",
+      "title": "Camera control",
+      "category": "Animate & 3D",
+      "files": [
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "diffusion_models/wan2.2_fun_camera_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_camera_low_noise_14B_fp8_scaled.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors"
+      ]
+    },
+    {
+      "id": "wan_move",
+      "kind": "action",
+      "title": "Trajectory motion",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/Wan21-WanMove_fp8_scaled_e4m3fn_KJ.safetensors",
+        "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "clip_vision/clip_vision_h.safetensors"
+      ]
+    },
+    {
+      "id": "vace_restyle",
+      "kind": "action",
+      "title": "Restyle video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors"
+      ]
+    },
+    {
+      "id": "vace_reframe",
+      "kind": "action",
+      "title": "Reframe video",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors"
+      ]
+    },
+    {
+      "id": "video_expand",
+      "kind": "action",
+      "title": "Expand video",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.3-22b-ic-lora-outpaint.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors"
+      ]
+    },
+    {
+      "id": "video_retake",
+      "kind": "action",
+      "title": "Retake video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "vace_extend",
+      "kind": "action",
+      "title": "Extend video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/wan2.2_fun_vace_high_noise_14B_fp8_scaled.safetensors",
+        "diffusion_models/wan2.2_fun_vace_low_noise_14B_fp8_scaled.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_high_noise_lora_rank64_lightx2v_4step_1022.safetensors",
+        "loras/wan_speed/wan2.2_i2v_A14b_low_noise_lora_rank64_lightx2v_4step_1022.safetensors"
+      ]
+    },
+    {
+      "id": "shots",
+      "kind": "action",
+      "title": "Shots",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "loras/qwen-image-edit-2511-multiple-angles-lora.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": "zooms",
+      "kind": "action",
+      "title": "Zooms",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "loras/qwen-image-edit-2511-multiple-angles-lora.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors"
+      ]
+    },
+    {
+      "id": "layers",
+      "kind": "action",
+      "title": "Layers",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/qwen_image_layered_fp8mixed.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_layered_vae.safetensors"
+      ]
+    },
+    {
+      "id": "vectorize",
+      "kind": "action",
+      "title": "Vectorize",
+      "category": "Edit",
+      "files": []
+    },
+    {
+      "id": "breakdown",
+      "kind": "action",
+      "title": "Breakdown",
+      "category": "Edit",
+      "files": [
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "see_through",
+      "kind": "action",
+      "title": "Layer Split",
+      "category": "Edit",
+      "files": [],
+      "dirs": [
+        "SeeThrough/layerdifforg/seethroughv0.0.2_layerdiff3d/",
+        "SeeThrough/layerdifforg/seethroughv0.0.1_marigold/"
+      ]
+    },
+    {
+      "id": "refocus",
+      "kind": "action",
+      "title": "Refocus",
+      "category": "Edit",
+      "files": [
+        "geometry_estimation/depth_anything_3_mono_large.safetensors"
+      ]
+    },
+    {
+      "id": "rack_focus",
+      "kind": "action",
+      "title": "Rack focus",
+      "category": "Animate & 3D",
+      "files": [
+        "geometry_estimation/depth_anything_3_mono_large.safetensors"
+      ]
+    },
+    {
+      "id": "sdr_to_hdr",
+      "kind": "action",
+      "title": "SDR to HDR",
+      "category": "Enhance",
+      "files": []
+    },
+    {
+      "id": "video_edit",
+      "kind": "action",
+      "title": "Edit video",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/lucy-edit-dev-cui-fp16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan2.2_vae.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_alpha_matte",
+      "kind": "action",
+      "title": "Alpha Matte",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-alpha-gen-0.9.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_clean_plate",
+      "kind": "action",
+      "title": "Clean Plate",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-clean-plate-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_day_to_night",
+      "kind": "action",
+      "title": "Day to Night",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-day-to-night-0.9.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_add_water",
+      "kind": "action",
+      "title": "Add Water",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-water-simulation-0.9.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_cinemagraph",
+      "kind": "action",
+      "title": "Cinemagraph",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-lora-cinemagraph-0.9.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_slow_motion",
+      "kind": "action",
+      "title": "Slow Motion",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-lora-slow-motion-control-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_ripple",
+      "kind": "action",
+      "title": "Ripple Edit",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/LTX25_Ripple_v11.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_edge_control",
+      "kind": "action",
+      "title": "Edge Control",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_blockout_render",
+      "kind": "action",
+      "title": "Blockout to Render",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "geometry_estimation/depth_anything_3_mono_large.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_sdr_to_hdr",
+      "kind": "action",
+      "title": "SDR to HDR (video)",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-sdr-to-hdr-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_layout_render",
+      "kind": "action",
+      "title": "Layout to Render",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-layout-to-render-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_ingredients",
+      "kind": "action",
+      "title": "Ingredients",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-ingredients-0.9.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_reshoot",
+      "kind": "action",
+      "title": "Re-shoot",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors",
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "loras/edit_tools/qwen-image-2.1-qma-camera-angles.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_exploded_view",
+      "kind": "action",
+      "title": "Exploded View",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-xpldv_v5-lora.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "ltx_paint_fluid",
+      "kind": "action",
+      "title": "Paint Fluid",
+      "category": "LTX VFX",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ainvfx-fluid.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "voiceover",
+      "kind": "action",
+      "title": "Voiceover",
+      "category": "Audio",
+      "files": [],
+      "dirs": [
+        "tts/VibeVoice/VibeVoice-1.5B/",
+        "tts/VibeVoice/VibeVoice-Realtime-0.5B/",
+        "tts/kokoro/Kokoro-82M/"
+      ]
+    },
+    {
+      "id": "add_sound",
+      "kind": "action",
+      "title": "Add sound to clip",
+      "category": "Audio",
+      "files": [
+        "mmaudio/mmaudio_large_44k_v2_fp16.safetensors",
+        "mmaudio/mmaudio_vae_44k_fp16.safetensors",
+        "mmaudio/mmaudio_synchformer_fp16.safetensors",
+        "mmaudio/apple_DFN5B-CLIP-ViT-H-14-384_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "character_swap_full",
+      "kind": "action",
+      "title": "Character swap in video (full re-render)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/minimax_h3_ref2va_pruned_bf16.safetensors",
+        "text_encoders/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+        "vae/minimax_h3_video_vae_fp16.safetensors",
+        "vae/minimax_h3_audio_vae_fp32.safetensors",
+        "loras/minimax_h3_fl2v_turbo_8step_v1.1_768p_comfyui_bf16.safetensors",
+        "loras/h3_character_swap_v1.5.safetensors"
+      ]
+    },
+    {
+      "id": "light_migration",
+      "kind": "action",
+      "title": "Relight (match a reference)",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "loras/Qwen-Image-Edit-2509-Light-Migration.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "flashvsr_upscale",
+      "kind": "action",
+      "title": "Upscale video (FlashVSR)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/WanVideo/FlashVSR/Wan2_1_FlashVSR_LQ_proj_model_bf16.safetensors",
+        "diffusion_models/WanVideo/FlashVSR/Wan2_1-T2V-1_3B_FlashVSR_fp32.safetensors",
+        "text_encoders/umt5-xxl-enc-fp8_e4m3fn.safetensors",
+        "vae/Wan2_1_FlashVSR_TCDecoder_fp32.safetensors"
+      ]
+    },
+    {
+      "id": "subject_matte",
+      "kind": "action",
+      "title": "Remove video background (MatAnyone2)",
+      "category": "Animate & 3D",
+      "files": [
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ]
+    },
+    {
+      "id": "rtx_upscale",
+      "kind": "action",
+      "title": "Upscale video (NVIDIA RTX)",
+      "category": "Animate & 3D",
+      "files": []
+    },
+    {
+      "id": "ltx_upscale_x2",
+      "kind": "action",
+      "title": "Upscale video (LTX x2)",
+      "category": "Animate & 3D",
+      "files": [
+        "diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "loras/ltx25/ltx-2.5-22b-ic-lora-pixel-spatial-upscaler-x2-1.0.safetensors",
+        "vae/ltx-2.5-video-vae-bf16.safetensors",
+        "vae/ltx-2.5-audio-vae-bf16.safetensors",
+        "text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+      ]
+    },
+    {
+      "id": "dub_video",
+      "kind": "pipeline",
+      "title": "Video Translator",
+      "category": "Audio",
+      "files": [
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "tts/chatterbox/chatterbox_local/t3_mtl23ls_v3.safetensors",
+        "audio_encoders/wav2vec2-chinese-base_fp16.safetensors",
+        "model_patches/wan2.1_infiniteTalk_single_fp16.safetensors",
+        "diffusion_models/wan2.1_i2v_480p_14B_fp8_scaled.safetensors",
+        "loras/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors",
+        "text_encoders/split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "vae/wan_2.1_vae.safetensors",
+        "vae/split_files/vae/wan_2.1_vae.safetensors",
+        "clip_vision/clip_vision_h.safetensors",
+        "checkpoints/sam3.1_multiplex_fp16.safetensors"
+      ],
+      "dirs": [
+        "tts/VibeVoice/VibeVoice-1.5B/",
+        "stt/whisper/whisper-large-v3-turbo/",
+        "tts/chatterbox/chatterbox_local/"
+      ]
+    },
+    {
+      "id": "voice_changer",
+      "kind": "pipeline",
+      "title": "Voice Changer",
+      "category": "Audio",
+      "files": [],
+      "dirs": [
+        "tts/chatterbox/chatterbox_local/"
+      ]
+    },
+    {
+      "id": "qwen21-outpaint",
+      "kind": "catalog",
+      "title": "Outpaint",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/qwen-image-2.1-outpaint-v2.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-restore",
+      "kind": "catalog",
+      "title": "Restore",
+      "category": "Restore",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/qwen-image-2.1-restore.safetensors",
+        "loras/edit_tools/qwen-image-2.1-consistency.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-camera",
+      "kind": "catalog",
+      "title": "Camera angle",
+      "category": "Camera",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/qwen-image-2.1-qma-camera-angles.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-outfit-swap",
+      "kind": "catalog",
+      "title": "Outfit swap",
+      "category": "Outfit",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/qwen-image-2.1-outfit-swap.safetensors",
+        "loras/edit_tools/qwen-image-2.1-consistency.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-unblur-background",
+      "kind": "catalog",
+      "title": "Unblur background",
+      "category": "Restore",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/unblur-background-qwen-image-2.1-edit-lora.safetensors",
+        "loras/edit_tools/qwen-image-2.1-consistency.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-general-edit",
+      "kind": "catalog",
+      "title": "General edit",
+      "category": "Edit",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/edit_tools/krea2_general_edit_v2_r64.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-inpaint",
+      "kind": "catalog",
+      "title": "Inpaint",
+      "category": "Inpaint",
+      "files": [
+        "diffusion_models/krea2_raw_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/edit_tools/krea2_inpaint_edit_v2_17500.safetensors"
+      ]
+    },
+    {
+      "id": "flux3-outpaint",
+      "kind": "catalog",
+      "title": "Outpaint",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/flux3_image_klein_sd_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "loras/edit_tools/flux-3-image-klein-outpaint.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-outpaint",
+      "kind": "catalog",
+      "title": "Outpaint (fast)",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/krea2_outpaint_rank32.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-anypaint",
+      "kind": "catalog",
+      "title": "Inpaint + Expand",
+      "category": "Inpaint",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/krea2_anypaint_rank32.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-head-swap",
+      "kind": "catalog",
+      "title": "Head swap",
+      "category": "Swap",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/bfs_head_v1.1_qwen_2.1.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-body-swap",
+      "kind": "catalog",
+      "title": "Body swap",
+      "category": "Swap",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/bfs_body_swap_v1.0_qwen_2.1.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-head-swap",
+      "kind": "catalog",
+      "title": "Head swap (Krea 2)",
+      "category": "Swap",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/bfs_head_swap_v1.1_krea2.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-body-swap",
+      "kind": "catalog",
+      "title": "Body swap (Krea 2)",
+      "category": "Swap",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/bfs_body_swap_v1_krea2.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-next-scene",
+      "kind": "catalog",
+      "title": "Next scene",
+      "category": "Story",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/next_scene_step2500.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-remove-bg",
+      "kind": "catalog",
+      "title": "Remove background (RGBA)",
+      "category": "Remove",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-remove-box",
+      "kind": "catalog",
+      "title": "Object Remover (box)",
+      "category": "Remove",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/Qwen-Image-2.1-Object-Remover-Bbox-turbo-4000.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-doodle",
+      "kind": "catalog",
+      "title": "Doodle in",
+      "category": "Inpaint",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/doodle_in_lora_qwen21.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-anything2real",
+      "kind": "catalog",
+      "title": "Anything to real",
+      "category": "Restyle",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/Qwen2.1_Anything2RealCharacters.safetensors",
+        "loras/edit_tools/qwen-image-2.1-lightning-4step.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-pano360",
+      "kind": "catalog",
+      "title": "360° panorama",
+      "category": "Expand",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/pano360_qwen21_edit_v1.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-character-sheet",
+      "kind": "catalog",
+      "title": "Character sheet",
+      "category": "Camera",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/character-sheet-qwen-image-2.1-edit-lora-e9.safetensors"
+      ]
+    },
+    {
+      "id": "qwen21-realism",
+      "kind": "catalog",
+      "title": "Phone-photo realism",
+      "category": "Enhance",
+      "files": [
+        "diffusion_models/qwen_image_2.1_bf16.safetensors",
+        "text_encoders/qwen3vl_8b_bf16.safetensors",
+        "vae/qwen_image_2.1_vae_bf16.safetensors",
+        "loras/edit_tools/realism-qwen-image-2.1-edit-lora-e8.safetensors"
+      ]
+    },
+    {
+      "id": "qwen2511-remove",
+      "kind": "catalog",
+      "title": "Object Remover (text)",
+      "category": "Remove",
+      "files": [
+        "diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/edit_tools/Qwen-Image-Edit-2511-Object-Remover.safetensors",
+        "loras/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+      ]
+    },
+    {
+      "id": "qwen2511-unblur-upscale",
+      "kind": "catalog",
+      "title": "Unblur",
+      "category": "Restore",
+      "files": [
+        "diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/edit_tools/Qwen-Image-Edit-Unblur-Upscale_20.safetensors",
+        "loras/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+      ]
+    },
+    {
+      "id": "qwen2511-camera",
+      "kind": "catalog",
+      "title": "Camera angle (Qwen Edit 2511)",
+      "category": "Camera",
+      "files": [
+        "diffusion_models/qwen_image_edit_2511_bf16.safetensors",
+        "text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/qwen-image-edit-2511-multiple-angles-lora.safetensors",
+        "loras/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+      ]
+    },
+    {
+      "id": "flux3-restore",
+      "kind": "catalog",
+      "title": "Restore",
+      "category": "Restore",
+      "files": [
+        "diffusion_models/flux3_image_klein_sd_int8_convrot.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "loras/edit_tools/flux-3-image-klein-restore.safetensors",
+        "loras/edit_tools/flux-3-image-klein-consistency.safetensors"
+      ]
+    },
+    {
+      "id": "flux3-camera",
+      "kind": "catalog",
+      "title": "Camera angle",
+      "category": "Camera",
+      "files": [
+        "diffusion_models/flux3_image_klein_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "loras/edit_tools/flux3_klein_angles_comfy.safetensors"
+      ]
+    },
+    {
+      "id": "moss-restyle-depth",
+      "kind": "catalog",
+      "title": "Restyle from depth",
+      "category": "Restyle",
+      "files": [
+        "diffusion_models/moss_image_sft_bf16.safetensors",
+        "text_encoders/qwen3.5_9b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "geometry_estimation/depth_anything_3_base.safetensors",
+        "loras/moss-control.safetensors",
+        "loras/moss_image_sft_banding_fix_L37-41_bf16.safetensors",
+        "loras/moss_image_sft_8step_dmd.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-restyle-depth",
+      "kind": "catalog",
+      "title": "Krea 2 restyle from depth",
+      "category": "Restyle",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "geometry_estimation/depth_anything_3_base.safetensors",
+        "loras/krea2-control.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "krea2-layout-regions",
+      "kind": "catalog",
+      "title": "Krea 2 layout from region map",
+      "category": "Compose",
+      "files": [
+        "diffusion_models/krea2_turbo_bf16.safetensors",
+        "text_encoders/qwen3vl_4b_bf16.safetensors",
+        "vae/qwen_image_vae.safetensors",
+        "loras/krea2-control.safetensors",
+        "loras/krea2_turbo_4step_rank_64_lora_comfyui.safetensors"
+      ]
+    },
+    {
+      "id": "moss-charref",
+      "kind": "catalog",
+      "title": "Character reference",
+      "category": "Story",
+      "files": [
+        "vae/flux2-vae.safetensors",
+        "diffusion_models/moss_image_base_bf16.safetensors",
+        "text_encoders/qwen3.5_9b_bf16.safetensors",
+        "loras/moss_image_charref_v2.safetensors"
+      ]
+    },
+    {
+      "id": "moss-colorize",
+      "kind": "catalog",
+      "title": "Colorize",
+      "category": "Restore",
+      "files": [
+        "diffusion_models/moss_image_base_bf16.safetensors",
+        "text_encoders/qwen3.5_9b_bf16.safetensors",
+        "vae/flux2-vae.safetensors",
+        "loras/moss_image_base_colorize_v2.safetensors"
+      ]
+    }
+  ]
+}
